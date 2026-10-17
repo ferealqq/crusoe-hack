@@ -2,7 +2,7 @@
 
 A shared memory layer for a team of ML research agents, built on Crusoe Managed Inference.
 
-Every new agent on a team usually starts from zero and pays again for the same context. In Shared Brain, short-lived researcher agents read a shared memory before they work, and a curator keeps that memory **current, lean and conflict-free**. Each generation starts fresh but smarter, and we measure the gain as validation loss.
+Every new agent on a team usually starts from zero and pays again for the same context. In Shared Brain, short-lived researcher agents read a shared memory before they work, and a curator keeps that memory **current, lean and conflict-free**. Each generation starts fresh but smarter. We measure the gain as the drop in loss on a held-out test split that no agent sees.
 
 ## How it works
 
@@ -38,6 +38,16 @@ All setups use the same dataset, splits, models, sandbox and total number of run
 | **Shared Brain** | Curated memory: lean and current | Curated memory, 2,000-token cap | Curator check on 3 seeds |
 
 A new best must beat the old one by more than the noise threshold, in every setup.
+
+## Results so far
+
+| Dataset | One-shot | No memory | Raw log | Shared Brain | Details |
+|---|---|---|---|---|---|
+| Churn (test gain, 5 generations) | 4.1% | 20.0% | 20.0% | **21.0%** | [findings](data/runs/20261017-223035-churn/FINDINGS.md) |
+| Churn (test accuracy) | 82.3% | 86.3% | 86.3% | **86.8%** | starting model 82.7% |
+| Superconductivity (test gain, generation 1 only) | 44.1% | 45.7% | 46.0% | 46.2% | [partial findings](data/runs/20261017-234325-653156-superconductivity/FINDINGS.md) |
+
+On churn, Shared Brain was the only setup that improved after generation 1. It's one research run per setup, so treat it as a promising signal, not proof. The superconductivity run was stopped after generation 1, before memory comes into play. Each run folder has a `report.html` with per-generation charts and memory snapshots.
 
 ## Budget
 
@@ -82,7 +92,7 @@ We test on three different kinds of problem: a yes/no prediction, a time-series 
 |---|---|---|---|---|
 | Churn | Will this customer leave? (yes/no) | [OpenML 46371](https://www.openml.org/d/46371) (35k customers) | Log loss | Random 70/15/15, stratified, seed 42 |
 | Regression | At what temperature does a material become a superconductor? | [Superconductivity](https://www.openml.org/d/44148) (21k rows, 79 features) | RMSE | Random 70/15/15, seed 42 |
-| Inventory | Daily demand per product | [Walmart M5](https://zenodo.org/records/12636070), top 1,000 products by units sold | Pinball loss at 90% | By time: test = last 28 days, val = 28 days before, train = the rest |
+| Inventory (not built yet) | Daily demand per product | [Walmart M5](https://zenodo.org/records/12636070), top 1,000 products by units sold | Pinball loss at 90% | By time: test = last 28 days, val = 28 days before, train = the rest |
 
 Why these:
 
@@ -90,9 +100,9 @@ Why these:
 - **Regression:** most room to improve (~47%); 79 features give agents real tuning work.
 - **Inventory:** real retail data; the score measures stock levels, not just the forecast. Room to improve not measured yet: `prepare_data.py` measures it, and we drop M5 if it's under 5%.
 
-Order: churn first end-to-end, then superconductivity, then M5 only if there's time.
+Order: churn first end-to-end, then superconductivity, then M5 only if there's time. Status: churn done; superconductivity built, first run stopped after generation 1; M5 not started.
 
-`scripts/prepare_data.py <name>` downloads a dataset, splits it and saves it locally under `data/<name>/` (git-ignored): `train.parquet`, `val_X.parquet`, `val_y.parquet`, `test_X.parquet`, `test_y.parquet` and `meta.json` (target column, loss, split rule).
+`scripts/prepare_data.py <name>` (`churn` or `superconductivity`) downloads a dataset, splits it and saves it locally under `data/<name>/` (git-ignored): `train.parquet`, `val_X.parquet`, `val_y.parquet`, `test_X.parquet`, `test_y.parquet`, `trainval.parquet` (used only by `test.py`) and `meta.json` (target column, loss, split rule).
 
 ## Files
 
@@ -123,7 +133,7 @@ Starting `train.py` per dataset, in `baselines/<name>/train.py`:
 |---|---|
 | Churn | Logistic regression |
 | Regression | Ridge regression |
-| Inventory | Per-product 90th percentile of the last 28 days |
+| Inventory | Per-product 90th percentile of the last 28 days (not built yet) |
 
 ## Tools
 
@@ -136,7 +146,7 @@ Starting `train.py` per dataset, in `baselines/<name>/train.py`:
 | `upsert_memory` | `kind` (works / failed / try_next), `claim` (200 characters max), `run_ids`, optional `id` to edit | `id`, tokens used, token cap. Refused if over the cap |
 | `remove_memory` | `id`, `reason` | ok |
 
-The memory tools are our own, backed by Neon Postgres. Crusoe has no memory API.
+The memory tools are our own: memory lives in the orchestrator and is saved to the run's files every generation (see [Storage](#storage)). Crusoe has no memory API. `web_search` is offered only when `YDC_API_KEY` is set.
 
 `web_search` uses the [You.com Search API](https://you.com/docs/get-started/quickstart): `POST https://ydc-index.io/v1/search` with header `X-API-Key: $YDC_API_KEY` and body `{"query": "...", "count": 5}`. Results are in `results.web[]` (`title`, `url`, `description`).
 
@@ -146,7 +156,7 @@ The memory tools are our own, backed by Neon Postgres. Crusoe has no memory API.
 |---|---|---|
 | **Researcher** (×4) | `nvidia/NVIDIA-Nemotron-3-Super-120B-A12B` | `get_memory`, `web_search`, `run_code` |
 | **Curator** (×1) | `deepseek-ai/DeepSeek-V4-Pro` | `get_memory`, `run_code` (to re-check), `upsert_memory`, `remove_memory` |
-| Waste checker | `openai/gpt-oss-120b` | None |
+| Waste checker (planned, not built) | `openai/gpt-oss-120b` | None |
 
 - Researcher focus areas: features, model type, tuning, regularization and ensembling.
 - Researcher settings: temperature 1.0, top_p 0.95, `chat_template_kwargs: {"enable_thinking": true, "force_nonempty_content": true}`, max_tokens 8192.
@@ -251,42 +261,50 @@ fitness = average gain across seeds 1, 2, 3
 All setups use the same dataset and budget, and are scored on the same test split. We track four metrics per generation:
 
 - **Quality:** test gain of that generation's best `train.py`.
-- **Waste:** runs that repeat a change that already failed earlier in the same research run. `openai/gpt-oss-120b` checks each change against the full run log, with the same rule in every setup.
+- **Waste (planned, not built):** runs that repeat a change that already failed earlier in the same research run. `openai/gpt-oss-120b` would check each change against the full run log, with the same rule in every setup.
 - **Memory size:** tokens of what researchers read. Curated memory should stay flat while the raw log grows.
-- **Cost:** prompt, cached and output tokens, dollars, and time-to-first-token per agent (calls are streamed to measure it; see [Why Crusoe MemoryAlloy](#why-crusoe-memoryalloy)).
+- **Cost:** prompt, cached and output tokens per agent, saved with each agent session; `report.html` turns them into dollars with Crusoe's prices. Time-to-first-token (which needs streamed calls; see [Why Crusoe MemoryAlloy](#why-crusoe-memoryalloy)) is planned, not built.
 
-Expected size: about 170 sandbox runs and about 2 hours per research run, or about 1,500 runs for all 3 datasets × 4 setups. Run setups in parallel.
+Measured size: on churn, about 135 sandbox runs per setup. With all 4 setups in parallel, the run took 52 minutes; most of that was waiting on Crusoe rate limits, and without them a generation takes about 5 minutes.
 
 ## Storage
 
-| Postgres table | Holds |
+No database and no bucket for research: everything is a file on local disk under `data/` (git-ignored), written with `app/store.py`. JSONL files are append-only. Finished run folders are committed with `git add -f`.
+
+| File in `data/runs/<timestamp>-<dataset>/` | Holds |
 |---|---|
-| `research_runs` | Dataset, setup, config, status, `L0`, noise threshold, fitness |
-| `generations` | Index, start and end best val loss, best version, test gain, memory tokens |
-| `agent_sessions` | Role, focus, model, report, tokens, cost |
-| `experiments` | Seed, status, val loss, runtime, note, output tail, waste flag, code key |
-| `memory_entries` | The entry fields above, plus an active flag |
-| `memory_events` | Every upsert and remove, with the reason |
-| `memory_snapshots` | Rendered memory and token count per generation |
+| `config.json` | Dataset, loss, setups, budget, models, Crusoe prices |
+| `baseline.json` | `L0`, noise threshold, the starting model's val and test losses |
+| `summary.json`, `rate_limited.json` | Final result per setup; 429 counts per model |
+| `events.jsonl` | Live research events for the telemetry API |
+| `run.log`, `report.html`, `FINDINGS.md` | Console log; generated report; hand-written findings |
+| `<setup>/generations.jsonl` | Per generation: start and end best val loss, best version, test losses and gain, memory tokens, runs, token usage |
+| `<setup>/experiments.jsonl` | Every sandbox run: agent, seed, status, val loss, runtime, note, output tail, the full `train.py` |
+| `<setup>/agents.jsonl` | Every agent session: role, focus, model, report, run log, curator re-checks, tokens, transcript |
+| `<setup>/memory_snapshots.jsonl` | Memory text and token count after each generation, every memory change with its reason, the curator's summary |
+| `<setup>/result.json` | Fitness, best version, best val loss, the best `train.py` |
 
-No bucket and no AWS: every file stays on local disk under `data/` (git-ignored). Datasets are in `data/<name>/`. Each research run writes `data/runs/<timestamp>-<name>/<setup>/`: `experiments.jsonl` (with each run's `train.py` code), `agents.jsonl` (reports and transcripts), `generations.jsonl`, `memory_snapshots.jsonl` and `result.json`.
-
-The old prompt-grading tables (`datasets`, `runs`, `run_results`) and code (`evaluator.py`, the LLM judge) are removed in the same migration.
+Datasets live in `data/<name>/` and aren't committed; `prepare_data.py` rebuilds them. The older prompt-grading endpoints (`datasets`, `runs`, `evaluator.py`, the LLM judge) still use Neon Postgres and the bucket; the research code doesn't touch them.
 
 ## Code layout
 
 ```
 app/
-  orchestrator.py        # CLI: uv run python -m app.orchestrator --dataset churn --setup shared_brain
-  loop.py                # generation loop, ranking, best tracking
-  agents/                # researcher.py, curator.py, prompts.py, tools.py
-  memory.py              # entries, rendering, cap, staleness
+  orchestrator.py        # CLI: uv run python -m app.orchestrator --dataset churn --setup all
+  loop.py                # baseline and noise, generation loop, ranking, best tracking
+  lab.py                 # runs train.py in the sandbox, scores it outside, records experiments
+  agents/                # base.py (tool-calling loop), researcher.py, curator.py, prompts.py
+  memory.py              # curated memory (cap, staleness, drop order) and the raw log
   scoring.py             # losses, noise threshold, gain, fitness
-  services/              # inference.py, sandbox.py, storage.py, search.py
-  api/routes/            # research.py, dashboard.py, health.py, playground.py
+  store.py               # JSON/JSONL files under data/runs/
+  report.py              # report.html for a run folder
+  events.py              # live research events (see docs/research-telemetry.md)
+  services/              # inference.py, sandbox.py, search.py, research_events.py, model_exports.py
+                         # (storage.py and evaluator.py serve the old prompt-grading endpoints)
+  api/routes/            # research.py, exports.py, health.py, playground.py (+ old datasets.py, runs.py)
 sandbox/                 # harness.py, test.py (locked, copied into the sandbox)
 baselines/<dataset>/train.py
-scripts/prepare_data.py
+scripts/                 # prepare_data.py, preflight.py (+ setup.sh, check_env.py for the full service)
 ```
 
 ## API and dashboard
@@ -303,14 +321,17 @@ endpoints still use Postgres.
 
 | Endpoint | Returns |
 |---|---|
-| `GET /` | Dashboard: test gain per generation for each setup, memory size, cost (one HTML page, Chart.js from a CDN) |
 | `GET /research-runs` | All research runs |
-| `GET /research-runs/{id}` | Generations and metrics |
-| `GET /research-runs/{id}/memory?generation=n` | Memory snapshot |
+| `GET /research-runs/{id}` | One run's metadata |
+| `GET /research-runs/{id}/events` | Recorded events, paged with `after` |
+| `GET /research-runs/{id}/state` | Run state rebuilt from events, optionally at an event number (`at`) |
+| `GET /research-runs/{id}/stream` | Live events over SSE, with paced replay |
 | `POST /research-runs/{id}/setups/{setup}/export` | Build or reuse a trained model export |
 | `GET /research-runs/{id}/setups/{setup}/export` | Export status and download URL |
 | `GET /research-runs/{id}/setups/{setup}/export/download` | Download the trained model ZIP |
 | `GET /health`, `GET /playground/models` | Unchanged |
+
+There's no dashboard page in this repo yet; per-run charts are in each run's `report.html`.
 
 ## Settings
 
@@ -321,10 +342,14 @@ New settings go in `app/config.py` and `.env.example`:
 | `YDC_API_KEY` | — |
 | `RESEARCHER_MODEL` | `nvidia/NVIDIA-Nemotron-3-Super-120B-A12B` |
 | `CURATOR_MODEL` | `deepseek-ai/DeepSeek-V4-Pro` |
-| `CRUSOE_JUDGE_MODEL` (exists, used for the waste check) | `openai/gpt-oss-120b` |
+| `CRUSOE_JUDGE_MODEL` (exists; for the planned waste check) | `openai/gpt-oss-120b` |
 | `SANDBOX_TIMEOUT_SECONDS` (exists) | `120` |
 | `SANDBOX_CPU` | `2` |
 | `SANDBOX_MEMORY_MB` | `4096` |
+| `SANDBOX_MAX_CONCURRENCY` (sandboxes at once, all setups) | `24` |
+| `CRUSOE_MAX_RPM` (requests per minute per model, spaced evenly) | `30` |
+| `MODAL_ENVIRONMENT` (overrides the `~/.modal.toml` profile's environment) | — |
+| `DATA_DIR` | `data` |
 
 Budget numbers live in a `ResearchConfig` model with the defaults above, and can be overridden from the CLI.
 
@@ -342,7 +367,7 @@ Budget numbers live in a `ResearchConfig` model with the defaults above, and can
 ## Done when
 
 - `uv run python -m app.orchestrator --dataset churn --setup shared_brain` finishes 5 generations and saves fitness.
-- All 4 setups run on churn and show on the dashboard.
+- All 4 setups run on churn and show in the run's `report.html` (a dashboard UI can use the telemetry API).
 - Tests (no network) cover: val and test labels never reach the research sandbox, run limits, memory cap and dropping order, staleness, ranking with ties, equal total runs across setups, scoring math, raw log trimming.
 - `uv run ruff check . && uv run ruff format . && uv run pytest` passes.
 
@@ -356,7 +381,7 @@ GPUs, fine-tuning, more than one dataset per research run, agents editing anythi
 |---|---|
 | Researcher | `nvidia/NVIDIA-Nemotron-3-Super-120B-A12B` |
 | Curator | `deepseek-ai/DeepSeek-V4-Pro` |
-| Waste checker | `openai/gpt-oss-120b` |
+| Waste checker (planned) | `openai/gpt-oss-120b` |
 
 Add a payment method to the Crusoe project: it raises the limit from 30 to 600 requests per minute per model.
 
@@ -365,13 +390,15 @@ Add a payment method to the Crusoe project: it raises the limit from 30 to 600 r
 | Layer | Tool |
 | --- | --- |
 | API | [FastAPI](https://fastapi.tiangolo.com) (Python 3.12+, uv) |
-| Database | [Neon Postgres](https://neon.com/docs) via SQLAlchemy async + asyncpg, Alembic migrations |
+| Database | [Neon Postgres](https://neon.com/docs) via SQLAlchemy async + asyncpg, Alembic migrations (old prompt-grading endpoints only) |
 | File storage | Local files under `data/` (no object storage) |
 | LLM inference | [Crusoe Intelligence Foundry](https://console.crusoecloud.com/foundry) (OpenAI-compatible API) |
 | Code sandboxes | [Modal Sandboxes](https://modal.com/docs/guide/sandboxes) |
 | Web search | [You.com Search API](https://you.com/docs/get-started/quickstart) |
 
 ## Setup
+
+For research runs only, skip this and see [Running the experiments](#running-the-experiments): they need just `CRUSOE_API_KEY` and a Modal token. The steps below set up the full service, including the old prompt-grading endpoints that need Neon.
 
 ```bash
 scripts/setup.sh                    # installs tooling, signs in to Modal/Neon/Crusoe, generates a verified .env
@@ -383,10 +410,10 @@ Requires Node.js (for the Neon CLI) and access to the team Neon project `patient
 
 ## Running the experiments
 
-The current build is the lean churn version: results are files under `data/runs/<timestamp>-churn/` (git-ignored) instead of Postgres and the bucket, and there is no waste checker or dashboard yet. It needs only `CRUSOE_API_KEY` and a Modal token in `.env` (`YDC_API_KEY` turns on `web_search`).
+Results are files under `data/runs/<timestamp>-<dataset>/` (see [Storage](#storage)). A run needs only `CRUSOE_API_KEY` and a Modal token in `.env`; `YDC_API_KEY` turns on `web_search`.
 
 ```bash
-uv run python scripts/prepare_data.py churn                     # download + split into data/churn/
+uv run python scripts/prepare_data.py churn                     # download + split into data/churn/ (or: superconductivity)
 uv run python scripts/preflight.py                              # check Crusoe, You.com and Modal keys
 uv run python -m app.orchestrator --dataset churn --setup all   # 4 setups in parallel, shared baseline
 uv run python -m app.report data/runs/<run>                     # rebuild report.html (works mid-run)
