@@ -302,7 +302,7 @@ app/
   services/              # inference.py, sandbox.py, search.py, research_events.py, model_exports.py
                          # (storage.py and evaluator.py serve the old prompt-grading endpoints)
   api/routes/            # research.py, exports.py, health.py, playground.py (+ old datasets.py, runs.py)
-sandbox/                 # harness.py, test.py (locked, copied into the sandbox)
+sandbox/                 # harness.py, test.py (locked, copied into the sandbox); export.py, predict.py for model exports
 baselines/<dataset>/train.py
 scripts/                 # prepare_data.py, preflight.py (+ setup.sh, check_env.py for the full service)
 ```
