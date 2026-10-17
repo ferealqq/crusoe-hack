@@ -37,3 +37,33 @@ class Experiment(BaseModel):
     note: str = ""
     output_tail: str = ""
     code: str
+
+
+class Usage(BaseModel):
+    prompt: int = 0
+    cached: int = 0
+    output: int = 0
+    calls: int = 0
+
+    def __add__(self, other: "Usage") -> "Usage":
+        return Usage(
+            prompt=self.prompt + other.prompt,
+            cached=self.cached + other.cached,
+            output=self.output + other.output,
+            calls=self.calls + other.calls,
+        )
+
+
+class ToolCall(BaseModel):
+    id: str
+    name: str
+    arguments: str  # JSON text, as the model wrote it
+
+
+class Reply(BaseModel):
+    """One chat completion, reduced to what the agent loop needs."""
+
+    content: str
+    tool_calls: list[ToolCall] = []
+    usage: Usage = Usage()
+    finish_reason: str | None = None

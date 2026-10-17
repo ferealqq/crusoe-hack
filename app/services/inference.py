@@ -2,10 +2,12 @@
 
 import time
 from functools import lru_cache
+from typing import Any
 
 from openai import AsyncOpenAI
 
 from app.config import get_settings
+from app.schemas import Reply, ToolCall, Usage
 
 BASE_URL = "https://api.inference.crusoecloud.com/v1"
 
@@ -38,6 +40,36 @@ async def chat(
     )
     latency_ms = int((time.perf_counter() - started) * 1000)
     return resp.choices[0].message.content or "", latency_ms
+
+
+async def complete(
+    messages: list[dict[str, Any]],
+    model: str,
+    tools: list[dict[str, Any]] | None = None,
+    **params: Any,
+) -> Reply:
+    """One chat completion with optional tools. Non-OpenAI params go in `extra_body`."""
+    if tools:
+        params["tools"] = tools
+    resp = await get_client().chat.completions.create(model=model, messages=messages, **params)
+    choice = resp.choices[0]
+    u = resp.usage
+    details = getattr(u, "prompt_tokens_details", None) if u else None
+    usage = Usage(
+        prompt=u.prompt_tokens if u else 0,
+        cached=(getattr(details, "cached_tokens", 0) or 0) if details else 0,
+        output=u.completion_tokens if u else 0,
+        calls=1,
+    )
+    return Reply(
+        content=choice.message.content or "",
+        tool_calls=[
+            ToolCall(id=c.id, name=c.function.name, arguments=c.function.arguments or "{}")
+            for c in choice.message.tool_calls or []
+        ],
+        usage=usage,
+        finish_reason=choice.finish_reason,
+    )
 
 
 async def list_models() -> list[str]:
