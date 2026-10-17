@@ -53,7 +53,8 @@ async def run_baseline(lab: Lab) -> None:
     lab.baseline_code = code
     lab.l0 = statistics.mean(losses)
     lab.threshold = scoring.noise_threshold(losses)
-    lab.best = Best(0, code, lab.l0, exps[0].run_id, "Starting train.py.")
+    seed_run = next((e for e in exps if e.seed == lab.config.research_seed), exps[0])
+    lab.best = Best(0, code, lab.l0, seed_run.run_id, "Starting train.py.", seed_run.loss or lab.l0)
     if lab.setup == "shared_brain":
         lab.memory.set_best(
             claim=best_claim(lab),
@@ -82,8 +83,10 @@ async def run_generation(lab: Lab, generation: int) -> tuple[Usage, int]:
             for i, focus in enumerate(_focuses(lab, generation))
         )
     )
+    # Compare against the best's own score on the research seed, so an unchanged copy of the
+    # best (or a lucky seed) can't look like a gain.
     ranked = scoring.rank_researchers(
-        {o.agent: o.runs for o in outcomes}, start.val_loss, lab.threshold
+        {o.agent: o.runs for o in outcomes}, start.seed_loss, lab.threshold
     )
     usage = sum((o.usage for o in outcomes), Usage())
     runs = sum(len(o.runs) for o in outcomes)
@@ -98,18 +101,20 @@ async def run_generation(lab: Lab, generation: int) -> tuple[Usage, int]:
         if winners:
             w = min(winners, key=lambda v: v.mean or 0.0)
             source = lab.find_run(w.source_run_id) if w.source_run_id else None
+            on_seed = source and source.seed == lab.config.research_seed and source.loss
             lab.best = Best(
                 start.version + 1,
                 w.code,
                 w.mean or 0.0,
                 w.source_run_id or w.run_ids[0],
                 source.note if source else "Curator's code.",
+                source.loss if on_seed and source.loss is not None else w.mean or 0.0,
             )
     else:
         candidates = [r for o in outcomes for r in o.runs if r.loss is not None]
         top = min(candidates, key=lambda r: r.loss or 0.0, default=None)
-        if top and top.loss is not None and scoring.beats(top.loss, start.val_loss, lab.threshold):
-            lab.best = Best(start.version + 1, top.code, top.loss, top.run_id, top.note)
+        if top and top.loss is not None and scoring.beats(top.loss, start.seed_loss, lab.threshold):
+            lab.best = Best(start.version + 1, top.code, top.loss, top.run_id, top.note, top.loss)
 
     changed = lab.best.version != start.version
     dropped: list[str] = []
@@ -136,6 +141,7 @@ async def run_generation(lab: Lab, generation: int) -> tuple[Usage, int]:
         {
             "generation": generation,
             "start_best": start.val_loss,
+            "start_best_seed_loss": start.seed_loss,
             "end_best": lab.best.val_loss,
             "best_version": lab.best.version,
             "best_run_id": lab.best.run_id,

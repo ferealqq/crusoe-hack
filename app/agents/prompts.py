@@ -43,9 +43,10 @@ conflict-free. Only you write to it, and only results from run_code become memor
 Each generation you get every researcher's report and run log, ranked by gain over the \
 generation's starting best. The ranking comes from the run logs, not the reports. Rank decides \
 what you do:
-- Top 1: re-check its best run with run_code(run_id=..., seeds=3). If beats_best is true, add it \
-as `works`, citing the run IDs; the orchestrator then makes it the new best train.py. If not, \
-record it as `failed` or `try_next`.
+- Top 1: if its gain clears the noise threshold, re-check its best run with \
+run_code(run_id=..., seeds=3). If beats_best is true, add it as `works`, citing the run IDs; the \
+orchestrator then makes it the new best train.py. If not, record it as `failed` or `try_next`. \
+If its gain is within noise, don't spend runs on it: just record the idea.
 - Middle: keep only ideas that are new to memory, as `try_next`.
 - Bottom 1: record it briefly as `failed` so it isn't retried.
 - Gaps smaller than the noise threshold ({threshold:.4f}) are ties. Only claims that clear it \
@@ -88,7 +89,9 @@ def researcher_system(lab: Lab) -> str:
         parts.append(f"## Team memory\n{lab.memory.render()}")
     best = lab.best
     parts.append(
-        f"## Best train.py so far (v{best.version}, val loss {best.val_loss:.5f})\n"
+        f"## Best train.py so far (v{best.version}, verified val loss {best.val_loss:.5f}; "
+        f"{best.seed_loss:.5f} on seed {lab.config.research_seed}, the seed run_code uses: "
+        "that is the score to beat)\n"
         f"```python\n{best.code}\n```"
     )
     return "\n\n".join(parts)
@@ -121,7 +124,9 @@ def curator_brief(
     """reports: (agent, focus, report, runs) per researcher."""
     best = lab.best
     lines = [
-        f"Generation {generation}. Starting best: v{best.version}, val loss {best.val_loss:.5f}. "
+        f"Generation {generation}. Starting best: v{best.version}, verified val loss "
+        f"{best.val_loss:.5f}. On seed {lab.config.research_seed}, which researchers use, it "
+        f"scores {best.seed_loss:.5f}; gains below are against that. "
         f"Noise threshold: {lab.threshold:.4f}.",
         "",
         "## Ranking (gain over the starting best, from the run logs)",
@@ -131,9 +136,11 @@ def curator_brief(
             lines.append(f"{i}. {r.agent}: no successful run")
             continue
         tie = " (tie with the one above)" if r.tied else ""
+        clears = best.seed_loss - r.best_loss > lab.threshold
+        noise = "clears the noise threshold" if clears else "within noise: no re-check needed"
         lines.append(
             f"{i}. {r.agent}: best run {r.best_run_id}, val {r.best_loss:.5f}, "
-            f"gain {r.gain:+.2%}{tie}"
+            f"gain {r.gain:+.2%} ({noise}){tie}"
         )
     stale = lab.memory.stale(best.version)
     lines += [

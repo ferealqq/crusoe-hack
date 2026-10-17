@@ -166,7 +166,7 @@ The orchestrator attaches the researcher's run log (note, status and val loss pe
 1. **Once per research run:** run the starting `train.py` on seeds 0 to 4. `L0` is the mean. The noise threshold is the larger of 2 × the spread and 0.5% of `L0`.
 2. **Each generation:**
    1. Run 4 researchers in parallel from the best `train.py` and the current memory.
-   2. Rank them by gain over the generation's starting best, from the run log.
+   2. Rank them by gain over the generation's starting best, from the run log. Gains are measured against the best's own score on seed 0 (the seed researchers use), so an unchanged copy or a lucky seed can't look like a win.
    3. Update memory: the curator (Shared Brain), or nothing (No memory).
    4. Update the best `train.py` if a run beats it by more than the noise threshold.
    5. Append this generation's metrics to `generations.jsonl`.
@@ -178,7 +178,7 @@ Each generation, the 4 researchers are ranked by **gain over the generation's st
 
 | Rank | Curator action |
 |---|---|
-| **Top 1** | Re-run with `run_code` on 3 seeds. If `beats_best`, add it to memory as a fact; the orchestrator updates the best `train.py` |
+| **Top 1** | If its gain clears the noise threshold, re-run with `run_code` on 3 seeds. If `beats_best`, add it to memory as a fact; the orchestrator updates the best `train.py`. Within noise: just record the idea |
 | **Middle 2** | Keep only new ideas, as `try_next` |
 | **Bottom 1** | Record briefly as `failed` so it isn't retried |
 

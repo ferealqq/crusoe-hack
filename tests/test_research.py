@@ -13,7 +13,7 @@ import pandas as pd
 import pytest
 
 from app import loop, scoring
-from app.agents import tools
+from app.agents import prompts, tools
 from app.config import ResearchConfig
 from app.data import Dataset
 from app.lab import Best, Lab, runs_per_generation
@@ -96,7 +96,7 @@ async def test_researcher_run_limit(lab: Lab, monkeypatch):
         return TrainResult(status="error", output_tail="boom")
 
     monkeypatch.setattr(sandbox, "run_train", run_train)
-    lab.best = Best(0, "x", 0.5, "g0-base-1", "start")
+    lab.best = Best(0, "x", 0.5, "g0-base-1", "start", 0.5)
     budget, runs = tools.Budget(2), []
     run_code = tools.researcher_run_code(lab, agent="r1", generation=1, budget=budget, runs=runs)
     results = [await run_code.fn({"code": "x", "note": "n"}) for _ in range(3)]
@@ -110,7 +110,7 @@ async def test_curator_check_needs_enough_runs(lab: Lab, monkeypatch):
         return TrainResult(status="ok", preds=[0.2] * 30)
 
     monkeypatch.setattr(sandbox, "run_train", run_train)
-    lab.best = Best(0, "x", 0.6, "g0-base-1", "start")
+    lab.best = Best(0, "x", 0.6, "g0-base-1", "start", 0.6)
     budget, checks = tools.Budget(4), []
     run_code = tools.curator_run_code(lab, generation=1, budget=budget, verifications=checks)
     first = await run_code.fn({"code": "x", "seeds": 3})
@@ -217,6 +217,18 @@ def test_ranking_with_ties():
     assert [r.tied for r in ranked] == [False, False, True, False]
     assert ranked[0].best_run_id == "g1-r3-1" and ranked[0].gain == pytest.approx(0.25)
     assert ranked[3].gain is None
+
+
+def test_curator_brief_flags_gains_within_noise(lab: Lab):
+    lab.threshold = 0.002
+    lab.best = Best(1, "x", 0.3244, "g1-r2-3", "CatBoost", seed_loss=0.3236)
+    logs = {"r1": [_exp("g2-r1-1", 0.3232)], "r2": [_exp("g2-r2-1", 0.3100)]}
+    ranked = scoring.rank_researchers(logs, lab.best.seed_loss, lab.threshold)
+    reports = [(r.agent, "f", "report", logs[r.agent]) for r in ranked]
+    brief = prompts.curator_brief(lab, 2, reports, ranked)
+    assert "0.32360" in brief  # gains are against the best's seed-0 score, not 0.3244
+    r2, r1 = brief.split("\n2. ")[0], brief.split("\n2. ")[1]
+    assert "clears the noise threshold" in r2 and "within noise" in r1.splitlines()[0]
 
 
 def test_scoring_math():

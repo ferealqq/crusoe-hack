@@ -41,9 +41,10 @@ def runs_per_generation(config: ResearchConfig, setup: Setup) -> int:
 class Best:
     version: int
     code: str
-    val_loss: float
+    val_loss: float  # verified score (baseline: mean of seeds 0-4; curator: mean of seeds 1-3)
     run_id: str
     note: str
+    seed_loss: float  # its score on the research seed, which researchers' runs use
 
 
 class Lab:
