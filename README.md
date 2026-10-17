@@ -92,7 +92,7 @@ Why these:
 
 Order: churn first end-to-end, then superconductivity, then M5 only if there's time.
 
-`scripts/prepare_data.py <name>` downloads a dataset, splits it and uploads to the bucket under `datasets/<name>/`: `train.parquet`, `val_X.parquet`, `val_y.parquet`, `test_X.parquet`, `test_y.parquet` and `meta.json` (target column, loss, split rule).
+`scripts/prepare_data.py <name>` downloads a dataset, splits it and saves it locally under `data/<name>/` (git-ignored): `train.parquet`, `val_X.parquet`, `val_y.parquet`, `test_X.parquet`, `test_y.parquet` and `meta.json` (target column, loss, split rule).
 
 ## Files
 
@@ -144,7 +144,7 @@ The memory tools are our own, backed by Neon Postgres. Crusoe has no memory API.
 
 | Agent | Model | Tools |
 |---|---|---|
-| **Researcher** (×4) | `nvidia/Nemotron-3-Super-120B-A12B` | `get_memory`, `web_search`, `run_code` |
+| **Researcher** (×4) | `nvidia/NVIDIA-Nemotron-3-Super-120B-A12B` | `get_memory`, `web_search`, `run_code` |
 | **Curator** (×1) | `deepseek-ai/DeepSeek-V4-Pro` | `get_memory`, `run_code` (to re-check), `upsert_memory`, `remove_memory` |
 | Waste checker | `openai/gpt-oss-120b` | None |
 
@@ -269,7 +269,7 @@ Expected size: about 170 sandbox runs and about 2 hours per research run, or abo
 | `memory_events` | Every upsert and remove, with the reason |
 | `memory_snapshots` | Rendered memory and token count per generation |
 
-Bucket: `datasets/<name>/…`, `research/<run_id>/code/<experiment_id>.py`, `research/<run_id>/transcripts/<session_id>.jsonl`.
+No bucket and no AWS: every file stays on local disk under `data/` (git-ignored). Datasets are in `data/<name>/`. Each research run writes `data/runs/<timestamp>-<name>/<setup>/`: `experiments.jsonl` (with each run's `train.py` code), `agents.jsonl` (reports and transcripts), `generations.jsonl`, `memory_snapshots.jsonl` and `result.json`.
 
 The old prompt-grading tables (`datasets`, `runs`, `run_results`) and code (`evaluator.py`, the LLM judge) are removed in the same migration.
 
@@ -308,7 +308,7 @@ New settings go in `app/config.py` and `.env.example`:
 | Setting | Default |
 |---|---|
 | `YDC_API_KEY` | — |
-| `RESEARCHER_MODEL` | `nvidia/Nemotron-3-Super-120B-A12B` |
+| `RESEARCHER_MODEL` | `nvidia/NVIDIA-Nemotron-3-Super-120B-A12B` |
 | `CURATOR_MODEL` | `deepseek-ai/DeepSeek-V4-Pro` |
 | `CRUSOE_JUDGE_MODEL` (exists, used for the waste check) | `openai/gpt-oss-120b` |
 | `SANDBOX_TIMEOUT_SECONDS` (exists) | `120` |
@@ -343,7 +343,7 @@ GPUs, fine-tuning, more than one dataset per research run, agents editing anythi
 
 | Role | Model |
 |---|---|
-| Researcher | `nvidia/Nemotron-3-Super-120B-A12B` |
+| Researcher | `nvidia/NVIDIA-Nemotron-3-Super-120B-A12B` |
 | Curator | `deepseek-ai/DeepSeek-V4-Pro` |
 | Waste checker | `openai/gpt-oss-120b` |
 
@@ -355,7 +355,7 @@ Add a payment method to the Crusoe project: it raises the limit from 30 to 600 r
 | --- | --- |
 | API | [FastAPI](https://fastapi.tiangolo.com) (Python 3.12+, uv) |
 | Database | [Neon Postgres](https://neon.com/docs) via SQLAlchemy async + asyncpg, Alembic migrations |
-| Object storage | [Neon Object Storage](https://neon.com/docs/storage/overview) (S3-compatible, boto3) |
+| File storage | Local files under `data/` (no object storage) |
 | LLM inference | [Crusoe Intelligence Foundry](https://console.crusoecloud.com/foundry) (OpenAI-compatible API) |
 | Code sandboxes | [Modal Sandboxes](https://modal.com/docs/guide/sandboxes) |
 | Web search | [You.com Search API](https://you.com/docs/get-started/quickstart) |
@@ -369,5 +369,18 @@ uv run fastapi dev app/main.py
 ```
 
 Requires Node.js (for the Neon CLI) and access to the team Neon project `patient-art-99467040` (ask the owner to invite your Neon account).
+
+## Running the experiments
+
+The current build is the lean churn version: results are files under `data/runs/<timestamp>-churn/` (git-ignored) instead of Postgres and the bucket, and there is no waste checker or dashboard yet. It needs only `CRUSOE_API_KEY` and a Modal token in `.env` (`YDC_API_KEY` turns on `web_search`).
+
+```bash
+uv run python scripts/prepare_data.py churn                     # download + split into data/churn/
+uv run python scripts/preflight.py                              # check Crusoe, You.com and Modal keys
+uv run python -m app.orchestrator --dataset churn --setup all   # 4 setups in parallel, shared baseline
+uv run python -m app.report data/runs/<run>                     # rebuild report.html (works mid-run)
+```
+
+`--generations`, `--researchers` and `--max-turns` override the budget for a quick smoke run. With `--setup all`, the setups share one baseline measurement, so they have the same `L0` and noise threshold. Crusoe refuses bursts of more than about 1–2 requests a second per model, so requests are spaced evenly (`CRUSOE_MAX_RPM`), and 429s are retried and counted in `rate_limited.json`.
 
 Built at the Crusoe x Cerebral Valley Recursive Agents Hackathon, SF, Oct 2026.
