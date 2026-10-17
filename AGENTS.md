@@ -1,6 +1,6 @@
 # AGENTS.md
 
-FastAPI service that improves LLMs with an eval loop. Inference runs on Crusoe (OpenAI-compatible), model-generated code is graded in Modal Sandboxes, results go to Neon Postgres, and datasets and traces go to Neon Object Storage.
+Shared Brain: research agents on Crusoe (OpenAI-compatible) improve a `train.py`, which runs in Modal Sandboxes. Research datasets and results are local files under `data/` (see README "Running the experiments"). The older prompt-grading endpoints still use Neon Postgres and Neon Object Storage.
 
 ## Skills (`.agents/skills/<name>/SKILL.md`)
 Open the matching skill before working in that area. If your harness doesn't auto-load skills, read the file directly. Each skill keeps long material in `references/`; open it only when needed.

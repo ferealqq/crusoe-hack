@@ -21,6 +21,19 @@ Test gain is the drop in test log loss of the final best `train.py` versus the s
 4. **The curator kept memory honest.** It re-checked the top claim every generation and rejected three ties that looked like gains on one seed: generations 2 and 3 (model averaging, 0.3120 vs 0.3126) and generation 5 (seed averaging, 0.30753 vs 0.30752). It moved early stopping from "try next" to "failed" once tested. It corrected an earlier "drop surname" note when surname turned out to matter. It removed entries tested two versions back.
 5. **One edit is not enough.** The single-agent, single-edit floor got 4.1%. Every multi-agent setup got about 5× that.
 
+## Test accuracy
+
+Re-scored after the run: each saved best `train.py` was re-trained on train + val and scored on the test split at a 0.5 cutoff, seeds 1–3. Log loss from these re-runs matched the recorded values. Per-generation numbers are in `test_accuracy.json`.
+
+| Setup | Gen 1 | Gen 2 | Gen 3 | Gen 4 | Gen 5 |
+|---|---|---|---|---|---|
+| One-shot | 82.3% | | | | |
+| No memory | 86.3% | 86.3% | 86.3% | 86.3% | 86.3% |
+| Raw log | 86.3% | 86.3% | 86.3% | 86.3% | 86.3% |
+| **Shared Brain** | 86.4% | 86.4% | 86.4% | **86.8%** | **86.8%** |
+
+For reference, the starting model scores 82.7% and always predicting "no churn" scores 78.9%. One-shot is slightly below the starting model on accuracy despite better log loss: its `class_weight='balanced'` pushes predictions toward "churns".
+
 ## How the memory evolved
 
 | After gen | Tokens | Changes |
