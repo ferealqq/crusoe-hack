@@ -1,0 +1,40 @@
+[
+ {
+  "setup": "No memory",
+  "run_id": "churn-no_memory-20261017-223056",
+  "fitness": 0.21721,
+  "val_gain": 0.18293,
+  "start_val_loss": 0.39805,
+  "best_val_loss": 0.32523,
+  "test_start_loss": 0.39332,
+  "test_best_loss": 0.30789,
+  "sandbox_runs": 140,
+  "wasted_runs": 36,
+  "wasted_share": 0.2571,
+  "tokens_prompt": 535082,
+  "tokens_cached": 370944,
+  "tokens_output": 143744,
+  "memory_tokens": 0,
+  "noise_threshold": 0.00199,
+  "best_run_id": "g1-r1-5"
+ },
+ {
+  "setup": "Shared Brain",
+  "run_id": "churn-shared_brain-20261017-223053",
+  "fitness": 0.21876,
+  "val_gain": 0.18491,
+  "start_val_loss": 0.39805,
+  "best_val_loss": 0.32444,
+  "test_start_loss": 0.39332,
+  "test_best_loss": 0.30727,
+  "sandbox_runs": 133,
+  "wasted_runs": 9,
+  "wasted_share": 0.0677,
+  "tokens_prompt": 544217,
+  "tokens_cached": 350208,
+  "tokens_output": 163366,
+  "memory_tokens": 420,
+  "noise_threshold": 0.00199,
+  "best_run_id": "g1-r2-3"
+ }
+]

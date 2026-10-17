@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from catboost import CatBoostClassifier
 
+
 def fit(train: pd.DataFrame, target: str, seed: int) -> object:
     X = train.drop(columns=[target])
     y = train[target]
@@ -9,12 +10,13 @@ def fit(train: pd.DataFrame, target: str, seed: int) -> object:
         iterations=200,
         learning_rate=0.05,
         depth=6,
-        loss_function='Logloss',
+        loss_function="Logloss",
         verbose=False,
-        random_seed=seed
+        random_seed=seed,
     )
     model.fit(X, y)
     return model
+
 
 def predict(model: object, X: pd.DataFrame) -> np.ndarray:
     return model.predict_proba(X)[:, 1]

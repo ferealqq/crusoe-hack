@@ -1,0 +1,44 @@
+[
+ {
+  "setup": "No memory",
+  "seed": 1,
+  "start_loss": 0.39332,
+  "best_loss": 0.30743,
+  "gain": 0.21837
+ },
+ {
+  "setup": "No memory",
+  "seed": 2,
+  "start_loss": 0.39332,
+  "best_loss": 0.30755,
+  "gain": 0.21805
+ },
+ {
+  "setup": "No memory",
+  "seed": 3,
+  "start_loss": 0.39332,
+  "best_loss": 0.30868,
+  "gain": 0.21519
+ },
+ {
+  "setup": "Shared Brain",
+  "seed": 1,
+  "start_loss": 0.39332,
+  "best_loss": 0.30756,
+  "gain": 0.21803
+ },
+ {
+  "setup": "Shared Brain",
+  "seed": 2,
+  "start_loss": 0.39332,
+  "best_loss": 0.30727,
+  "gain": 0.21876
+ },
+ {
+  "setup": "Shared Brain",
+  "seed": 3,
+  "start_loss": 0.39332,
+  "best_loss": 0.30699,
+  "gain": 0.21948
+ }
+]
