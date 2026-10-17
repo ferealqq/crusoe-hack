@@ -1,0 +1,26 @@
+16:15:50 research run churn-one_shot-20261017-231550: 1 generations, 1 runs per generation
+16:15:55 g0-base-2 val seed 1: ok loss 0.39805  starting train.py
+16:15:56 g0-base-4 val seed 3: ok loss 0.39805  starting train.py
+16:15:57 g0-base-3 val seed 2: ok loss 0.39805  starting train.py
+16:15:57 g0-base-1 val seed 0: ok loss 0.39805  starting train.py
+16:15:57 g0-base-5 val seed 4: ok loss 0.39805  starting train.py
+16:15:57 baseline: L0 0.39805, noise threshold 0.00199
+16:15:57 committed 4861853: start: L0 0.39805, noise threshold 0.00199
+16:15:57 g1: 1 researchers from v0
+16:16:16 g1-r1-1 val seed 0: ok loss 0.35272  LightGBM with 500 trees, learning_rate 0.1, default other params
+16:16:32 g1 done: best v1 val 0.35272 (+11.39%), 1 runs
+16:16:32 committed 1ff57cf: g1 done: best v1 val 0.35272 (+11.39%), 1 runs
+16:16:38 test-v0-1 test seed 1: ok loss 0.39332  test: train.py v0
+16:16:38 test-v0-3 test seed 3: ok loss 0.39332  test: train.py v0
+16:16:39 test-v0-2 test seed 2: ok loss 0.39332  test: train.py v0
+16:16:46 test-v1-2 test seed 2: ok loss 0.32071  test: train.py v1
+16:16:47 test-v1-1 test seed 1: ok loss 0.32071  test: train.py v1
+16:16:47 test-v1-3 test seed 3: ok loss 0.32071  test: train.py v1
+16:16:47 research run churn-one_shot-20261017-231550 finished: fitness +0.1846
+16:16:47 committed 17975b9: finished: fitness +0.1846
+
+research run                             setup          fitness  val gain  best val loss by generation                  memory  tokens (prompt/cached/output)
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+churn-no_memory-20261017-223056          no_memory      +21.72%   +18.29%  0.3252 0.3252 0.3252 0.3252 0.3252                0  0.54M/0.37M/0.14M
+churn-shared_brain-20261017-223053       shared_brain   +21.88%   +18.49%  0.3244 0.3244 0.3244 0.3244 0.3244              420  0.54M/0.35M/0.16M
+churn-one_shot-20261017-231550           one_shot       +18.46%   +11.39%  0.3527                                            0  5k/2k/1k

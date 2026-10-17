@@ -1,14 +1,16 @@
 [
  {
+  "dataset": "churn",
   "setup": "No memory",
   "generation": 0,
   "best_val_loss": 0.39805,
   "val_gain": 0.0,
-  "sandbox_runs": 5,
+  "sandbox_runs": 0,
   "wasted_runs": 0,
   "memory_tokens": 0
  },
  {
+  "dataset": "churn",
   "setup": "No memory",
   "generation": 1,
   "best_val_loss": 0.32523,
@@ -18,6 +20,7 @@
   "memory_tokens": 0
  },
  {
+  "dataset": "churn",
   "setup": "No memory",
   "generation": 2,
   "best_val_loss": 0.32523,
@@ -27,6 +30,7 @@
   "memory_tokens": 0
  },
  {
+  "dataset": "churn",
   "setup": "No memory",
   "generation": 3,
   "best_val_loss": 0.32523,
@@ -36,6 +40,7 @@
   "memory_tokens": 0
  },
  {
+  "dataset": "churn",
   "setup": "No memory",
   "generation": 4,
   "best_val_loss": 0.32523,
@@ -45,6 +50,7 @@
   "memory_tokens": 0
  },
  {
+  "dataset": "churn",
   "setup": "No memory",
   "generation": 5,
   "best_val_loss": 0.32523,
@@ -54,15 +60,37 @@
   "memory_tokens": 0
  },
  {
-  "setup": "Shared Brain",
+  "dataset": "churn",
+  "setup": "One-shot",
   "generation": 0,
   "best_val_loss": 0.39805,
   "val_gain": 0.0,
-  "sandbox_runs": 5,
+  "sandbox_runs": 0,
   "wasted_runs": 0,
   "memory_tokens": 0
  },
  {
+  "dataset": "churn",
+  "setup": "One-shot",
+  "generation": 1,
+  "best_val_loss": 0.35272,
+  "val_gain": 0.11386,
+  "sandbox_runs": 1,
+  "wasted_runs": 0,
+  "memory_tokens": 0
+ },
+ {
+  "dataset": "churn",
+  "setup": "Shared Brain",
+  "generation": 0,
+  "best_val_loss": 0.39805,
+  "val_gain": 0.0,
+  "sandbox_runs": 0,
+  "wasted_runs": 0,
+  "memory_tokens": 0
+ },
+ {
+  "dataset": "churn",
   "setup": "Shared Brain",
   "generation": 1,
   "best_val_loss": 0.32444,
@@ -72,6 +100,7 @@
   "memory_tokens": 139
  },
  {
+  "dataset": "churn",
   "setup": "Shared Brain",
   "generation": 2,
   "best_val_loss": 0.32444,
@@ -81,6 +110,7 @@
   "memory_tokens": 227
  },
  {
+  "dataset": "churn",
   "setup": "Shared Brain",
   "generation": 3,
   "best_val_loss": 0.32444,
@@ -90,6 +120,7 @@
   "memory_tokens": 349
  },
  {
+  "dataset": "churn",
   "setup": "Shared Brain",
   "generation": 4,
   "best_val_loss": 0.32444,
@@ -99,6 +130,7 @@
   "memory_tokens": 378
  },
  {
+  "dataset": "churn",
   "setup": "Shared Brain",
   "generation": 5,
   "best_val_loss": 0.32444,
