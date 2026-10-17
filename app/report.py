@@ -98,10 +98,16 @@ def chart_data(data: dict[str, Any]) -> dict[str, Any]:
         )
     return {
         "gens": list(range(0, n_gens + 1)),
+        "loss": _loss(data),
         "l0": l0,
         "threshold": data["baseline"]["threshold"] if data["baseline"] else None,
         "series": series,
     }
+
+
+def _loss(data: dict[str, Any]) -> str:
+    """Display name of the run's loss; runs before the field existed are churn (log loss)."""
+    return data["config"].get("loss", "log_loss").replace("_", " ")
 
 
 def headline(data: dict[str, Any]) -> str:
@@ -119,7 +125,7 @@ def headline(data: dict[str, Any]) -> str:
     diff = (sb - nm) * 100
     verdict = "ahead of" if diff > 0 else "behind" if diff < 0 else "level with"
     return (
-        f"Shared Brain improved test log loss by {sb * 100:.2f}% over the starting model, "
+        f"Shared Brain improved test {_loss(data)} by {sb * 100:.2f}% over the starting model, "
         f"{abs(diff):.2f} points {verdict} No memory ({nm * 100:.2f}%) on the same budget."
     )
 
@@ -320,7 +326,7 @@ function line(id, key, opts) {
   });
 }
 line('test', 'test', { y: 'Test gain vs starting model', fmt: pct });
-line('val', 'val', { y: 'Best val log loss', fmt: (x) => x == null ? '' : x.toFixed(4),
+line('val', 'val', { y: 'Best val ' + D.loss, fmt: (x) => x == null ? '' : x.toFixed(4),
   stepped: true,
   extra: D.l0 ? [{ label: 'Start minus noise threshold', data: D.gens.map(() => D.l0 - D.threshold),
     borderColor: v('--rule'), borderDash: [2, 3], pointRadius: 0, borderWidth: 1 }] : [] });
@@ -336,6 +342,7 @@ document.querySelectorAll('.tabs button').forEach((b) => b.addEventListener('cli
 def render(data: dict[str, Any]) -> str:
     cfg, base = data["config"], data["baseline"]
     r = cfg["research"]
+    loss, name = _loss(data), cfg.get("dataset", "churn")
     tabs = "".join(
         f"<button type='button' role='tab' data-setup='{k}' "
         f"aria-selected='{'true' if k == 'shared_brain' else 'false'}'>{LABELS[k]}</button>"
@@ -349,19 +356,19 @@ def render(data: dict[str, Any]) -> str:
         if k in data["setups"]
     )
     base_line = (
-        f"<span>start val log loss L0 {base['l0']:.5f}</span>"
+        f"<span>start val {loss} L0 {base['l0']:.5f}</span>"
         f"<span>noise threshold {base['threshold']:.5f}</span>"
-        f"<span>start test log loss {sum(base['test_losses']) / 3:.5f}</span>"
+        f"<span>start test {loss} {sum(base['test_losses']) / 3:.5f}</span>"
         if base
         else ""
     )
-    page = f"""<title>Shared Brain Churn Results</title>
+    page = f"""<title>Shared Brain {_e(name.title())} Results</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Newsreader:opsz,wght@6..72,600&family=Public+Sans:wght@400;600&display=swap">
 <style>{STYLE}</style>
 <main>
 <header style="display:grid;gap:.6rem">
-  <div class="eyebrow">Shared Brain &middot; churn &middot; run {_e(cfg["started"])}</div>
+  <div class="eyebrow">Shared Brain &middot; {_e(name)} &middot; run {_e(cfg["started"])}</div>
   <h1>Does curated memory make research agents better?</h1>
   <p class="lede">{_e(headline(data))}</p>
   <div class="meta"><span>{r["generations"]} generations</span>
@@ -371,7 +378,7 @@ def render(data: dict[str, Any]) -> str:
 </header>
 <section>
   <h2>Results by setup</h2>
-  <p class="dim">Test gain is the drop in test log loss of the final best train.py versus the
+  <p class="dim">Test gain is the drop in test {loss} of the final best train.py versus the
   starting one, averaged over seeds 1, 2 and 3. Agents never see the test split.</p>
   <div class="tablewrap"><table>
   <thead><tr><th>Setup</th><th>Test gain</th><th>Val gain</th><th>Best</th><th>Gens</th>
@@ -384,7 +391,7 @@ def render(data: dict[str, Any]) -> str:
     <figure><div class="canvasbox"><canvas id="test" aria-label="Test gain per generation"></canvas></div>
       <figcaption>Test gain of each generation's best train.py. Higher is better.</figcaption></figure>
     <figure><div class="canvasbox"><canvas id="val" aria-label="Best val loss per generation"></canvas></div>
-      <figcaption>Best val log loss so far. A step down is a new best that beat the old one by
+      <figcaption>Best val {loss} so far. A step down is a new best that beat the old one by
       more than the noise threshold.</figcaption></figure>
     <figure><div class="canvasbox"><canvas id="mem" aria-label="Memory size per generation"></canvas></div>
       <figcaption>What researchers read at the start of each generation. Curated memory is

@@ -108,6 +108,7 @@ async def _execute(
         "config",
         {
             "dataset": args.dataset,
+            "loss": dataset.loss,
             "setups": setups,
             "research": cfg.model_dump(),
             "researcher_model": s.researcher_model,

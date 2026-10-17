@@ -39,7 +39,22 @@ def load_churn() -> tuple[pd.DataFrame, dict]:
     return df, meta
 
 
-DATASETS = {"churn": load_churn}
+def load_superconductivity() -> tuple[pd.DataFrame, dict]:
+    url = "https://data.openml.org/datasets/0004/44148/dataset_44148.pq"
+    with urllib.request.urlopen(url, timeout=120) as r:
+        df = pd.read_parquet(io.BytesIO(r.read()))
+    meta = {
+        "name": "superconductivity",
+        "source": "OpenML 44148 (Superconductivity, CC BY 4.0)",
+        "target": "criticaltemp",
+        "loss": "rmse",
+        "predict": "critical temperature in kelvin at which the material superconducts",
+        "split": "random 70/15/15, seed 42",
+    }
+    return df, meta
+
+
+DATASETS = {"churn": load_churn, "superconductivity": load_superconductivity}
 
 
 def split(df: pd.DataFrame, target: str, stratify: bool) -> tuple[pd.DataFrame, ...]:
