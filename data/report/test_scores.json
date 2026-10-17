@@ -1,5 +1,6 @@
 [
  {
+  "key": "churn/No memory/1",
   "dataset": "churn",
   "setup": "No memory",
   "seed": 1,
@@ -8,6 +9,7 @@
   "gain": 0.21837
  },
  {
+  "key": "churn/No memory/2",
   "dataset": "churn",
   "setup": "No memory",
   "seed": 2,
@@ -16,6 +18,7 @@
   "gain": 0.21805
  },
  {
+  "key": "churn/No memory/3",
   "dataset": "churn",
   "setup": "No memory",
   "seed": 3,
@@ -24,6 +27,7 @@
   "gain": 0.21519
  },
  {
+  "key": "churn/One-shot/1",
   "dataset": "churn",
   "setup": "One-shot",
   "seed": 1,
@@ -32,6 +36,7 @@
   "gain": 0.18459
  },
  {
+  "key": "churn/One-shot/2",
   "dataset": "churn",
   "setup": "One-shot",
   "seed": 2,
@@ -40,6 +45,7 @@
   "gain": 0.18459
  },
  {
+  "key": "churn/One-shot/3",
   "dataset": "churn",
   "setup": "One-shot",
   "seed": 3,
@@ -48,6 +54,7 @@
   "gain": 0.18459
  },
  {
+  "key": "churn/Shared Brain/1",
   "dataset": "churn",
   "setup": "Shared Brain",
   "seed": 1,
@@ -56,6 +63,7 @@
   "gain": 0.21803
  },
  {
+  "key": "churn/Shared Brain/2",
   "dataset": "churn",
   "setup": "Shared Brain",
   "seed": 2,
@@ -64,6 +72,7 @@
   "gain": 0.21876
  },
  {
+  "key": "churn/Shared Brain/3",
   "dataset": "churn",
   "setup": "Shared Brain",
   "seed": 3,

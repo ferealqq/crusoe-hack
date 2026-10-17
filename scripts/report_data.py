@@ -109,6 +109,7 @@ def main() -> None:
         ):
             tests.append(
                 {
+                    "key": f"{dataset}/{s}/{seed}",
                     "dataset": dataset,
                     "setup": s,
                     "seed": seed,
