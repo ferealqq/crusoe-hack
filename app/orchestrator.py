@@ -10,11 +10,11 @@ and noise threshold). Results go to data/runs/<timestamp>-<dataset>/, then repor
 import argparse
 import asyncio
 import logging
-import sys
+import signal
 from datetime import UTC, datetime
 from pathlib import Path
 
-from app import report
+from app import events, report
 from app.config import SETUPS, ResearchConfig, Setup, get_settings
 from app.lab import Dataset
 from app.loop import SetupRun, measure_baseline
@@ -31,7 +31,7 @@ async def check_models() -> dict[str, dict[str, str]]:
     ids = {m.id for m in models}
     missing = [m for m in (s.researcher_model, s.curator_model) if m not in ids]
     if missing:
-        sys.exit(f"models not on Crusoe: {missing}. Available: {sorted(ids)}")
+        raise RuntimeError(f"models not on Crusoe: {missing}. Available: {sorted(ids)}")
     return {
         m.id: (m.model_dump().get("pricing") or {})
         for m in models
@@ -52,13 +52,58 @@ async def main_async(args: argparse.Namespace) -> Path:
     }
     cfg = ResearchConfig(**overrides)
     setups: list[Setup] = list(SETUPS) if args.setup == "all" else [args.setup]
-    dataset = Dataset(Path(s.data_dir) / args.dataset)
-    pricing = await check_models()
-
-    stamp = datetime.now(UTC).strftime("%Y%m%d-%H%M%S")
+    stamp = datetime.now(UTC).strftime("%Y%m%d-%H%M%S-%f")
     root = Path(s.data_dir) / "runs" / f"{stamp}-{args.dataset}"
     store = Store(root)
-    logging.getLogger().addHandler(logging.FileHandler(root / "run.log"))
+    event_log = events.EventLog(root)
+    handler = logging.FileHandler(root / "run.log")
+    logging.getLogger().addHandler(handler)
+    with events.bind(event_log):
+        events.emit(
+            "run.started",
+            dataset=args.dataset,
+            setups=setups,
+            research=cfg.model_dump(),
+            researcher_model=s.researcher_model,
+            curator_model=s.curator_model,
+        )
+        heartbeat = asyncio.create_task(_heartbeat())
+        terminal, terminal_data = "run.failed", {}
+        try:
+            success = await _execute(args, cfg, setups, root, store, stamp)
+            terminal = "run.completed" if success else "run.failed"
+        except asyncio.CancelledError:
+            terminal = "run.cancelled"
+            raise
+        except Exception as e:
+            terminal_data = {"error_type": type(e).__name__}
+            raise
+        finally:
+            heartbeat.cancel()
+            await asyncio.gather(heartbeat, return_exceptions=True)
+            events.emit(terminal, **terminal_data)
+            logging.getLogger().removeHandler(handler)
+            handler.close()
+    return root
+
+
+async def _heartbeat() -> None:
+    while True:
+        await asyncio.sleep(5)
+        events.emit("run.heartbeat")
+
+
+async def _execute(
+    args: argparse.Namespace,
+    cfg: ResearchConfig,
+    setups: list[Setup],
+    root: Path,
+    store: Store,
+    stamp: str,
+) -> bool:
+    s = get_settings()
+    dataset = Dataset(Path(s.data_dir) / args.dataset)
+    pricing = await check_models()
     store.write_json(
         "config",
         {
@@ -80,7 +125,16 @@ async def main_async(args: argparse.Namespace) -> Path:
     log.info("results in %s", root)
 
     code = (Path("baselines") / args.dataset / "train.py").read_text()
-    baseline = await measure_baseline(dataset, code, cfg, store)
+    with events.scope(phase="baseline", role="orchestrator"):
+        events.emit("baseline.started", seeds=cfg.baseline_seeds)
+        baseline = await measure_baseline(dataset, code, cfg, store)
+        events.emit(
+            "baseline.completed",
+            l0=baseline.l0,
+            threshold=baseline.threshold,
+            val_losses=baseline.val_losses,
+            test_losses=baseline.test_losses,
+        )
     store.write_json("baseline", baseline.__dict__)
     log.info(
         "baseline: L0 %.5f, noise threshold %.5f, test %s",
@@ -115,7 +169,7 @@ async def main_async(args: argparse.Namespace) -> Path:
             f"{row['runs']:>4}"
         )
     print(f"\nreport: {path}")
-    return root
+    return all("error" not in row for row in summary)
 
 
 def main() -> None:
@@ -129,7 +183,24 @@ def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     for noisy in ("httpx", "openai", "modal", "hpack"):
         logging.getLogger(noisy).setLevel(logging.WARNING)
-    asyncio.run(main_async(args))
+    try:
+        asyncio.run(_cli(args))
+    except (KeyboardInterrupt, asyncio.CancelledError):
+        log.info("research run cancelled")
+        raise SystemExit(130) from None
+
+
+async def _cli(args: argparse.Namespace) -> None:
+    # SIGINT is handled by asyncio.run; handle SIGTERM as cancellation as well so
+    # sandbox finally blocks finish before the terminal event is recorded.
+    loop = asyncio.get_running_loop()
+    task = asyncio.current_task()
+    assert task is not None
+    loop.add_signal_handler(signal.SIGTERM, task.cancel)
+    try:
+        await main_async(args)
+    finally:
+        loop.remove_signal_handler(signal.SIGTERM)
 
 
 if __name__ == "__main__":

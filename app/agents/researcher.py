@@ -3,6 +3,7 @@
 from dataclasses import dataclass, field
 from typing import Any
 
+from app import events
 from app.agents.base import Tool, run_agent
 from app.config import ResearchConfig, get_settings
 from app.lab import Lab
@@ -156,14 +157,16 @@ async def run_researcher(
         cfg=cfg,
         run_log=run_log,
     )
-    result = await run_agent(
-        model=get_settings().researcher_model,
-        messages=[{"role": "system", "content": system}, {"role": "user", "content": task}],
-        tools=tools,
-        params=RESEARCHER_PARAMS,
-        max_turns=cfg.max_turns,
-        wrap_up="You are out of turns. Write your report now, in the required format.",
-    )
+    with events.scope(agent=name, role="researcher", gen=gen):
+        result = await run_agent(
+            model=get_settings().researcher_model,
+            messages=[{"role": "system", "content": system}, {"role": "user", "content": task}],
+            tools=tools,
+            params=RESEARCHER_PARAMS,
+            max_turns=cfg.max_turns,
+            wrap_up="You are out of turns. Write your report now, in the required format.",
+            public_info={"focus": focus, "run_budget": runs, "best_version": best_version},
+        )
     return ResearcherOutcome(
         name=name,
         focus=focus,

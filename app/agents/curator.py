@@ -4,7 +4,7 @@ import asyncio
 from dataclasses import dataclass, field
 from typing import Any
 
-from app import scoring
+from app import events, scoring
 from app.agents.base import Tool, run_agent
 from app.config import ResearchConfig, get_settings
 from app.lab import Lab
@@ -49,17 +49,46 @@ async def check_code(
     threshold: float,
     by: str,
 ) -> Check:
-    exps = await asyncio.gather(
-        *(
-            lab.run(code, seed, by, f"re-check {source} (seed {seed})", gen, best_version)
-            for seed in seeds
+    with events.scope(agent=by, role="curator", phase="verification", gen=gen):
+        return await _check_code(
+            lab=lab,
+            code=code,
+            source=source,
+            seeds=seeds,
+            gen=gen,
+            best_version=best_version,
+            best_val=best_val,
+            threshold=threshold,
+            by=by,
         )
-    )
+
+
+async def _check_code(
+    *,
+    lab: Lab,
+    code: str,
+    source: str,
+    seeds: list[int],
+    gen: int,
+    best_version: int,
+    best_val: float,
+    threshold: float,
+    by: str,
+) -> Check:
+    events.emit("verification.started", source=source, seeds=seeds)
+    async with asyncio.TaskGroup() as group:
+        tasks = [
+            group.create_task(
+                lab.run(code, seed, by, f"re-check {source} (seed {seed})", gen, best_version)
+            )
+            for seed in seeds
+        ]
+    exps = [task.result() for task in tasks]
     losses = [e.val_loss for e in exps]
     ok = [x for x in losses if x is not None]
     complete = len(ok) == len(losses)
     mean = sum(ok) / len(ok) if ok else None
-    return Check(
+    check = Check(
         source=source,
         code=code,
         run_ids=[e.id for e in exps],
@@ -70,6 +99,10 @@ async def check_code(
         beats_best=complete and mean is not None and scoring.beats(mean, best_val, threshold),
         by=by,
     )
+    events.emit(
+        "verification.completed", **{k: v for k, v in check.__dict__.items() if k != "code"}
+    )
+    return check
 
 
 def curator_tools(
@@ -149,7 +182,7 @@ def curator_tools(
         if kind not in ("works", "failed", "try_next"):
             return {"error": "kind must be works, failed or try_next"}
         change, seeds = val_change(run_ids) if run_ids else (None, [])
-        return memory.upsert(
+        result = memory.upsert(
             kind=kind,  # type: ignore[arg-type]
             claim=claim,
             run_ids=run_ids,
@@ -159,9 +192,28 @@ def curator_tools(
             seeds=seeds,
             id=id,
         )
+        if "error" not in result:
+            events.emit(
+                "memory.updated",
+                action="upsert",
+                entry=memory.entries[result["id"]].model_dump(),
+                text=memory.render(best_version),
+                tokens=memory.tokens(best_version),
+            )
+        return result
 
     async def remove_memory(id: str, reason: str) -> dict[str, Any]:
-        return memory.remove(id, reason, gen)
+        result = memory.remove(id, reason, gen)
+        if "error" not in result:
+            events.emit(
+                "memory.updated",
+                action="remove",
+                id=id,
+                reason=reason[:400],
+                text=memory.render(best_version),
+                tokens=memory.tokens(best_version),
+            )
+        return result
 
     return [
         Tool(
@@ -245,13 +297,15 @@ async def run_curator(
         best_val=best_val,
         threshold=threshold,
     )
-    result = await run_agent(
-        model=get_settings().curator_model,
-        messages=[{"role": "system", "content": system}, {"role": "user", "content": task}],
-        tools=tools,
-        params=CURATOR_PARAMS,
-        max_turns=cfg.curator_max_turns,
-    )
+    with events.scope(agent="curator", role="curator", gen=gen, phase="curation"):
+        result = await run_agent(
+            model=get_settings().curator_model,
+            messages=[{"role": "system", "content": system}, {"role": "user", "content": task}],
+            tools=tools,
+            params=CURATOR_PARAMS,
+            max_turns=cfg.curator_max_turns,
+            public_info={"run_budget": cfg.curator_runs},
+        )
     return CuratorOutcome(
         summary=result.final,
         checks=state.checks,

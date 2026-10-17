@@ -12,6 +12,7 @@ from typing import Literal
 import modal
 import numpy as np
 
+from app import events
 from app.config import get_settings
 from app.schemas import SandboxResult
 
@@ -120,6 +121,7 @@ async def run_train(code: str, data_dir: Path, seed: int, mode: Mode = "research
                 if attempt == 2:
                     raise
                 log.warning("sandbox infrastructure error, retrying: %s", e)
+                events.emit("sandbox.retry", error_type=type(e).__name__, attempt=attempt + 1)
                 await asyncio.sleep(5 * (attempt + 1))
     raise AssertionError("unreachable")
 
@@ -138,6 +140,8 @@ async def _run_train_once(code: str, data_dir: Path, seed: int, mode: Mode) -> T
     )
     try:
         await sb.filesystem.write_text.aio(code, "/work/train.py")
+        if mode == "research":
+            events.emit("experiment.started", sandbox_mode=mode)
         started = time.perf_counter()
         p = await sb.exec.aio(
             "python", f"/harness/{MODE_SCRIPT[mode]}", "--seed", str(seed), timeout=t
