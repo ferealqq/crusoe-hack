@@ -5,4 +5,3 @@ __pycache__/
 .env.local
 .pytest_cache/
 .ruff_cache/
-data/
