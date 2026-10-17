@@ -1,0 +1,1 @@
+{"id": "m1", "kind": "best", "claim": "train.py v0: val loss 17.84142 (+0.00% vs start). Starting train.py.", "run_ids": ["g0-base-1", "g0-base-2", "g0-base-3", "g0-base-4", "g0-base-5"], "val_change": null, "seeds": [], "tested_on": 0, "created_gen": 0, "updated_gen": 0}
