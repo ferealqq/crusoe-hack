@@ -1,271 +1,316 @@
-"""Shared Brain tests. No network: inference and sandboxes are monkeypatched."""
+"""Offline tests: no Crusoe, no Modal (README "Done when")."""
 
+import io
 import json
+import re
+import subprocess
+import sys
 from pathlib import Path
-from types import SimpleNamespace
 from typing import Any
 
 import numpy as np
 import pandas as pd
 import pytest
 
-from app import report, scoring
-from app.agents import base, researcher
-from app.config import SETUPS, ResearchConfig, get_settings
-from app.lab import Dataset, Lab
-from app.loop import SetupRun, measure_baseline, rank
-from app.memory import RawLog, SharedMemory, count_tokens
+from app import loop, scoring
+from app.agents import prompts, tools
+from app.config import ResearchConfig
+from app.data import Dataset
+from app.lab import Best, Lab, runs_per_generation
+from app.memory import Memory, MemoryFull
+from app.schemas import Experiment, Reply, ToolCall, TrainResult, Usage
 from app.services import inference, sandbox
-from app.store import Store
 
-# --- data isolation ---------------------------------------------------------------
-
-
-def test_research_sandbox_never_gets_labels_or_test_data(tmp_path: Path):
-    remote = set(sandbox.sandbox_files(tmp_path, "research").values())
-    assert remote == {
-        "/data/train.parquet",
-        "/data/val_X.parquet",
-        "/data/meta.json",
-        "/harness/harness.py",
-    }
-    for name in ("val_y", "test_X", "test_y", "trainval", "test.py"):
-        assert not any(name in r for r in remote)
+ROOT = Path(__file__).resolve().parents[1]
+pytestmark = pytest.mark.anyio
 
 
-def test_test_sandbox_gets_test_inputs_but_no_test_labels(tmp_path: Path):
-    remote = set(sandbox.sandbox_files(tmp_path, "test").values())
-    assert "/data/test_X.parquet" in remote and "/data/trainval.parquet" in remote
-    assert not any("test_y" in r or "val_y" in r for r in remote)
+def _frame(data: bytes) -> pd.DataFrame:
+    return pd.read_parquet(io.BytesIO(data))
 
 
-# --- scoring ----------------------------------------------------------------------
+# --- labels never reach the research sandbox ----------------------------------------------
 
 
-def test_scoring_math():
-    y = np.array([1.0, 0.0])
-    assert scoring.log_loss(y, np.array([0.5, 0.5])) == pytest.approx(np.log(2))
-    assert scoring.rmse(np.array([1.0, 3.0]), np.array([1.0, 1.0])) == pytest.approx(np.sqrt(2))
-    assert scoring.pinball_90(np.array([10.0]), np.array([0.0])) == pytest.approx(9.0)
-    assert scoring.gain(0.4, 0.3) == pytest.approx(0.25)
-    assert scoring.fitness([0.4, 0.5], [0.3, 0.25]) == pytest.approx((0.25 + 0.5) / 2)
-    # threshold: max(2 x spread, 0.5% of L0)
-    assert scoring.noise_threshold([1.0, 1.0, 1.0]) == pytest.approx(0.005)
-    assert scoring.noise_threshold([1.0, 1.2]) == pytest.approx(2 * np.std([1.0, 1.2], ddof=1))
-    assert scoring.beats(0.9, 1.0, 0.05) and not scoring.beats(0.96, 1.0, 0.05)
+def test_research_files_hold_no_val_labels_or_test_data(dataset: Dataset, tmp_path: Path):
+    files = dataset.research_files
+    assert set(files) == {"train.parquet", "X.parquet"}
+    X = _frame(files["X.parquet"])
+    assert "y" not in X.columns
+    pd.testing.assert_frame_equal(X, pd.read_parquet(tmp_path / "toy" / "val_X.parquet"))
+    test_X = pd.read_parquet(tmp_path / "toy" / "test_X.parquet")
+    train = _frame(files["train.parquet"])
+    assert len(train) == 140  # train only: no val or test rows
+    assert not X.merge(test_X).shape[0] and not train.drop(columns="y").merge(test_X).shape[0]
 
 
-def test_score_rejects_bad_predictions():
-    y = np.array([1.0, 0.0])
-    for bad in (np.array([0.5]), np.array([np.nan, 0.5]), np.array([1.5, 0.5])):
-        with pytest.raises(ValueError):
-            scoring.score("log_loss", y, bad)
+def test_test_files_give_train_plus_val_labels_and_test_inputs(dataset: Dataset):
+    train = _frame(dataset.test_files["train.parquet"])
+    X = _frame(dataset.test_files["X.parquet"])
+    assert len(train) == 170 and train["y"].notna().all()
+    assert "y" not in X.columns and len(X) == 30
 
 
-# --- ranking ------------------------------------------------------------------------
+async def test_research_runs_send_only_research_files(lab: Lab, monkeypatch):
+    seen: list[dict[str, bytes]] = []
+
+    async def run_train(code, files, target, seed):
+        seen.append(files)
+        return TrainResult(status="ok", preds=[0.2] * 30)
+
+    monkeypatch.setattr(sandbox, "run_train", run_train)
+    exp = await lab.run_experiment("x", prefix="p", agent="r1", generation=1, seed=0)
+    assert seen == [lab.dataset.research_files]
+    assert exp.loss == pytest.approx(scoring.log_loss(lab.dataset.val_y, np.full(30, 0.2)))
 
 
-def test_ranking_with_ties():
-    # 0.300 and 0.302 tie within 0.005; 0.350 is clearly worse; None ranks last
-    ranked = rank([0.350, 0.302, None, 0.300], threshold=0.005)
-    assert [i for i, _ in ranked] == [3, 1, 0, 2]
-    assert dict(ranked) == {3: 1, 1: 1, 0: 3, 2: 4}
+def test_harness_rejects_bad_predictions(tmp_path: Path, dataset: Dataset):
+    for name, data in dataset.research_files.items():
+        (tmp_path / name).write_bytes(data)
+    (tmp_path / "harness.py").write_text((ROOT / "sandbox" / "harness.py").read_text())
+
+    def run(train_py: str) -> subprocess.CompletedProcess[str]:
+        (tmp_path / "train.py").write_text(train_py)
+        cmd = [sys.executable, "harness.py", "--target", "y", "--seed", "0"]
+        return subprocess.run(cmd, cwd=tmp_path, capture_output=True, text=True)
+
+    good = (
+        "def fit(t, target, seed):\n    return None\n"
+        "def predict(m, X):\n    return [0.2] * len(X)\n"
+    )
+    assert run(good).returncode == 0
+    assert json.loads((tmp_path / "preds.json").read_text()) == [0.2] * 30
+    assert run(good.replace("[0.2] * len(X)", "[0.2]")).returncode != 0
+    assert run(good.replace("0.2", "1.5")).returncode != 0
 
 
-# --- budget -------------------------------------------------------------------------
+# --- run limits ----------------------------------------------------------------------------
+
+
+async def test_researcher_run_limit(lab: Lab, monkeypatch):
+    calls = 0
+
+    async def run_train(code, files, target, seed):
+        nonlocal calls
+        calls += 1
+        return TrainResult(status="error", output_tail="boom")
+
+    monkeypatch.setattr(sandbox, "run_train", run_train)
+    lab.best = Best(0, "x", 0.5, "g0-base-1", "start", 0.5)
+    budget, runs = tools.Budget(2), []
+    run_code = tools.researcher_run_code(lab, agent="r1", generation=1, budget=budget, runs=runs)
+    results = [await run_code.fn({"code": "x", "note": "n"}) for _ in range(3)]
+    assert [r.get("runs_left") for r in results] == [1, 0, 0]
+    assert "no runs left" in results[2]["error"]
+    assert calls == 2  # crashes use up a run; the refused call never reaches the sandbox
+
+
+async def test_curator_check_needs_enough_runs(lab: Lab, monkeypatch):
+    async def run_train(code, files, target, seed):
+        return TrainResult(status="ok", preds=[0.2] * 30)
+
+    monkeypatch.setattr(sandbox, "run_train", run_train)
+    lab.best = Best(0, "x", 0.6, "g0-base-1", "start", 0.6)
+    budget, checks = tools.Budget(4), []
+    run_code = tools.curator_run_code(lab, generation=1, budget=budget, verifications=checks)
+    first = await run_code.fn({"code": "x", "seeds": 3})
+    assert first["beats_best"] is True and first["runs_left"] == 1
+    assert "needs 3 runs" in (await run_code.fn({"code": "x"}))["error"]
+    assert (await run_code.fn({"code": "x", "seeds": 1}))["runs_left"] == 0
+    assert [c.full for c in checks] == [True, False]
 
 
 def test_equal_total_runs_across_setups():
-    cfg = ResearchConfig()
-    totals = {s: cfg.runs_per_generation(s) for s in SETUPS if s != "one_shot"}
-    assert set(totals.values()) == {28}
-    assert cfg.runs_per_generation("one_shot") == 1
+    config = ResearchConfig()
+    assert runs_per_generation(config, "shared_brain") == runs_per_generation(config, "no_memory")
+    assert runs_per_generation(config, "no_memory") == 28
 
 
-async def test_researcher_run_limit(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
-    calls = []
+# --- memory --------------------------------------------------------------------------------
 
-    async def fake_run(code: str, seed: int, agent: str, note: str, gen: int, started: int):
-        calls.append(code)
-        return SimpleNamespace(id=f"e{len(calls)}", status="ok", val_loss=0.3, output_tail="")
 
-    lab = SimpleNamespace(run=fake_run)
-    log: list[dict[str, Any]] = []
-    tools = researcher.researcher_tools(
-        lab=lab,  # type: ignore[arg-type]
-        name="r1",
-        gen=1,
-        best_version=0,
-        runs=2,
-        memory=None,
-        cfg=ResearchConfig(),
-        run_log=log,
+def _add(memory: Memory, kind: str, claim: str, gen: int = 1, tested_on: int = 0) -> str:
+    entry = memory.upsert(
+        kind=kind,  # type: ignore[arg-type]
+        claim=claim,
+        run_ids=["g1-r1-1"],
+        val_change=-0.01,
+        seeds=[0],
+        tested_on=tested_on,
+        generation=gen,
     )
-    run_code = next(t for t in tools if t.name == "run_code").fn
-    assert (await run_code(code="a", note="x"))["runs_left"] == 1
-    assert (await run_code(code="b", note="y"))["runs_left"] == 0
-    assert "error" in await run_code(code="c", note="z")
-    assert len(calls) == 2 and len(log) == 2
+    return entry.id
 
 
-# --- memory -------------------------------------------------------------------------
+def test_memory_cap_refuses_and_drops_oldest_try_next_then_failed(tmp_path: Path):
+    memory = Memory(tmp_path / "memory.jsonl", cap_tokens=10_000)
+    memory.set_best(claim="best " + "b" * 150, run_ids=["x"], val_change=None, version=0, gen=0)
+    ids = {
+        "works": _add(memory, "works", "w" * 150),
+        "failed_old": _add(memory, "failed", "f" * 150, gen=1),
+        "failed_new": _add(memory, "failed", "g" * 150, gen=2),
+        "try_old": _add(memory, "try_next", "t" * 150, gen=1),
+        "try_new": _add(memory, "try_next", "u" * 150, gen=2),
+    }
+    memory.cap = memory.tokens() - 1
+    with pytest.raises(MemoryFull):
+        _add(memory, "works", "too much")
+    memory.cap = memory.tokens() - 100  # needs about three drops
+    dropped = [e.id for e in memory.enforce_cap()]
+    assert dropped == [ids["try_old"], ids["try_new"], ids["failed_old"]]
+    kinds = {e.kind for e in memory.entries}
+    assert kinds == {"best", "works", "failed"}  # best and works are never dropped
+    assert Memory(tmp_path / "memory.jsonl", 0).entries == memory.entries  # saved to disk
 
 
-def _mem(cap: int = 2000) -> SharedMemory:
-    return SharedMemory(cap_tokens=cap)
+def test_memory_render_is_stable_and_best_is_protected(tmp_path: Path):
+    memory = Memory(tmp_path / "memory.jsonl", cap_tokens=2000)
+    t = _add(memory, "try_next", "try this")
+    w = _add(memory, "works", "this works")
+    memory.set_best(claim="best so far", run_ids=["x"], val_change=None, version=1, gen=1)
+    text = memory.render()
+    assert text.index("## best") < text.index("## works") < text.index("## try_next")
+    assert text.index(f"[{w}]") < text.index(f"[{t}]")
+    best_id = next(e.id for e in memory.entries if e.kind == "best")
+    with pytest.raises(ValueError):
+        memory.remove(best_id)
+    with pytest.raises(ValueError):
+        _add(memory, "best", "nope")
+    with pytest.raises(ValueError):
+        _add(memory, "works", "x" * 201)
 
 
-def test_memory_cap_refuses_and_keeps_state():
-    m = _mem(cap=60)
-    ok = m.upsert(kind="works", claim="a" * 150, run_ids=["e1"], gen=1, best_version=0)
-    assert "id" in ok
-    refused = m.upsert(kind="failed", claim="b" * 150, run_ids=["e2"], gen=1, best_version=0)
-    assert "error" in refused and len(m.active()) == 1
-    assert "error" in m.upsert(kind="works", claim="x" * 201, run_ids=[], gen=1, best_version=0)
-    assert "error" in m.upsert(kind="best", claim="x", run_ids=[], gen=1, best_version=0)
+def test_staleness(tmp_path: Path):
+    memory = Memory(tmp_path / "memory.jsonl", cap_tokens=2000)
+    old = _add(memory, "works", "old", tested_on=1)
+    _add(memory, "works", "recent", tested_on=2)
+    memory.set_best(claim="best", run_ids=["x"], val_change=None, version=0, gen=0)
+    assert [e.id for e in memory.stale(best_version=3)] == [old]
+    assert memory.stale(best_version=2) == []
 
 
-def test_memory_drop_order_try_next_then_failed_never_best():
-    m = _mem()
-    for kind in ("failed", "try_next", "try_next", "works"):
-        m.upsert(kind=kind, claim=kind * 10, run_ids=["e1"], gen=1, best_version=0)
-    m.set_best("v1: " + "z" * 200, ["e1"], 1, 1, 0.3)
-    m.cap_tokens = count_tokens(m.render(1)) - 1
-    dropped = m.enforce_cap(gen=2, best_version=1)
-    assert dropped == ["m2"]  # the oldest try_next
-    m.cap_tokens = 10
-    dropped = m.enforce_cap(gen=2, best_version=1)
-    assert dropped == ["m3", "m1"]  # remaining try_next, then failed
-    kinds = {e.kind for e in m.active()}
-    assert kinds == {"best", "works"}
+# --- ranking and scoring -------------------------------------------------------------------
 
 
-def test_memory_render_is_stable_and_ordered():
-    m = _mem()
-    m.upsert(kind="try_next", claim="t", run_ids=[], gen=1, best_version=0)
-    m.upsert(kind="works", claim="w", run_ids=["e1"], gen=1, best_version=0)
-    m.set_best("v1: best", ["e1"], 1, 1, 0.3)
-    text = m.render(1)
-    assert text.index("## Best") < text.index("## Works") < text.index("## Try next")
-    assert text == m.render(1)
-
-
-def test_staleness():
-    m = _mem()
-    m.upsert(kind="works", claim="old", run_ids=["e1"], gen=1, best_version=0)
-    m.upsert(kind="works", claim="new", run_ids=["e2"], gen=2, best_version=1)
-    assert [e.id for e in m.stale(best_version=1)] == []
-    assert [e.id for e in m.stale(best_version=2)] == ["m1"]
-    assert "STALE" in m.render(2)
-
-
-def test_raw_log_trims_oldest():
-    r = RawLog(cap_tokens=50)
-    for i in range(5):
-        r.append(f"report {i} " + "x" * 80)
-    assert r.reports[-1].startswith("report 4")
-    assert r.tokens() <= 50 or len(r.reports) == 1
-    assert not any(rep.startswith("report 0") for rep in r.reports)
-
-
-# --- end to end with fakes ------------------------------------------------------------
-
-
-@pytest.fixture
-def tiny_dataset(tmp_path: Path) -> Dataset:
-    rng = np.random.default_rng(0)
-    d = tmp_path / "churn"
-    d.mkdir()
-    (d / "meta.json").write_text(json.dumps({"name": "churn", "target": "y", "loss": "log_loss"}))
-    pd.DataFrame({"y": rng.integers(0, 2, 200)}).to_parquet(d / "val_y.parquet")
-    pd.DataFrame({"y": rng.integers(0, 2, 200)}).to_parquet(d / "test_y.parquet")
-    return Dataset(d)
-
-
-def _fake_sandbox(dataset: Dataset):
-    async def run_train(code: str, data_dir: Path, seed: int, mode: str = "research"):
-        y = dataset.val_y if mode == "research" else dataset.test_y
-        noise = 0.001 * seed
-        preds = y * 0.6 + 0.2 + noise if "GOOD" in code else np.full_like(y, 0.45 + noise)
-        return sandbox.TrainResult("ok", preds, "fake output", 0.1)
-
-    return run_train
-
-
-def _msg(content: str = "", calls: list[tuple[str, dict[str, Any]]] | None = None):
-    tool_calls = [
-        SimpleNamespace(id=f"c{i}", function=SimpleNamespace(name=name, arguments=json.dumps(args)))
-        for i, (name, args) in enumerate(calls or [])
-    ] or None
-    return SimpleNamespace(content=content, tool_calls=tool_calls)
-
-
-async def fake_chat_turn(messages: list[dict[str, Any]], model: str, tools, **params):
-    usage = {"prompt": 100, "cached": 50, "output": 10}
-    tool_results = [json.loads(m["content"]) for m in messages if m["role"] == "tool"]
-    if model == get_settings().researcher_model:
-        if not tool_results:
-            return _msg(calls=[("run_code", {"code": "GOOD", "note": "better model"})]), None, usage
-        return _msg("Tried: GOOD\nBest run: x\nLearned: works\nNext: more"), "stop", usage
-    # curator: re-check, record the finding, finish
-    if not tool_results:
-        return _msg(calls=[("run_code", {"code": "GOOD"})]), None, usage
-    if len(tool_results) == 1:
-        ids = tool_results[0]["run_ids"]
-        claim = {"kind": "works", "claim": "GOOD model lowers log loss", "run_ids": ids}
-        return _msg(calls=[("upsert_memory", claim)]), None, usage
-    return _msg("Added one works entry."), "stop", usage
-
-
-async def test_shared_brain_generation_end_to_end(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, tiny_dataset: Dataset
-):
-    monkeypatch.setattr(sandbox, "run_train", _fake_sandbox(tiny_dataset))
-    monkeypatch.setattr(inference, "chat_turn", fake_chat_turn)
-    monkeypatch.setattr(get_settings(), "ydc_api_key", "")
-    cfg = ResearchConfig(generations=2, researchers=2)
-    root = tmp_path / "run"
-    store = Store(root)
-    baseline = await measure_baseline(tiny_dataset, "BASE", cfg, store)
-    assert baseline.threshold > 0
-
-    run = SetupRun("shared_brain", tiny_dataset, baseline, cfg, root)
-    result = await run.run()
-
-    assert result["best_version"] == 1 and result["fitness"] > 0
-    gens = Store(root / "shared_brain").read("generations")
-    assert [g["new_best"] for g in gens] == [True, False]
-    assert gens[0]["runs"] == 2 * 1 + 3  # each fake researcher runs once; curator 3 seeds
-    kinds = {e.kind for e in run.memory.active()} if run.memory else set()
-    assert {"best", "works"} <= kinds
-
-    store.write_json("config", {
-        "setups": ["shared_brain"], "research": cfg.model_dump(), "started": "test",
-        "researcher_model": "r", "curator_model": "c", "pricing": {},
-    })  # fmt: skip
-    store.write_json("baseline", baseline.__dict__)
-    assert "Shared Brain" in report.write_report(root).read_text()
-
-
-async def test_agent_survives_api_failure(monkeypatch: pytest.MonkeyPatch):
-    async def boom(*args, **kwargs):
-        raise RuntimeError("429 forever")
-
-    monkeypatch.setattr(inference, "chat_turn", boom)
-    result = await base.run_agent(
-        model="m", messages=[{"role": "user", "content": "hi"}], tools=[], params={}, max_turns=3
+def _exp(run_id: str, loss: float | None) -> Experiment:
+    return Experiment(
+        run_id=run_id,
+        generation=1,
+        agent=run_id.split("-")[1],
+        seed=0,
+        status="ok" if loss is not None else "error",
+        loss=loss,
+        runtime_s=1.0,
+        code="",
     )
-    assert result.final.startswith("(stopped early")
 
 
-def test_lab_records_bad_predictions_as_error(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, tiny_dataset: Dataset
-):
-    async def run_train(code: str, data_dir: Path, seed: int, mode: str = "research"):
-        return sandbox.TrainResult("ok", np.array([2.0]), "", 0.1)
+def test_ranking_with_ties():
+    logs = {
+        "r1": [_exp("g1-r1-1", 0.40), _exp("g1-r1-2", 0.35)],
+        "r2": [_exp("g1-r2-1", 0.352)],
+        "r3": [_exp("g1-r3-1", 0.30)],
+        "r4": [_exp("g1-r4-1", None)],
+    }
+    ranked = scoring.rank_researchers(logs, start_best=0.40, threshold=0.005)
+    assert [r.agent for r in ranked] == ["r3", "r1", "r2", "r4"]
+    assert [r.tied for r in ranked] == [False, False, True, False]
+    assert ranked[0].best_run_id == "g1-r3-1" and ranked[0].gain == pytest.approx(0.25)
+    assert ranked[3].gain is None
+
+
+def test_curator_brief_flags_gains_within_noise(lab: Lab):
+    lab.threshold = 0.002
+    lab.best = Best(1, "x", 0.3244, "g1-r2-3", "CatBoost", seed_loss=0.3236)
+    logs = {"r1": [_exp("g2-r1-1", 0.3232)], "r2": [_exp("g2-r2-1", 0.3100)]}
+    ranked = scoring.rank_researchers(logs, lab.best.seed_loss, lab.threshold)
+    reports = [(r.agent, "f", "report", logs[r.agent]) for r in ranked]
+    brief = prompts.curator_brief(lab, 2, reports, ranked)
+    assert "0.32360" in brief  # gains are against the best's seed-0 score, not 0.3244
+    r2, r1 = brief.split("\n2. ")[0], brief.split("\n2. ")[1]
+    assert "clears the noise threshold" in r2 and "within noise" in r1.splitlines()[0]
+
+
+def test_scoring_math():
+    assert scoring.log_loss(np.array([1, 0]), np.array([0.5, 0.5])) == pytest.approx(np.log(2))
+    assert scoring.log_loss(np.array([1]), np.array([1.0])) == pytest.approx(0, abs=1e-12)
+    assert scoring.noise_threshold([0.4, 0.4]) == pytest.approx(0.002)  # 0.5% of L0
+    assert scoring.noise_threshold([0.38, 0.42]) == pytest.approx(0.04)  # 2 x spread
+    assert scoring.gain(0.4, 0.3) == pytest.approx(0.25)
+    assert scoring.fitness([0.4, 0.5], [0.3, 0.5]) == pytest.approx(0.125)
+    assert scoring.beats(0.39, 0.40, 0.005) and not scoring.beats(0.398, 0.40, 0.005)
+
+
+# --- a whole research run, with fake models and a fake sandbox -----------------------------
+
+
+def _fake_sandbox(monkeypatch) -> None:
+    """Predicts the constant P=<x> found in the code; the starting train.py predicts 0.5."""
+
+    async def run_train(code, files, target, seed):
+        m = re.search(r"P=([0-9.]+)", code)
+        n = len(_frame(files["X.parquet"]))
+        return TrainResult(status="ok", preds=[float(m.group(1)) if m else 0.5] * n)
 
     monkeypatch.setattr(sandbox, "run_train", run_train)
-    import asyncio
 
-    exp = asyncio.run(Lab(tiny_dataset, Store(tmp_path)).run("x", 0, "r1", "n", 1, 0))
-    assert exp.status == "error" and exp.val_loss is None
+
+def _fake_models(monkeypatch) -> list[str]:
+    roles: list[str] = []
+
+    def call(name: str, **args: Any) -> Reply:
+        return Reply(
+            content="",
+            tool_calls=[ToolCall(id=f"c{len(roles)}", name=name, arguments=json.dumps(args))],
+            usage=Usage(prompt=100, cached=50, output=10, calls=1),
+        )
+
+    async def complete(messages, model, tools=None, **params) -> Reply:
+        names = {t["function"]["name"] for t in tools or []}
+        turn = sum(m["role"] == "assistant" for m in messages)
+        roles.append("curator" if "upsert_memory" in names else "researcher")
+        done = Reply(content="Tried: P=0.2\nBest run: x\nLearned: ok\nNext: more")
+        if "upsert_memory" not in names:  # researcher: one run, then report
+            if turn == 0:
+                return call("run_code", code="P=0.2", note="predict the base rate")
+            return done
+        top = re.search(r"best run (\S+),", messages[1]["content"]).group(1)
+        if turn == 0:
+            return call("run_code", run_id=top, seeds=3)
+        if turn == 1:
+            return call("upsert_memory", kind="works", claim="P=0.2 beats 0.5", run_ids=[top])
+        return Reply(content="Added one works entry.")
+
+    monkeypatch.setattr(inference, "complete", complete)
+    return roles
+
+
+@pytest.mark.parametrize("setup", ["shared_brain", "no_memory"])
+async def test_research_run_end_to_end(setup, dataset: Dataset, tmp_path: Path, monkeypatch):
+    _fake_sandbox(monkeypatch)
+    roles = _fake_models(monkeypatch)
+    (tmp_path / "baselines" / "toy").mkdir(parents=True)
+    (tmp_path / "baselines" / "toy" / "train.py").write_text("starting train.py")
+    monkeypatch.setattr(loop, "BASELINES", tmp_path / "baselines")
+    config = ResearchConfig(generations=1, researchers=2, researcher_runs=3, curator_runs=4)
+    row = await loop.research_run(dataset, setup, config, root=tmp_path)
+
+    run_dir = tmp_path / "research_runs" / row["run_id"]
+    assert row["best_version"] == 1 and row["val_gain"] > 0 and row["fitness"] > 0
+    assert (run_dir / "best_train.py").read_text() == "P=0.2"
+    gens = [json.loads(line) for line in (run_dir / "generations.jsonl").read_text().splitlines()]
+    assert len(gens) == 1 and gens[0]["best_changed"]
+    agents = (run_dir / "agents.jsonl").read_text().splitlines()
+    memory = Memory(run_dir / "memory.jsonl", 2000)
+    if setup == "shared_brain":
+        assert "curator" in roles and len(agents) == 3
+        assert {e.kind for e in memory.entries} == {"best", "works"}
+        assert next(e for e in memory.entries if e.kind == "best").tested_on == 1
+    else:
+        assert "curator" not in roles and len(agents) == 2 and memory.entries == []
+    tests = [
+        json.loads(line)
+        for line in (run_dir / "experiments.jsonl").read_text().splitlines()
+        if json.loads(line)["split"] == "test"
+    ]
+    assert len(tests) == 6  # starting and best train.py, seeds 1-3

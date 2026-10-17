@@ -1,0 +1,203 @@
+15:30:53 research run churn-shared_brain-20261017-223053: 5 generations, 28 runs per generation
+15:31:00 g0-base-1 val seed 0: ok loss 0.39805  starting train.py
+15:31:00 g0-base-5 val seed 4: ok loss 0.39805  starting train.py
+15:31:00 g0-base-2 val seed 1: ok loss 0.39805  starting train.py
+15:31:00 g0-base-3 val seed 2: ok loss 0.39805  starting train.py
+15:31:01 g0-base-4 val seed 3: ok loss 0.39805  starting train.py
+15:31:01 baseline: L0 0.39805, noise threshold 0.00199
+15:31:01 committed 11324e8: start: L0 0.39805, noise threshold 0.00199
+15:31:01 g1: 4 researchers from v0
+15:31:04 RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B; retrying in 6 s
+15:31:05 RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B; retrying in 7 s
+15:31:14 RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B; retrying in 14 s
+15:31:16 RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B; retrying in 10 s
+15:31:22 g1-r2-1 val seed 0: ok loss 0.32716  First attempt: LightGBM with defaultish parameters
+15:31:28 g1-r1-1 val seed 0: ok loss 0.33437  LightGBM defaultish parameters
+15:31:30 RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B; retrying in 14 s
+15:31:37 g1-r2-2 val seed 0: ok loss 0.32562  XGBoost with defaultish parameters
+15:31:50 g1-r2-3 val seed 0: ok loss 0.32355  CatBoost with defaultish parameters
+15:31:53 RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B; retrying in 6 s
+15:31:55 g1-r1-2 val seed 0: ok loss 0.33402  Added interaction features: balance_to_salary, creditscore_age, tenure_products,
+15:32:03 g1-r3-1 val seed 0: ok loss 0.38495  LightGBM with defaultish params, is_unbalance=True
+15:32:06 g1-r4-1 val seed 0: ok loss 0.39879  L2 regularization, C=0.1 (stronger regularization)
+15:32:21 g1-r4-2 val seed 0: ok loss 0.39943  L2 regularization, C=0.01 (stronger regularization than previous)
+15:32:22 g1-r3-2 val seed 0: error  LightGBM with early stopping on internal validation
+15:32:28 g1-r1-3 val seed 0: ok loss 0.33396  More feature engineering: ratios, products, log transforms
+15:32:32 g1-r2-4 val seed 0: ok loss 0.51086  Simple MLP with two hidden layers, standardized features
+15:32:42 g1-r4-3 val seed 0: ok loss 0.39789  L2 regularization, C=10 (weaker regularization)
+15:32:44 g1-r3-3 val seed 0: error  LightGBM with early stopping, removed eval_metric from fit
+15:32:56 g1-r1-4 val seed 0: error  XGBoost with same features
+15:33:14 g1-r2-5 val seed 0: ok loss 0.32542  CatBoost with more iterations, lower learning rate, deeper trees
+15:33:15 g1-r3-4 val seed 0: error  LightGBM native API with early stopping
+15:33:16 g1-r4-4 val seed 0: ok loss 0.39953  L1 regularization, C=0.1
+15:33:29 g1-r1-5 val seed 0: ok loss 0.34066  XGBoost fixed max_depth=6, typo fixed
+15:33:45 g1-r3-5 val seed 0: ok loss 0.38754  LightGBM tuned: lower LR, more estimators, some regularization
+15:33:46 g1-r4-5 val seed 0: ok loss 0.39791  L2 regularization, C=5
+15:33:51 g1-r2-6 val seed 0: ok loss 0.32441  CatBoost with more iterations, lower LR, regularization, bagging
+15:34:01 g1-r3-6 val seed 0: error  XGBoost with early stopping and scale_pos_weight
+15:34:02 g1-r1-6 val seed 0: ok loss 0.32633  CatBoost with same feature set as Run 3
+15:34:11 g1-r4-6 val seed 0: ok loss 0.39917  Elastic net regularization, l1_ratio=0.5, C=0.1
+15:34:44 g1-curator-2 val seed 2: ok loss 0.32490  verify g1-r2-3 (seed 2)
+15:34:44 g1-curator-1 val seed 1: ok loss 0.32426  verify g1-r2-3 (seed 1)
+15:34:45 g1-curator-3 val seed 3: ok loss 0.32417  verify g1-r2-3 (seed 3)
+15:34:55 committed be2f683: g1 curator add m2 (works): CatBoost defaultish: val 0.32444 vs v0 0.39805, gain 0.07361 > noise 0.0020
+15:34:55 committed 39f8b65: g1 curator add m3 (try_next): CatBoost + engineered features (interactions, ratios, products, logs): val 0.32633
+15:34:56 committed e754f8f: g1 curator add m4 (try_next): LightGBM is_unbalance=True: val 0.38495, beats v0 but below CatBoost
+15:34:56 committed 1ae52d1: g1 curator add m5 (failed): L2/L1/elastic net C sweeps: best 0.39789 vs v0 0.39805, within noise
+15:34:58 committed a3927bb: g1 best -> v1: val 0.32444 from g1-r2-3
+15:34:58 g1 done: best v1 val 0.32444 (+18.49%), 27 runs
+15:34:58 committed eb58c40: g1 done: best v1 val 0.32444 (+18.49%), 27 runs
+15:34:58 g2: 4 researchers from v1
+15:35:02 RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B; retrying in 7 s
+15:35:12 RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B; retrying in 17 s
+15:35:28 g2-r4-1 val seed 0: ok loss 0.32388  Idea 1: Ensemble of 3 CatBoost models with different seeds (averaging)
+15:35:29 g2-r2-1 val seed 0: ok loss 0.39720  CatBoost tuned: depth=8, lr=0.03, iterations=500, scale_pos_weight
+15:35:47 g2-r3-1 val seed 0: ok loss 0.32429  CatBoost with l2_leaf_reg=10.0
+15:35:54 g2-r4-2 val seed 0: ok loss 0.32368  Idea 2: Ensemble of 5 CatBoost models with different seeds (averaging)
+15:35:55 g2-r2-2 val seed 0: ok loss 0.41582  CatBoost with early stopping, holdout validation, lr=0.03, depth=6, iterations=2
+15:36:01 g2-r3-2 val seed 0: ok loss 0.32478  CatBoost with l2_leaf_reg=50.0
+15:36:04 g2-r1-1 val seed 0: ok loss 0.40495  XGBoost with scale_pos_weight, n_estimators=200, lr=0.05, max_depth=6
+15:36:13 g2-r2-3 val seed 0: ok loss 0.32355  Baseline v1 to confirm
+15:36:21 g2-r3-3 val seed 0: ok loss 0.32381  CatBoost with l2_leaf_reg=1.0
+15:36:29 g2-r1-2 val seed 0: ok loss 0.38870  LightGBM with n_estimators=500, lr=0.05, max_depth=-1, class_weight='balanced'
+15:36:30 g2-r4-3 val seed 0: ok loss 0.32615  Idea 3: Ensemble of 5 CatBoost with more iterations (500) and lower LR (0.01)
+15:36:32 RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B; retrying in 9 s
+15:36:38 g2-r2-4 val seed 0: ok loss 0.37999  XGBoost with scale_pos_weight, early stopping, holdout validation
+15:36:45 g2-r3-4 val seed 0: ok loss 0.32717  LightGBM with lambda_l2=10
+15:36:47 g2-r4-4 val seed 0: ok loss 0.32520  Idea 4: Ensemble of CatBoost and LightGBM (averaging)
+15:36:49 RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B; retrying in 6 s
+15:37:06 g2-r2-5 val seed 0: ok loss 0.32765  CatBoost: lr=0.02, depth=8, iterations=1000
+15:37:16 g2-r1-3 val seed 0: ok loss 0.33926  Simple MLP with one hidden layer, standardization, 20 epochs
+15:37:21 g2-r4-5 val seed 0: ok loss 0.32449  Idea 5: Ensemble of 7 CatBoost models with varied depths (4,5,6,6,7,8,9) and dif
+15:37:23 g2-r3-5 val seed 0: ok loss 0.32483  CatBoost depth=8, l2_leaf_reg=10.0
+15:37:25 RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B; retrying in 6 s
+15:37:46 RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B; retrying in 6 s
+15:37:49 g2-r1-4 val seed 0: ok loss 0.32598  CatBoost with iterations=1000, lr=0.01, depth=8, early stopping
+15:38:00 g2-r4-6 val seed 0: ok loss 0.32380  Idea 6: Ensemble of 10 CatBoost models with different seeds (averaging)
+15:38:21 g2-r1-5 val seed 0: ok loss 0.32455  CatBoost with engineered features: balance_to_salary, creditscore_age, balance_n
+15:38:29 g2-r3-6 val seed 0: ok loss 0.32434  CatBoost with more iterations, lower LR, l2_leaf_reg=3.0
+15:39:00 g2-r1-6 val seed 0: ok loss 0.38846  CatBoost with tuned hyperparameters: iterations=500, lr=0.02, depth=10, l2_leaf_
+15:40:01 g2-curator-3 val seed 3: ok loss 0.32417  verify g2-r2-3 (seed 3)
+15:40:02 g2-curator-1 val seed 1: ok loss 0.32426  verify g2-r2-3 (seed 1)
+15:40:02 g2-curator-2 val seed 2: ok loss 0.32490  verify g2-r2-3 (seed 2)
+15:40:21 committed d2d0b79: g2 curator add m6 (failed): r2 baseline 0.32355 not confirmed: 3-seed mean 0.32444 = best, beats_best false
+15:40:21 committed d9923c1: g2 curator add m7 (try_next): Ensemble of 5 CatBoost models with different seeds (averaging): val 0.32368 vs baseline 0.32444
+15:40:21 committed 7e3b9c4: g2 curator add m8 (failed): r1 best 0.32455 worse than baseline 0.32444; XGB/LGBM/MLP and feature engineering did not improve
+15:40:28 g2 done: best v1 val 0.32444 (+18.49%), 26 runs
+15:40:28 committed 3623329: g2 done: best v1 val 0.32444 (+18.49%), 26 runs
+15:40:28 g3: 4 researchers from v1
+15:40:51 g3-r2-1 val seed 0: ok loss 0.32429  CatBoost with l2_leaf_reg=10 (higher regularization)
+15:40:58 g3-r1-1 val seed 0: ok loss 0.32482  Run 2: depth=8, else same as v1
+15:41:02 g3-r4-1 val seed 0: ok loss 0.32355  Confirm baseline v1
+15:41:13 g3-r2-2 val seed 0: ok loss 0.32381  CatBoost with l2_leaf_reg=1 (less regularization)
+15:41:17 g3-r1-2 val seed 0: ok loss 0.32431  Run 3: learning_rate=0.03, iterations=300, depth=6
+15:41:24 g3-r3-1 val seed 0: ok loss 0.32380  Ensemble of 10 CatBoost models with different seeds (seed + i)
+15:41:32 g3-r4-2 val seed 0: ok loss 0.32399  CatBoost + engineered features (interactions, ratios, products, logs)
+15:41:39 g3-r2-3 val seed 0: ok loss 0.32361  CatBoost with l2_leaf_reg=0.5
+15:41:39 g3-r1-3 val seed 0: ok loss 0.41058  Run 4: class weights for imbalance, depth=7, lr=0.04, iterations=250
+15:42:02 g3-r3-2 val seed 0: ok loss 0.35992  Ensemble of CatBoost, LightGBM, XGBoost (each with defaultish parameters)
+15:42:04 g3-r4-3 val seed 0: ok loss 0.32458  CatBoost + more engineered features
+15:42:06 g3-r1-4 val seed 0: ok loss 0.41753  Run5: auto_class_weights='Balanced'
+15:42:13 g3-r2-4 val seed 0: ok loss 0.32383  CatBoost with l2_leaf_reg=0.1
+15:42:38 g3-r4-4 val seed 0: error  CatBoost with early stopping, more iterations, lower lr
+15:42:40 g3-r2-5 val seed 0: ok loss 0.32482  CatBoost with l2_leaf_reg=0.01
+15:42:44 g3-r1-5 val seed 0: ok loss 0.32389  Run6: CatBoost with more iterations, lower LR, regularization
+15:42:59 g3-r3-3 val seed 0: error  Stacking of 5 CatBoost models with different depths (4-8) using out-of-fold pred
+15:43:00 g3-r4-5 val seed 0: ok loss 0.32507  CatBoost with early stopping, more iterations, lower lr (fixed random_state)
+15:43:01 g3-r2-6 val seed 0: ok loss 0.32395  CatBoost with l2_leaf_reg=0.3
+15:43:03 RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B; retrying in 8 s
+15:43:15 RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B; retrying in 18 s
+15:43:16 g3-r1-6 val seed 0: ok loss 0.32379  Run7: Ensemble of 5 CatBoost models with seeds offset, using best params from Ru
+15:44:01 g3-r3-4 val seed 0: ok loss 0.33376  Stacking of 5 CatBoost models with different depths (4-8) using out-of-fold pred
+15:44:19 g3-r4-6 val seed 0: ok loss 0.32821  LightGBM with early stopping
+15:44:23 RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B; retrying in 9 s
+15:44:36 RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B; retrying in 11 s
+15:44:39 g3-r3-5 val seed 0: ok loss 0.32376  Ensemble of 20 CatBoost models with different seeds (seed + i)
+15:45:18 g3-r3-6 val seed 0: ok loss 0.32368  Simple average of 5 CatBoost models with seeds seed, seed+1, ..., seed+4
+15:46:11 g3-curator-1 val seed 1: ok loss 0.32426  verify g3-r4-1 (seed 1)
+15:46:11 g3-curator-2 val seed 2: ok loss 0.32490  verify g3-r4-1 (seed 2)
+15:46:11 g3-curator-3 val seed 3: ok loss 0.32417  verify g3-r4-1 (seed 3)
+15:46:29 committed fd0d2e7: g3 curator add m9 (failed): r4 best run g3-r4-1 (baseline CatBoost 0.32355) not confirmed: 3-seed mean 0.32444 = best, beats_best false (g3-curator-1/2/3)
+15:46:29 committed 6e383dd: g3 curator add m10 (try_next): CatBoost l2_leaf_reg=0.5: val 0.32361 vs baseline 0.32444, gain within noise 0.0020 (g3-r2-3)
+15:46:29 committed e603e7d: g3 curator add m11 (failed): r1 best g3-r1-6 (ensemble of 5 CatBoost, 0.32379) within noise of baseline 0.32444; class weights worsened performance
+15:46:29 committed 4293861: g3 curator edit m3 (failed): CatBoost + engineered features (interactions, ratios, products, logs): r4 runs 0.32399/0.32458, no improvement over baseline 0.32444 (g3-r4-2/3)
+15:46:33 g3 done: best v1 val 0.32444 (+18.49%), 27 runs
+15:46:33 committed d441852: g3 done: best v1 val 0.32444 (+18.49%), 27 runs
+15:46:33 g4: 4 researchers from v1
+15:46:37 RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B; retrying in 9 s
+15:47:04 g4-r1-1 val seed 0: ok loss 0.32429  CatBoost with l2_leaf_reg=10.0
+15:47:06 g4-r2-1 val seed 0: ok loss 0.32368  Ensemble of 5 CatBoost with different seeds (averaging)
+15:47:30 g4-r1-2 val seed 0: ok loss 0.32383  CatBoost l2_leaf_reg=0.1
+15:47:32 g4-r4-1 val seed 0: ok loss 0.32645  Try XGBoost defaultish parameters
+15:47:32 g4-r3-1 val seed 0: ok loss 0.32362  Feature engineering: ratios, logs, polynomials, interactions
+15:47:34 g4-r2-2 val seed 0: ok loss 0.32427  Ensemble of 5 CatBoost with varying depths (4-8) and different seeds
+15:47:45 g4-r4-2 val seed 0: ok loss 0.40307  Try LightGBM with is_unbalance=True
+15:47:50 g4-r1-3 val seed 0: ok loss 0.32482  CatBoost l2_leaf_reg=0.01
+15:47:57 g4-r2-3 val seed 0: ok loss 0.32498  Ensemble of CatBoost, LightGBM, XGBoost (each with same seed)
+15:48:13 g4-r3-2 val seed 0: ok loss 0.32408  Feature engineering with CatBoost: iterations=500, learning_rate=0.02
+15:48:14 g4-r4-3 val seed 0: ok loss 0.40323  CatBoost with more iterations, lower LR, depth 8, class weights
+15:48:20 g4-r1-4 val seed 0: ok loss 0.32361  CatBoost l2_leaf_reg=0.5
+15:48:35 g4-r4-4 val seed 0: ok loss 0.32465  CatBoost tuned hyperparameters
+15:48:36 g4-r1-5 val seed 0: error  CatBoost l1_leaf_reg=0.5
+15:48:41 g4-r3-3 val seed 0: ok loss 0.32355  Baseline CatBoost (v1) with seed=42
+15:48:55 g4-r1-6 val seed 0: ok loss 0.32361  CatBoost with l2_leaf_reg=0.5, bagging_temperature=1.0, subsample=0.8, random_st
+15:49:03 g4-r2-4 val seed 0: error  Stacking ensemble: 5 CatBoost base models (different seeds) + logistic regressio
+15:49:22 g4-r4-5 val seed 0: ok loss 0.33312  Ensemble of CatBoost, XGBoost, LightGBM (averaging probabilities)
+15:49:24 g4-r3-4 val seed 0: ok loss 0.40708  LightGBM with feature engineering, is_unbalance=True
+15:49:52 g4-r4-6 val seed 0: ok loss 0.32368  Ensemble of 5 CatBoost models with different seeds (averaging probabilities)
+15:49:53 g4-r3-5 val seed 0: ok loss 0.32368  Ensemble of 5 CatBoost models with different seeds (no feature engineering)
+15:49:59 g4-r2-5 val seed 0: ok loss 0.33339  Stacking ensemble: 5 CatBoost base models (different seeds) + logistic regressio
+15:50:24 g4-r2-6 val seed 0: ok loss 0.32432  Ensemble of 5 CatBoost with different learning rates (0.03-0.07) and different s
+15:50:24 g4-r3-6 val seed 0: ok loss 0.32361  CatBoost with l2_leaf_reg=0.5 (no feature engineering)
+15:51:43 g4-curator-2 val seed 2: ok loss 0.32490  verify g4-r3-3 (seed 2)
+15:51:43 g4-curator-3 val seed 3: ok loss 0.32417  verify g4-r3-3 (seed 3)
+15:51:43 g4-curator-1 val seed 1: ok loss 0.32426  verify g4-r3-3 (seed 1)
+15:51:56 committed 0657ebe: g4 curator add m12 (failed): r3 baseline CatBoost v1 seed=42: 3-seed mean 0.32444 = best, beats_best false (g4-r3-3)
+15:51:59 g4 done: best v1 val 0.32444 (+18.49%), 27 runs
+15:52:00 committed 553f9f4: g4 done: best v1 val 0.32444 (+18.49%), 27 runs
+15:52:00 g5: 4 researchers from v1
+15:52:03 RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B; retrying in 7 s
+15:52:03 RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B; retrying in 6 s
+15:52:38 g5-r2-1 val seed 0: ok loss 0.32443  Add five new interaction features: balance_per_tenure, salary_per_age, age_balan
+15:52:41 g5-r4-1 val seed 0: ok loss 0.32624  Run 1: lower learning rate (0.01), more iterations (500), depth 6
+15:52:46 g5-r1-1 val seed 0: ok loss 0.32380  Ensemble of 10 CatBoost models with different seeds (averaging)
+15:53:10 g5-r2-2 val seed 0: ok loss 0.32398  Add log, sqrt, ratio, and geography interactions
+15:53:11 g5-r3-1 val seed 0: ok loss 0.32624  CatBoost iterations=500, learning_rate=0.01, depth=6
+15:53:16 g5-r1-2 val seed 0: ok loss 0.32368  Ensemble of 5 CatBoost models with seeds seed..seed+4
+15:53:17 g5-r4-2 val seed 0: ok loss 0.32546  Run 2: CatBoost with early stopping using inner stratified split, learning_rate=
+15:53:32 g5-r3-2 val seed 0: ok loss 0.32645  XGBoost defaultish parameters
+15:53:41 g5-r1-3 val seed 0: ok loss 0.32498  Heterogeneous ensemble: CatBoost, LightGBM, XGBoost (each with same seed)
+15:53:43 g5-r4-3 val seed 0: ok loss 0.41587  Run 3: CatBoost with class weights to handle imbalance (inverse frequency weight
+15:53:46 g5-r3-3 val seed 0: ok loss 0.32818  LightGBM defaultish parameters
+15:54:04 g5-r4-4 val seed 0: ok loss 0.32361  Run 4: l2_leaf_reg=0.5, else baseline
+15:54:09 g5-r2-3 val seed 0: ok loss 0.32402  Many interaction and transformed features
+15:54:11 g5-r3-4 val seed 0: ok loss 0.33395  MLPClassifier with two hidden layers, scaling
+15:54:12 g5-r1-4 val seed 0: ok loss 0.35992  Voting ensemble: CatBoost, LightGBM(is_unbalance=True), XGBoost(scale_pos_weight
+15:54:34 g5-r3-5 val seed 0: ok loss 0.33829  RandomForestClassifier with 200 trees, max_depth=10
+15:54:34 g5-r4-5 val seed 0: ok loss 0.32432  Run 5: depth=7, else baseline
+15:54:36 g5-r2-4 val seed 0: ok loss 0.32508  Drop surname_tfidf columns, add four interaction features
+15:54:55 g5-r1-5 val seed 0: ok loss 0.33468  Stacking ensemble: CatBoost, LightGBM, XGBoost base models, logistic regression 
+15:54:59 g5-r3-6 val seed 0: ok loss 0.32368  Ensemble of 5 CatBoost models with different seeds (averaging predictions)
+15:55:13 g5-r2-5 val seed 0: ok loss 0.32398  Feature set from g5-r2-2, seed=42
+15:55:21 g5-r4-6 val seed 0: ok loss 0.32589  Run 6: depth=8, learning_rate=0.03, iterations=500, l2_leaf_reg=0.5, boosting_ty
+15:55:29 g5-r1-6 val seed 0: ok loss 0.32498  Bagging ensemble: 5 CatBoost models trained on bootstrap samples
+15:56:38 g5-curator-2 val seed 2: ok loss 0.32389  verify g5-r4-4 (seed 2)
+15:56:38 g5-curator-1 val seed 1: ok loss 0.32380  verify g5-r4-4 (seed 1)
+15:56:38 g5-curator-3 val seed 3: ok loss 0.32480  verify g5-r4-4 (seed 3)
+15:56:45 committed ecc4bc5: g5 curator edit m10 (failed): CatBoost l2_leaf_reg=0.5: 3-seed mean 0.32416, beats_best false vs best 0.32444 (g5-curator-1/2/3)
+15:56:45 committed 297009d: g5 curator add m13 (failed): Feature engineering log/sqrt/ratio/geography interactions: val 0.32398 vs baseline 0.32444, gain +0.14% within noise 0.0020 (g5-r2-2/5)
+15:56:48 g5 done: best v1 val 0.32444 (+18.49%), 26 runs
+15:56:49 committed f5df30b: g5 done: best v1 val 0.32444 (+18.49%), 26 runs
+15:56:54 test-v0-2 test seed 2: ok loss 0.39332  test: train.py v0
+15:56:54 test-v0-3 test seed 3: ok loss 0.39332  test: train.py v0
+15:56:54 test-v0-1 test seed 1: ok loss 0.39332  test: train.py v0
+15:56:58 test-v1-1 test seed 1: ok loss 0.30756  test: train.py v1
+15:56:58 test-v1-3 test seed 3: ok loss 0.30699  test: train.py v1
+15:56:59 test-v1-2 test seed 2: ok loss 0.30727  test: train.py v1
+15:56:59 research run churn-shared_brain-20261017-223053 finished: fitness +0.2188
+15:56:59 committed f2dbe5d: finished: fitness +0.2188
+
+research run                             setup          fitness  val gain  best val loss by generation                  memory  tokens (prompt/cached/output)
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+churn-no_memory-20261017-223056          no_memory      +21.72%   +18.29%  0.3252 0.3252 0.3252 0.3252 0.3252                0  0.54M/0.37M/0.14M
+churn-shared_brain-20261017-223053       shared_brain   +21.88%   +18.49%  0.3244 0.3244 0.3244 0.3244 0.3244              420  0.54M/0.35M/0.16M

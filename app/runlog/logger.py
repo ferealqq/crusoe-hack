@@ -6,19 +6,14 @@
         ...
 
 Events are validated, numbered and timestamped, then appended to var/runs/<run_id>.jsonl,
-which the frontend can stream live. When the run ends, the file is uploaded to the bucket.
+which the frontend can stream live.
 """
 
-import asyncio
-import logging
 import time
 from typing import Self
 
 from app.runlog import store
 from app.runlog.events import Event, RunConfig, RunFinished, RunStarted, Setup, event_adapter
-from app.services import storage
-
-log = logging.getLogger(__name__)
 
 
 class RunLogger:
@@ -55,20 +50,6 @@ class RunLogger:
     def finish(self, status: str = "completed", error: str | None = None) -> None:
         if not self._finished:
             self.emit(RunFinished(status=status, error=error))  # type: ignore[arg-type]
-        try:
-            asyncio.run(self.upload())
-        except RuntimeError:  # already inside an event loop: caller should await upload()
-            log.warning("call `await runlog.upload()` from async code")
-
-    async def upload(self) -> None:
-        try:
-            await storage.put_bytes(
-                f"{store.BUCKET_PREFIX}{self.run_id}.jsonl",
-                self.path.read_bytes(),
-                "application/x-ndjson",
-            )
-        except Exception as e:
-            log.warning("run %s not uploaded to bucket: %s", self.run_id, e)
 
     def __enter__(self) -> Self:
         return self

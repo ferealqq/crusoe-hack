@@ -28,16 +28,14 @@ flowchart TD
 
 ## Setups
 
-All setups use the same dataset, splits, models, sandbox and total number of runs. Every generation starts from the best `train.py` so far, so **memory is the only difference**.
+Both setups use the same dataset, splits, models, sandbox and total number of runs. Every generation starts from the best `train.py` so far, so **memory is the only difference**.
 
 | Setup | What it shows | What researchers read | Who picks the best `train.py` |
 |---|---|---|---|
-| One-shot | A single agent, a single edit; this is the floor | Nothing. One run | — |
 | No memory | Every agent starts from zero | Nothing | Orchestrator: lowest val loss |
-| Raw log | Memory without curation, which bloats and contradicts itself | Every report, appended as-is. Oldest dropped past 100k tokens | Orchestrator: lowest val loss |
 | **Shared Brain** | Curated memory: lean and current | Curated memory, 2,000-token cap | Curator check on 3 seeds |
 
-A new best must beat the old one by more than the noise threshold, in every setup.
+A new best must beat the old one by more than the noise threshold, in both setups.
 
 ## Budget
 
@@ -45,10 +43,9 @@ A new best must beat the old one by more than the noise threshold, in every setu
 |---|---|
 | Generations | 5 |
 | Researchers per generation | 4 |
-| `run_code` calls per researcher | 6 (Shared Brain), 7 (No memory, Raw log) |
+| `run_code` calls per researcher | 6 (Shared Brain), 7 (No memory) |
 | Curator runs per generation | 4: 3 seeds to verify the top claim, 1 for a conflict or stale entry |
-| Total runs per generation | 28 in every setup |
-| `web_search` per researcher | 2, 5 results each |
+| Total runs per generation | 28 in both setups |
 | Agent turns per researcher | 30 max |
 | One run | 120 s, 2 CPUs, 4 GB RAM, no GPU, no network |
 | Seeds | Researcher runs: 0. Curator checks: 1, 2, 3. Test scoring: 1, 2, 3 |
@@ -57,13 +54,13 @@ Crashes and timeouts use up a run.
 
 ## Data
 
-Each run uses one dataset, split three ways. There are no other datasets in a run.
+We use one dataset, churn, split three ways.
 
 | Split | Who sees it | Use |
 |---|---|---|
 | Train | Researchers, curator | Training |
 | Val | Researchers, curator (inputs only, never labels) | Scoring during research |
-| Test | No agent | Final before-and-after comparison only, run by `test.py` |
+| Test | No agent | Final before-and-after comparison only, run by the orchestrator |
 
 - Researchers never see the test split: not its data, its loss, or any score built from it.
 - The curator doesn't see it either. It verifies claims on val, because what it learns goes into memory, and researchers read memory.
@@ -72,35 +69,24 @@ Each run uses one dataset, split three ways. There are no other datasets in a ru
 | Step | The sandbox gets | The sandbox never gets |
 |---|---|---|
 | Research (`run_code`) | Train, val inputs | Val labels, any test data |
-| Final scoring (`test.py`) | Train + val (with labels), test inputs | Test labels |
+| Final scoring | Train + val (with labels), test inputs | Test labels |
 
-### Data sources
+### Data source
 
-We test on three different kinds of problem: a yes/no prediction, a time-series forecast and a numeric prediction. Each dataset gets its own run and is scored on its own test split. All datasets are free to download without a login.
+| Predicts | Dataset | Val loss | Split |
+|---|---|---|---|
+| Will this customer leave? (yes/no) | [OpenML 46371](https://www.openml.org/d/46371) (35k customers, free, no login) | Log loss | Random 70/15/15, stratified, seed 42 |
 
-| Problem | What it predicts | Dataset | Val loss | Split |
-|---|---|---|---|---|
-| Churn | Will this customer leave? (yes/no) | [OpenML 46371](https://www.openml.org/d/46371) (35k customers) | Log loss | Random 70/15/15, stratified, seed 42 |
-| Regression | At what temperature does a material become a superconductor? | [Superconductivity](https://www.openml.org/d/44148) (21k rows, 79 features) | RMSE | Random 70/15/15, seed 42 |
-| Inventory | Daily demand per product | [Walmart M5](https://zenodo.org/records/12636070), top 1,000 products by units sold | Pinball loss at 90% | By time: test = last 28 days, val = 28 days before, train = the rest |
+Why churn: clear room to improve (~20%) and stable between runs.
 
-Why these:
-
-- **Churn:** clear room to improve (~20%) and stable between runs.
-- **Regression:** most room to improve (~47%); 79 features give agents real tuning work.
-- **Inventory:** real retail data; the score measures stock levels, not just the forecast. Room to improve not measured yet: `prepare_data.py` measures it, and we drop M5 if it's under 5%.
-
-Order: churn first end-to-end, then superconductivity, then M5 only if there's time.
-
-`scripts/prepare_data.py <name>` downloads a dataset, splits it and saves it locally under `data/<name>/` (git-ignored): `train.parquet`, `val_X.parquet`, `val_y.parquet`, `test_X.parquet`, `test_y.parquet` and `meta.json` (target column, loss, split rule).
+`scripts/prepare_data.py churn` downloads the dataset, splits it and saves it to `data/churn/`: `train.parquet`, `val_X.parquet`, `val_y.parquet`, `test_X.parquet`, `test_y.parquet` and `meta.json` (target column, loss, split rule).
 
 ## Files
 
 | File | Access |
 |---|---|
 | `train.py` | The only file agents can edit |
-| `sandbox/harness.py` | Locked. Runs `train.py` on train, predicts val inputs, returns predictions |
-| `sandbox/test.py` | Locked; agents can't see, edit or run it. Only the orchestrator runs it |
+| `sandbox/harness.py` | Locked. Fits `train.py` on `train.parquet`, predicts `X.parquet`, writes `preds.json`. The orchestrator decides which files go in: train + val inputs for research, train + val (with labels) + test inputs for final scoring, which only it runs (`loop.final_test`) |
 
 ### The `train.py` contract
 
@@ -113,17 +99,11 @@ def fit(train: pd.DataFrame, target: str, seed: int) -> object: ...
 def predict(model: object, X: pd.DataFrame) -> np.ndarray: ...
 ```
 
-- Churn returns the chance of leaving (0 to 1). Regression returns the temperature. Inventory returns the 90th-percentile daily demand for each row.
-- `test.py` fits on train + val, then predicts the test inputs, for seeds 1, 2 and 3.
+- `predict` returns the chance of leaving (0 to 1) for each row.
+- Final scoring fits on train + val, then predicts the test inputs, for seeds 1, 2 and 3.
 - Allowed libraries: numpy, pandas, pyarrow, scikit-learn, lightgbm, xgboost, catboost, torch (CPU). No installs at runtime.
 
-Starting `train.py` per dataset, in `baselines/<name>/train.py`:
-
-| Dataset | Baseline |
-|---|---|
-| Churn | Logistic regression |
-| Regression | Ridge regression |
-| Inventory | Per-product 90th percentile of the last 28 days |
+The starting `train.py` is logistic regression, in `baselines/churn/train.py`.
 
 ## Tools
 
@@ -132,25 +112,21 @@ Starting `train.py` per dataset, in `baselines/<name>/train.py`:
 | `get_memory` | — | Memory as text |
 | `run_code` (researcher) | `code` (the whole `train.py`), `note` (one line: what changed) | `run_id`, `status` (ok / error / timeout), `val_loss`, last 2,000 characters of output, `runs_left` |
 | `run_code` (curator) | `run_id` to re-check, or `code` | Mean and spread of val loss over seeds 1, 2, 3, and `beats_best` (true if it beats the best by more than the noise threshold). Uses 3 runs |
-| `web_search` | `query` | Up to 5 results: title, URL, description |
 | `upsert_memory` | `kind` (works / failed / try_next), `claim` (200 characters max), `run_ids`, optional `id` to edit | `id`, tokens used, token cap. Refused if over the cap |
-| `remove_memory` | `id`, `reason` | ok |
+| `remove_memory` | `id` | ok |
 
-The memory tools are our own, backed by Neon Postgres. Crusoe has no memory API.
-
-`web_search` uses the [You.com Search API](https://you.com/docs/get-started/quickstart): `POST https://ydc-index.io/v1/search` with header `X-API-Key: $YDC_API_KEY` and body `{"query": "...", "count": 5}`. Results are in `results.web[]` (`title`, `url`, `description`).
+The memory tools are our own, backed by `memory.jsonl` (see [Storage](#storage)). Crusoe has no memory API.
 
 ## Agents
 
 | Agent | Model | Tools |
 |---|---|---|
-| **Researcher** (×4) | `nvidia/NVIDIA-Nemotron-3-Super-120B-A12B` | `get_memory`, `web_search`, `run_code` |
-| **Curator** (×1) | `deepseek-ai/DeepSeek-V4-Pro` | `get_memory`, `run_code` (to re-check), `upsert_memory`, `remove_memory` |
-| Waste checker | `openai/gpt-oss-120b` | None |
+| **Researcher** (×4) | `nvidia/NVIDIA-Nemotron-3-Super-120B-A12B` | `get_memory`, `run_code` |
+| **Curator** (×1) | `nvidia/NVIDIA-Nemotron-3.5-Super-VL` | `get_memory`, `run_code` (to re-check), `upsert_memory`, `remove_memory` |
 
 - Researcher focus areas: features, model type, tuning, regularization and ensembling.
 - Researcher settings: temperature 1.0, top_p 0.95, `chat_template_kwargs: {"enable_thinking": true, "force_nonempty_content": true}`, max_tokens 8192.
-- Curator settings: `chat_template_kwargs: {"thinking": true}`, max_tokens 8192.
+- Curator settings: `chat_template_kwargs: {"enable_thinking": true, "force_nonempty_content": true}`, max_tokens 8192. Nemotron 3.5 Super is the newest Nemotron on Crusoe, the same size as the researcher (120B, 12B active).
 - At start, the orchestrator checks all model IDs against `/v1/models` and stops if one is missing. Nemotron 3 Ultra isn't on Crusoe's serverless list today; if it appears, it can replace the curator model.
 - The orchestrator is a plain Python script, not an agent.
 
@@ -181,7 +157,7 @@ The orchestrator attaches the researcher's run log (note, status and val loss pe
 ## Rules
 
 - **Memory writes:** only the curator writes to memory.
-- **`web_search`:** researchers only. Web ideas are hypotheses, not facts. Only results from `run_code` become memories.
+- **Memories come from runs:** only results from `run_code` become memories.
 - **Budget:** enforced inside `run_code` (time and run limits), so no one wins by training longer.
 - **Test split:** no agent can read it or get a score on it, so nothing tuned on it leaks into memory or `train.py`.
 
@@ -190,12 +166,11 @@ The orchestrator attaches the researcher's run log (note, status and val loss pe
 1. **Once per research run:** run the starting `train.py` on seeds 0 to 4. `L0` is the mean. The noise threshold is the larger of 2 × the spread and 0.5% of `L0`.
 2. **Each generation:**
    1. Run 4 researchers in parallel from the best `train.py` and the current memory.
-   2. Rank them by gain over the generation's starting best, from the run log.
-   3. Update memory: the curator (Shared Brain), append reports (Raw log), or nothing (No memory).
+   2. Rank them by gain over the generation's starting best, from the run log. Gains are measured against the best's own score on seed 0 (the seed researchers use), so an unchanged copy or a lucky seed can't look like a win.
+   3. Update memory: the curator (Shared Brain), or nothing (No memory).
    4. Update the best `train.py` if a run beats it by more than the noise threshold.
-   5. Score this generation's best on the test split (seeds 1 to 3) for the chart only. Never shown to agents.
-   6. Save metrics and a memory snapshot.
-3. **At the end:** `test.py` scores the starting and the best `train.py`.
+   5. Append this generation's metrics to `generations.jsonl`.
+3. **At the end:** the orchestrator scores the starting and the best `train.py` on the test split.
 
 ## Curation
 
@@ -203,7 +178,7 @@ Each generation, the 4 researchers are ranked by **gain over the generation's st
 
 | Rank | Curator action |
 |---|---|
-| **Top 1** | Re-run with `run_code` on 3 seeds. If `beats_best`, add it to memory as a fact; the orchestrator updates the best `train.py` |
+| **Top 1** | If its gain clears the noise threshold, re-run with `run_code` on 3 seeds. If `beats_best`, add it to memory as a fact; the orchestrator updates the best `train.py`. Within noise: just record the idea |
 | **Middle 2** | Keep only new ideas, as `try_next` |
 | **Bottom 1** | Record briefly as `failed` so it isn't retried |
 
@@ -228,7 +203,6 @@ Rules for the memory:
 - **Lean:** 2,000-token cap (counted as characters ÷ 4). If still over the cap after curation, drop the oldest `try_next`, then the oldest `failed`. Never drop `best`.
 - **Current:** an entry tested on a best that is 2 or more versions old is stale. The curator re-tests or removes it.
 - **Conflict-free:** only the curator writes to it, and contradictions are settled by an experiment.
-- **Versioned:** every change is logged, and memory is saved every generation.
 - **Stable text:** memory is rendered in a fixed order (best, works, failed, try_next, then by `id`) so the cache can reuse it.
 
 ### Why Crusoe MemoryAlloy
@@ -244,34 +218,48 @@ fitness = average gain across seeds 1, 2, 3
 
 - **`L0`:** loss of the starting `train.py`.
 - **`Lbest`:** loss of the best `train.py` reached within the budget.
-- During research, both are val loss. For the final score, `test.py` measures both on the test split, with the best `train.py` picked by val loss.
+- During research, both are val loss. For the final score, both are measured on the test split, with the best `train.py` picked by val loss.
 
 ## Evaluation
 
-All setups use the same dataset and budget, and are scored on the same test split. We track four metrics per generation:
+Both setups use the same dataset and budget, and are scored on the same test split. We track three metrics per generation:
 
-- **Quality:** test gain of that generation's best `train.py`.
-- **Waste:** runs that repeat a change that already failed earlier in the same research run. `openai/gpt-oss-120b` checks each change against the full run log, with the same rule in every setup.
-- **Memory size:** tokens of what researchers read. Curated memory should stay flat while the raw log grows.
-- **Cost:** prompt, cached and output tokens, dollars, and time-to-first-token per agent (calls are streamed to measure it; see [Why Crusoe MemoryAlloy](#why-crusoe-memoryalloy)).
+- **Quality:** val gain of that generation's best `train.py`. Test gain is measured once, at the end (fitness).
+- **Memory size:** tokens of what researchers read. Curated memory should stay under the cap.
+- **Tokens:** prompt, cached and output tokens per agent, from each response's `usage`. Cached tokens show the [MemoryAlloy](#why-crusoe-memoryalloy) reuse.
 
-Expected size: about 170 sandbox runs and about 2 hours per research run, or about 1,500 runs for all 3 datasets × 4 setups. Run setups in parallel.
+At the end, the orchestrator prints a results table from the files in `data/`: one row per research run with setup, fitness, best val loss per generation, memory tokens and tokens used.
+
+Expected size: about 150 sandbox runs and under 2 hours per research run, so about 300 runs for both setups. Run them in parallel.
 
 ## Storage
 
-| Postgres table | Holds |
-|---|---|
-| `research_runs` | Dataset, setup, config, status, `L0`, noise threshold, fitness |
-| `generations` | Index, start and end best val loss, best version, test gain, memory tokens |
-| `agent_sessions` | Role, focus, model, report, tokens, cost |
-| `experiments` | Seed, status, val loss, runtime, note, output tail, waste flag, code key |
-| `memory_entries` | The entry fields above, plus an active flag |
-| `memory_events` | Every upsert and remove, with the reason |
-| `memory_snapshots` | Rendered memory and token count per generation |
+No database. Everything is a file under `data/`, read and written with `app/store.py`, and **committed to git**. JSONL files are append-only, except `memory.jsonl`.
 
-No bucket and no AWS: every file stays on local disk under `data/` (git-ignored). Datasets are in `data/<name>/`. Each research run writes `data/runs/<timestamp>-<name>/<setup>/`: `experiments.jsonl` (with each run's `train.py` code), `agents.jsonl` (reports and transcripts), `generations.jsonl`, `memory_snapshots.jsonl` and `result.json`.
+```
+data/
+  churn/                       dataset splits from prepare_data.py; copied into each sandbox
+  research_runs.jsonl          one line per finished research run: dataset, setup, config, L0, noise threshold, fitness
+  research_runs/<run_id>/
+    generations.jsonl          one line per generation: index, start and end best val loss, best version, memory tokens
+    experiments.jsonl          one line per sandbox run: agent, seed, status, val loss, runtime, note, output tail, train.py code
+    agents.jsonl               one line per agent session: role, focus, model, report, transcript, tokens
+    memory.jsonl               current memory, one entry per line; rewritten on every change
+    best_train.py              the current best train.py
+  logs/<setup>.log             console output of the latest run of each setup
+```
 
-The old prompt-grading tables (`datasets`, `runs`, `run_results`) and code (`evaluator.py`, the LLM judge) are removed in the same migration.
+### Git trail
+
+The orchestrator commits the run's files after every memory change (each curator add, edit or remove, each new best, each entry dropped for the cap) and at the start and end of every generation. Messages start with `chore(brain):` and end with the run ID. To read the trail:
+
+```bash
+git log --oneline --grep 'chore(brain)'                           # every step of every run
+git log -p -- data/research_runs/<run_id>/memory.jsonl            # how the memory changed
+git log -p -- data/research_runs/<run_id>/best_train.py           # how the best train.py changed
+```
+
+Pass `--no-commit` to the orchestrator to turn this off.
 
 ## Code layout
 
@@ -279,32 +267,19 @@ The old prompt-grading tables (`datasets`, `runs`, `run_results`) and code (`eva
 app/
   orchestrator.py        # CLI: uv run python -m app.orchestrator --dataset churn --setup shared_brain
   loop.py                # generation loop, ranking, best tracking
-  agents/                # researcher.py, curator.py, prompts.py, tools.py
+  agents/                # base.py (tool loop), researcher.py, curator.py, prompts.py, tools.py
   memory.py              # entries, rendering, cap, staleness
   scoring.py             # losses, noise threshold, gain, fitness
-  services/              # inference.py, sandbox.py, storage.py, search.py
-  api/routes/            # research.py, dashboard.py, health.py, playground.py
-sandbox/                 # harness.py, test.py (locked, copied into the sandbox)
-baselines/<dataset>/train.py
+  lab.py                 # one research run's state: run log, best, memory, git checkpoints
+  data.py                # loads a prepared dataset, builds the files each sandbox gets
+  gitlog.py              # commits run files (the git trail)
+  store.py               # JSONL helpers: append, read, rewrite
+  services/              # inference.py, sandbox.py
+  api/routes/            # health.py, playground.py (setup checks only)
+sandbox/                 # harness.py (locked, copied into the sandbox)
+baselines/churn/train.py
 scripts/prepare_data.py
 ```
-
-## API and dashboard
-
-The backend now records live research events and serves SSE plus paced replay.
-See [Research telemetry API](docs/research-telemetry.md) for endpoints, event types,
-reconnect/seek semantics, and frontend integration. The dashboard UI is separate.
-
-Research telemetry reads the CLI's files under `DATA_DIR/runs/`; the API is read-only
-for research runs. The older prompt-grading endpoints still use Postgres.
-
-| Endpoint | Returns |
-|---|---|
-| `GET /` | Dashboard: test gain per generation for each setup, memory size, cost (one HTML page, Chart.js from a CDN) |
-| `GET /research-runs` | All research runs |
-| `GET /research-runs/{id}` | Generations and metrics |
-| `GET /research-runs/{id}/memory?generation=n` | Memory snapshot |
-| `GET /health`, `GET /playground/models` | Unchanged |
 
 ## Settings
 
@@ -312,10 +287,8 @@ New settings go in `app/config.py` and `.env.example`:
 
 | Setting | Default |
 |---|---|
-| `YDC_API_KEY` | — |
 | `RESEARCHER_MODEL` | `nvidia/NVIDIA-Nemotron-3-Super-120B-A12B` |
-| `CURATOR_MODEL` | `deepseek-ai/DeepSeek-V4-Pro` |
-| `CRUSOE_JUDGE_MODEL` (exists, used for the waste check) | `openai/gpt-oss-120b` |
+| `CURATOR_MODEL` | `nvidia/NVIDIA-Nemotron-3.5-Super-VL` |
 | `SANDBOX_TIMEOUT_SECONDS` (exists) | `120` |
 | `SANDBOX_CPU` | `2` |
 | `SANDBOX_MEMORY_MB` | `4096` |
@@ -328,64 +301,58 @@ Budget numbers live in a `ResearchConfig` model with the defaults above, and can
 2. One researcher, one generation.
 3. 4 researchers, ranking, best tracking: the No memory setup works.
 4. Curator and memory: the Shared Brain setup works.
-5. Raw log and One-shot setups.
-6. `test.py`, per-generation test scores, metrics.
-7. API and dashboard.
-8. Superconductivity, then M5.
+5. Final test scoring and the results table.
 
 ## Done when
 
 - `uv run python -m app.orchestrator --dataset churn --setup shared_brain` finishes 5 generations and saves fitness.
-- All 4 setups run on churn and show on the dashboard.
-- Tests (no network) cover: val and test labels never reach the research sandbox, run limits, memory cap and dropping order, staleness, ranking with ties, equal total runs across setups, scoring math, raw log trimming.
+- Both setups run on churn and the results table shows their fitness.
+- Tests (no network) cover: val and test labels never reach the research sandbox, run limits, memory cap and dropping order, staleness, ranking with ties, equal total runs across setups, scoring math.
 - `uv run ruff check . && uv run ruff format . && uv run pytest` passes.
 
 ## Out of scope
 
-GPUs, fine-tuning, more than one dataset per research run, agents editing anything but `train.py`, repeating whole research runs (add only if time allows).
+GPUs, fine-tuning, other datasets (superconductivity, Walmart M5), more setups (One-shot, Raw log), web search for researchers, a dashboard, the waste metric, cost in dollars and time-to-first-token, agents editing anything but `train.py`, repeating whole research runs (add only if time allows).
 
 ## Models (Crusoe Managed Inference)
 
 | Role | Model |
 |---|---|
 | Researcher | `nvidia/NVIDIA-Nemotron-3-Super-120B-A12B` |
-| Curator | `deepseek-ai/DeepSeek-V4-Pro` |
-| Waste checker | `openai/gpt-oss-120b` |
+| Curator | `nvidia/NVIDIA-Nemotron-3.5-Super-VL` |
 
-Add a payment method to the Crusoe project: it raises the limit from 30 to 600 requests per minute per model.
+Add a payment method to the Crusoe project: it raises the limit from 30 to 600 requests per minute per model. Without it, runs still finish: rate-limited calls wait and retry for up to 15 minutes.
 
 ## Tech stack
 
 | Layer | Tool |
 | --- | --- |
-| API | [FastAPI](https://fastapi.tiangolo.com) (Python 3.12+, uv) |
-| Database | [Neon Postgres](https://neon.com/docs) via SQLAlchemy async + asyncpg, Alembic migrations |
-| File storage | Local files under `data/` (no object storage) |
+| Setup checks | [FastAPI](https://fastapi.tiangolo.com) (Python 3.12+, uv) |
+| Storage | JSONL files in `data/` (no database) |
 | LLM inference | [Crusoe Intelligence Foundry](https://console.crusoecloud.com/foundry) (OpenAI-compatible API) |
 | Code sandboxes | [Modal Sandboxes](https://modal.com/docs/guide/sandboxes) |
-| Web search | [You.com Search API](https://you.com/docs/get-started/quickstart) |
 
 ## Setup
 
-```bash
-scripts/setup.sh                    # installs tooling, signs in to Modal/Neon/Crusoe, generates a verified .env
-uv run python scripts/check_env.py  # re-verify .env anytime (--skip-sandbox for a fast check)
-uv run fastapi dev app/main.py
-```
-
-Requires Node.js (for the Neon CLI) and access to the team Neon project `patient-art-99467040` (ask the owner to invite your Neon account).
-
-## Running the experiments
-
-The current build is the lean churn version: results are files under `data/runs/<timestamp>-churn/` (git-ignored) instead of Postgres and the bucket, and there is no waste checker or dashboard yet. It needs only `CRUSOE_API_KEY` and a Modal token in `.env` (`YDC_API_KEY` turns on `web_search`).
+You need [uv](https://docs.astral.sh/uv/), a Crusoe API key and a Modal token.
 
 ```bash
-uv run python scripts/prepare_data.py churn                     # download + split into data/churn/
-uv run python scripts/preflight.py                              # check Crusoe, You.com and Modal keys
-uv run python -m app.orchestrator --dataset churn --setup all   # 4 setups in parallel, shared baseline
-uv run python -m app.report data/runs/<run>                     # rebuild report.html (works mid-run)
+uv sync
+cp .env.example .env          # then paste the keys below into .env
+uv run python scripts/prepare_data.py churn                          # already committed in data/churn
+uv run python -m app.orchestrator --dataset churn --setup shared_brain
+uv run python -m app.orchestrator --dataset churn --setup no_memory  # in a second terminal
+uv run python -m app.orchestrator --report                           # results table
 ```
 
-`--generations`, `--researchers` and `--max-turns` override the budget for a quick smoke run. With `--setup all`, the setups share one baseline measurement, so they have the same `L0` and noise threshold. Crusoe refuses bursts of more than about 1–2 requests a second per model, so requests are spaced evenly (`CRUSOE_MAX_RPM`), and 429s are retried and counted in `rate_limited.json`.
+`--generations`, `--researchers`, `--runs` and `--turns` override the budget, e.g. for a quick check.
+
+- `CRUSOE_API_KEY`: Crusoe Console → Intelligence Foundry → API Keys. Keys can contain `$`, so wrap them in single quotes, never double.
+- `MODAL_TOKEN_ID` / `MODAL_TOKEN_SECRET`: Modal dashboard → Settings → API Tokens. They take priority over any `~/.modal.toml` profile, so sandboxes always run in this project's workspace. Leave them empty to use your active profile instead (`uv run modal token new`).
+
+To check the keys, run `uv run fastapi dev app/main.py` and open http://localhost:8000/docs:
+
+- `GET /playground/models` lists models: the Crusoe key works.
+- `POST /playground/sandbox` with `{"code": "print('ok')"}` prints `ok`: Modal works. The first run builds the image (1–2 min).
 
 Built at the Crusoe x Cerebral Valley Recursive Agents Hackathon, SF, Oct 2026.

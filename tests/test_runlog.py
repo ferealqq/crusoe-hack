@@ -25,11 +25,7 @@ def test_samples_match_contract():
         assert events[0].t == "run.started" and events[-1].t == "run.finished"
 
 
-def test_api_lists_and_serves_sample_runs(monkeypatch):
-    async def no_bucket(prefix=""):
-        raise RuntimeError("no bucket in tests")
-
-    monkeypatch.setattr(store.storage, "list_keys", no_bucket)
+def test_api_lists_and_serves_sample_runs():
     client = TestClient(app)
     runs = {r["run_id"]: r for r in client.get("/api/runs").json()}
     assert runs["sample-shared-brain"]["status"] == "completed"
@@ -42,11 +38,6 @@ def test_api_lists_and_serves_sample_runs(monkeypatch):
 
 def test_run_logger_writes_and_streams(tmp_path, monkeypatch):
     monkeypatch.setattr(store, "LOCAL_DIR", tmp_path)
-
-    async def no_upload(*a, **k):
-        raise RuntimeError("no bucket in tests")
-
-    monkeypatch.setattr("app.runlog.logger.storage.put_bytes", no_upload)
     with RunLogger.start("t1", setup="shared_brain", config=CONFIG, baseline_val_loss=2.0) as rl:
         rl.emit(GenStarted(gen=1, start_best_val_loss=2.0))
 

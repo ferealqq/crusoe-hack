@@ -2,27 +2,20 @@
 
 - `app/runlog/samples/*.jsonl`: recorded runs committed to the repo (always available for demos)
 - `var/runs/*.jsonl`: runs written locally by RunLogger (live while being written)
-- `brain-runs/*.jsonl` in the Neon bucket: finished runs uploaded by RunLogger
 """
 
 import json
-import logging
 from dataclasses import dataclass
 from pathlib import Path
 
-from app.services import storage
-
-log = logging.getLogger(__name__)
-
 SAMPLES_DIR = Path(__file__).parent / "samples"
 LOCAL_DIR = Path("var/runs")
-BUCKET_PREFIX = "brain-runs/"
 
 
 @dataclass
 class RunSummary:
     run_id: str
-    source: str  # sample | local | bucket
+    source: str  # sample | local
     setup: str | None
     status: str  # live | completed | failed
     best_val_loss: float | None
@@ -63,25 +56,14 @@ def _local_files() -> dict[str, tuple[str, Path]]:
 
 
 async def list_runs() -> list[RunSummary]:
-    runs = {
-        run_id: summarize(run_id, source, path.read_text().splitlines())
+    runs = [
+        summarize(run_id, source, path.read_text().splitlines())
         for run_id, (source, path) in _local_files().items()
-    }
-    try:
-        for key in await storage.list_keys(BUCKET_PREFIX):
-            run_id = Path(key).stem
-            if run_id not in runs:
-                text = (await storage.get_bytes(key)).decode()
-                runs[run_id] = summarize(run_id, "bucket", text.splitlines())
-    except Exception as e:  # bucket is optional for the demo (e.g. no .env yet)
-        log.info("skipping bucket runs: %s", e)
-    return sorted(runs.values(), key=lambda r: r.run_id)
+    ]
+    return sorted(runs, key=lambda r: r.run_id)
 
 
 async def read_lines(run_id: str) -> list[str] | None:
     if found := _local_files().get(run_id):
         return found[1].read_text().splitlines()
-    try:
-        return (await storage.get_bytes(f"{BUCKET_PREFIX}{run_id}.jsonl")).decode().splitlines()
-    except Exception:
-        return None
+    return None

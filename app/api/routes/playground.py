@@ -1,9 +1,8 @@
-"""Direct access to the underlying providers, handy for debugging."""
+"""Setup checks: does the Crusoe key work, and can Modal run code?"""
 
 from fastapi import APIRouter
 
-from app.config import get_settings
-from app.schemas import ChatRequest, ChatResponse, SandboxRequest, SandboxResult
+from app.schemas import SandboxRequest, SandboxResult
 from app.services import inference, sandbox
 
 router = APIRouter(prefix="/playground", tags=["playground"])
@@ -12,15 +11,6 @@ router = APIRouter(prefix="/playground", tags=["playground"])
 @router.get("/models")
 async def models() -> list[str]:
     return await inference.list_models()
-
-
-@router.post("/chat", response_model=ChatResponse)
-async def chat(body: ChatRequest):
-    model = body.model or get_settings().crusoe_default_model
-    content, latency_ms = await inference.chat(
-        body.messages, model=model, temperature=body.temperature, max_tokens=body.max_tokens
-    )
-    return ChatResponse(model=model, content=content, latency_ms=latency_ms)
 
 
 @router.post("/sandbox", response_model=SandboxResult)

@@ -5,22 +5,19 @@ from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
-from app.api.routes import brain, datasets, health, playground, research, runs
+from app.api.routes import brain, health, playground
 
 logging.basicConfig(level=logging.INFO)
 
 app = FastAPI(
     title="crusoe-hack",
-    description="LLM improvement loop: Crusoe inference, Modal sandboxes, Neon Postgres + storage",
+    description="Shared Brain: setup checks for Crusoe and Modal",
     version="0.1.0",
 )
 
 app.include_router(health.router)
-app.include_router(datasets.router)
-app.include_router(runs.router)
 app.include_router(playground.router)
 app.include_router(brain.router)
-app.include_router(research.router)
 
 # Demo frontend: serve the built web/ app (cd web && npm run build) with an SPA fallback.
 WEB_DIST = Path(__file__).resolve().parent.parent / "web" / "dist"

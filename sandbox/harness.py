@@ -1,54 +1,33 @@
-"""Locked research harness. Runs inside the sandbox; agents can't edit it.
+"""Locked. Runs inside the sandbox: fit train.py on train.parquet, predict X.parquet.
 
-    python /harness/harness.py --seed 0
+    python harness.py --target exited --seed 0
 
-Fits /work/train.py on /data/train.parquet, predicts /data/val_X.parquet and saves the
-predictions to /out/preds.npy. The sandbox never has the val labels: the orchestrator
-scores the predictions outside it.
+Writes predictions to preds.json. Never sees labels for X.parquet: the orchestrator scores
+the predictions outside the sandbox.
 """
 
 import argparse
-import importlib.util
 import json
-import os
-import random
-import time
+import math
 
-import numpy as np
 import pandas as pd
+import train  # the agent's train.py, next to this file
 
-# Tests point this at a temp dir; in the sandbox everything lives under /.
-ROOT = os.environ.get("HARNESS_ROOT", "/")
+parser = argparse.ArgumentParser()
+parser.add_argument("--target", required=True)
+parser.add_argument("--seed", type=int, required=True)
+args = parser.parse_args()
 
+train_df = pd.read_parquet("train.parquet")
+X = pd.read_parquet("X.parquet")
 
-def load_user_module(path: str):
-    spec = importlib.util.spec_from_file_location("train", path)
-    assert spec and spec.loader
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+model = train.fit(train_df, args.target, args.seed)
+preds = [float(p) for p in train.predict(model, X)]
 
+if len(preds) != len(X):
+    raise SystemExit(f"predict returned {len(preds)} values for {len(X)} rows")
+if not all(math.isfinite(p) and 0.0 <= p <= 1.0 for p in preds):
+    raise SystemExit("predict must return probabilities between 0 and 1")
 
-def main() -> None:
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--seed", type=int, required=True)
-    args = ap.parse_args()
-
-    meta = json.load(open(os.path.join(ROOT, "data/meta.json")))
-    train = pd.read_parquet(os.path.join(ROOT, "data/train.parquet"))
-    X = pd.read_parquet(os.path.join(ROOT, "data/val_X.parquet"))
-
-    random.seed(args.seed)
-    np.random.seed(args.seed)
-    user = load_user_module(os.path.join(ROOT, "work/train.py"))
-    started = time.perf_counter()
-    model = user.fit(train, meta["target"], args.seed)
-    fitted = time.perf_counter()
-    preds = np.asarray(user.predict(model, X), dtype=np.float64).reshape(-1)
-    os.makedirs(os.path.join(ROOT, "out"), exist_ok=True)
-    np.save(os.path.join(ROOT, "out/preds.npy"), preds)
-    print(f"[harness] fit {fitted - started:.1f}s, predict {time.perf_counter() - fitted:.1f}s")
-
-
-if __name__ == "__main__":
-    main()
+with open("preds.json", "w") as f:
+    json.dump(preds, f)
