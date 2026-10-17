@@ -84,7 +84,7 @@ code { font-family: var(--mono); font-size: .85em; }
 <header style="display:grid;gap:.6rem">
   <div class="eyebrow">Shared Brain &middot; churn &middot; run 20261017-223035</div>
   <h1>Does curated memory make research agents better?</h1>
-  <p class="lede">Shared Brain improved test log loss by 20.14% over the starting model, 0.18 points ahead of No memory (19.96%) on the same budget.</p>
+  <p class="lede">Shared Brain improved test log loss by 20.95% over the starting model, 0.99 points ahead of No memory (19.96%) on the same budget.</p>
   <div class="meta"><span>5 generations</span>
   <span>4 researchers each</span>
   <span>28 runs per generation</span><span>researcher nvidia/NVIDIA-Nemotron-3-Super-120B-A12B</span>
@@ -97,7 +97,7 @@ code { font-family: var(--mono); font-size: .85em; }
   <div class="tablewrap"><table>
   <thead><tr><th>Setup</th><th>Test gain</th><th>Val gain</th><th>Best</th><th>Gens</th>
   <th>Runs</th><th>Failed</th><th>Prompt tokens</th><th>Cost</th></tr></thead>
-  <tbody><tr class='row-one_shot'><th scope='row'><span class='swatch'></span>One-shot</th><td>+4.10%</td><td>+4.92%</td><td>v1 <span class='dim'>(1 new)</span></td><td>1</td><td>1</td><td>0</td><td>0.00M <span class='dim'>(68% cached)</span></td><td>$0.00</td></tr><tr class='row-no_memory'><th scope='row'><span class='swatch'></span>No memory</th><td>+19.96%</td><td>+21.02%</td><td>v1 <span class='dim'>(1 new)</span></td><td>3</td><td>88</td><td>2</td><td>0.32M <span class='dim'>(69% cached)</span></td><td>$0.25</td></tr><tr class='row-raw_log'><th scope='row'><span class='swatch'></span>Raw log</th><td>+19.96%</td><td>+21.02%</td><td>v1 <span class='dim'>(1 new)</span></td><td>2</td><td>57</td><td>3</td><td>0.28M <span class='dim'>(76% cached)</span></td><td>$0.21</td></tr><tr class='row-shared_brain'><th scope='row'><span class='swatch'></span>Shared Brain</th><td>+20.14%</td><td>+20.82%</td><td>v1 <span class='dim'>(1 new)</span></td><td>2</td><td>55</td><td>4</td><td>0.23M <span class='dim'>(68% cached)</span></td><td>$0.22</td></tr></tbody></table></div>
+  <tbody><tr class='row-one_shot'><th scope='row'><span class='swatch'></span>One-shot</th><td>+4.10%</td><td>+4.92%</td><td>v1 <span class='dim'>(1 new)</span></td><td>1</td><td>1</td><td>0</td><td>0.00M <span class='dim'>(68% cached)</span></td><td>$0.00</td></tr><tr class='row-no_memory'><th scope='row'><span class='swatch'></span>No memory</th><td>+19.96%</td><td>+21.02%</td><td>v1 <span class='dim'>(1 new)</span></td><td>5</td><td>140</td><td>5</td><td>0.53M <span class='dim'>(69% cached)</span></td><td>$0.43</td></tr><tr class='row-raw_log'><th scope='row'><span class='swatch'></span>Raw log</th><td>+19.96%</td><td>+21.02%</td><td>v1 <span class='dim'>(1 new)</span></td><td>5</td><td>131</td><td>8</td><td>1.21M <span class='dim'>(84% cached)</span></td><td>$0.59</td></tr><tr class='row-shared_brain'><th scope='row'><span class='swatch'></span>Shared Brain</th><td>+20.95%</td><td>+22.09%</td><td>v2 <span class='dim'>(2 new)</span></td><td>5</td><td>134</td><td>6</td><td>0.69M <span class='dim'>(71% cached)</span></td><td>$0.62</td></tr></tbody></table></div>
 </section>
 <section>
   <h2>How it evolved</h2>
@@ -115,7 +115,7 @@ code { font-family: var(--mono); font-size: .85em; }
 <section>
   <h2>Generation by generation</h2>
   <div class="tabs" role="tablist"><button type='button' role='tab' data-setup='one_shot' aria-selected='false'>One-shot</button><button type='button' role='tab' data-setup='no_memory' aria-selected='false'>No memory</button><button type='button' role='tab' data-setup='raw_log' aria-selected='false'>Raw log</button><button type='button' role='tab' data-setup='shared_brain' aria-selected='true'>Shared Brain</button></div>
-  <div class='evo' id='evo-one_shot' hidden><article class='gen'><header><h4>Generation 1</h4><div><span class='pill good'>new best v1</span> LightGBM with default-ish params</div><div class='nums'>val 0.37532 &middot; test gain +4.10% &middot; 1 runs, 0 failed &middot; read 0 tokens &middot; 0.9 min</div></header><div class='tablewrap'><table class='small'><thead><tr><th>Focus</th><th>Rank</th><th>Best val</th><th>Change</th></tr></thead><tbody><tr><td>any</td><td>1</td><td>0.37532 <span class='dim'>e1</span></td><td>LightGBM with default-ish params</td></tr></tbody></table></div></article></div><div class='evo' id='evo-no_memory' hidden><article class='gen'><header><h4>Generation 1</h4><div><span class='pill good'>new best v1</span> CatBoost with some tuning</div><div class='nums'>val 0.31176 &middot; test gain +19.96% &middot; 28 runs, 2 failed &middot; read 0 tokens &middot; 9.8 min</div></header><div class='tablewrap'><table class='small'><thead><tr><th>Focus</th><th>Rank</th><th>Best val</th><th>Change</th></tr></thead><tbody><tr><td>model type</td><td>1</td><td>0.31176 <span class='dim'>e8</span></td><td>CatBoost with some tuning</td></tr><tr><td>features</td><td>1</td><td>0.31292 <span class='dim'>e17</span></td><td>CatBoost with feature engineering</td></tr><tr><td>regularization</td><td>3</td><td>0.31581 <span class='dim'>e28</span></td><td>LightGBM with lower learning rate, more estimators, L1/L2, early stopping</td></tr><tr><td>tuning</td><td>3</td><td>0.31626 <span class='dim'>e19</span></td><td>LightGBM default parameters</td></tr></tbody></table></div></article><article class='gen'><header><h4>Generation 2</h4><div><span class='pill'>no new best</span></div><div class='nums'>val 0.31176 &middot; test gain +19.96% &middot; 28 runs, 0 failed &middot; read 0 tokens &middot; 7.4 min</div></header><div class='tablewrap'><table class='small'><thead><tr><th>Focus</th><th>Rank</th><th>Best val</th><th>Change</th></tr></thead><tbody><tr><td>ensembling</td><td>1</td><td>0.31143 <span class='dim'>e48</span></td><td>Weighted average of CatBoost and LightGBM with weight tuned on inner validation</td></tr><tr><td>tuning</td><td>1</td><td>0.31150 <span class='dim'>e47</span></td><td>Run 6: early stopping with holdout, then refit on full data</td></tr><tr><td>features</td><td>1</td><td>0.31256 <span class='dim'>e45</span></td><td>Drop surname only</td></tr><tr><td>model type</td><td>1</td><td>0.31317 <span class='dim'>e50</span></td><td>CatBoost with depth=8, same other params.</td></tr></tbody></table></div></article><article class='gen'><header><h4>Generation 3</h4><div><span class='pill'>no new best</span></div><div class='nums'>val 0.31176 &middot; test gain +19.96% &middot; 28 runs, 0 failed &middot; read 0 tokens &middot; 5.2 min</div></header><div class='tablewrap'><table class='small'><thead><tr><th>Focus</th><th>Rank</th><th>Best val</th><th>Change</th></tr></thead><tbody><tr><td>ensembling</td><td>1</td><td>0.31163 <span class='dim'>e66</span></td><td>Blend CatBoost, LightGBM, XGBoost (each with seed)</td></tr><tr><td>features</td><td>1</td><td>0.31176 <span class='dim'>e79</span></td><td>Baseline verification</td></tr><tr><td>model type</td><td>1</td><td>0.31176 <span class='dim'>e57</span></td><td>Baseline CatBoost with seed 0</td></tr><tr><td>regularization</td><td>1</td><td>0.31261 <span class='dim'>e60</span></td><td>Idea 2: Increase l2_leaf_reg to 10 (more regularization), no early stopping.</td></tr></tbody></table></div></article></div><div class='evo' id='evo-raw_log' hidden><article class='gen'><header><h4>Generation 1</h4><div><span class='pill good'>new best v1</span> CatBoost with 200 iterations, lr 0.05, depth 6</div><div class='nums'>val 0.31176 &middot; test gain +19.96% &middot; 28 runs, 3 failed &middot; read 0 tokens &middot; 12.5 min</div></header><div class='tablewrap'><table class='small'><thead><tr><th>Focus</th><th>Rank</th><th>Best val</th><th>Change</th></tr></thead><tbody><tr><td>model type</td><td>1</td><td>0.31176 <span class='dim'>e10</span></td><td>CatBoost with 200 iterations, lr 0.05, depth 6</td></tr><tr><td>features</td><td>1</td><td>0.31209 <span class='dim'>e21</span></td><td>CatBoost with more iterations, lower LR, deeper trees, higher reg</td></tr><tr><td>tuning</td><td>1</td><td>0.31224 <span class='dim'>e20</span></td><td>LightGBM lr=0.03, n_estimators=300, num_leaves=31</td></tr><tr><td>regularization</td><td>4</td><td>0.31596 <span class='dim'>e22</span></td><td>v4b: LightGBM with early stopping via callbacks</td></tr></tbody></table></div><details><summary>Memory after generation 1 (1929 tokens)</summary><pre>Generation 1, researcher-1 (features):
+  <div class='evo' id='evo-one_shot' hidden><article class='gen'><header><h4>Generation 1</h4><div><span class='pill good'>new best v1</span> LightGBM with default-ish params</div><div class='nums'>val 0.37532 &middot; test gain +4.10% &middot; 1 runs, 0 failed &middot; read 0 tokens &middot; 0.9 min</div></header><div class='tablewrap'><table class='small'><thead><tr><th>Focus</th><th>Rank</th><th>Best val</th><th>Change</th></tr></thead><tbody><tr><td>any</td><td>1</td><td>0.37532 <span class='dim'>e1</span></td><td>LightGBM with default-ish params</td></tr></tbody></table></div></article></div><div class='evo' id='evo-no_memory' hidden><article class='gen'><header><h4>Generation 1</h4><div><span class='pill good'>new best v1</span> CatBoost with some tuning</div><div class='nums'>val 0.31176 &middot; test gain +19.96% &middot; 28 runs, 2 failed &middot; read 0 tokens &middot; 9.8 min</div></header><div class='tablewrap'><table class='small'><thead><tr><th>Focus</th><th>Rank</th><th>Best val</th><th>Change</th></tr></thead><tbody><tr><td>model type</td><td>1</td><td>0.31176 <span class='dim'>e8</span></td><td>CatBoost with some tuning</td></tr><tr><td>features</td><td>1</td><td>0.31292 <span class='dim'>e17</span></td><td>CatBoost with feature engineering</td></tr><tr><td>regularization</td><td>3</td><td>0.31581 <span class='dim'>e28</span></td><td>LightGBM with lower learning rate, more estimators, L1/L2, early stopping</td></tr><tr><td>tuning</td><td>3</td><td>0.31626 <span class='dim'>e19</span></td><td>LightGBM default parameters</td></tr></tbody></table></div></article><article class='gen'><header><h4>Generation 2</h4><div><span class='pill'>no new best</span></div><div class='nums'>val 0.31176 &middot; test gain +19.96% &middot; 28 runs, 0 failed &middot; read 0 tokens &middot; 7.4 min</div></header><div class='tablewrap'><table class='small'><thead><tr><th>Focus</th><th>Rank</th><th>Best val</th><th>Change</th></tr></thead><tbody><tr><td>ensembling</td><td>1</td><td>0.31143 <span class='dim'>e48</span></td><td>Weighted average of CatBoost and LightGBM with weight tuned on inner validation</td></tr><tr><td>tuning</td><td>1</td><td>0.31150 <span class='dim'>e47</span></td><td>Run 6: early stopping with holdout, then refit on full data</td></tr><tr><td>features</td><td>1</td><td>0.31256 <span class='dim'>e45</span></td><td>Drop surname only</td></tr><tr><td>model type</td><td>1</td><td>0.31317 <span class='dim'>e50</span></td><td>CatBoost with depth=8, same other params.</td></tr></tbody></table></div></article><article class='gen'><header><h4>Generation 3</h4><div><span class='pill'>no new best</span></div><div class='nums'>val 0.31176 &middot; test gain +19.96% &middot; 28 runs, 0 failed &middot; read 0 tokens &middot; 5.2 min</div></header><div class='tablewrap'><table class='small'><thead><tr><th>Focus</th><th>Rank</th><th>Best val</th><th>Change</th></tr></thead><tbody><tr><td>ensembling</td><td>1</td><td>0.31163 <span class='dim'>e66</span></td><td>Blend CatBoost, LightGBM, XGBoost (each with seed)</td></tr><tr><td>features</td><td>1</td><td>0.31176 <span class='dim'>e79</span></td><td>Baseline verification</td></tr><tr><td>model type</td><td>1</td><td>0.31176 <span class='dim'>e57</span></td><td>Baseline CatBoost with seed 0</td></tr><tr><td>regularization</td><td>1</td><td>0.31261 <span class='dim'>e60</span></td><td>Idea 2: Increase l2_leaf_reg to 10 (more regularization), no early stopping.</td></tr></tbody></table></div></article><article class='gen'><header><h4>Generation 4</h4><div><span class='pill'>no new best</span></div><div class='nums'>val 0.31176 &middot; test gain +19.96% &middot; 28 runs, 3 failed &middot; read 0 tokens &middot; 6.7 min</div></header><div class='tablewrap'><table class='small'><thead><tr><th>Focus</th><th>Rank</th><th>Best val</th><th>Change</th></tr></thead><tbody><tr><td>features</td><td>1</td><td>0.31038 <span class='dim'>e88</span></td><td>Combine one-hot geography/gender into single categorical features and specify cat_features</td></tr><tr><td>ensembling</td><td>1</td><td>0.31103 <span class='dim'>e90</span></td><td>Blend of CatBoost and LightGBM</td></tr><tr><td>tuning</td><td>1</td><td>0.31176 <span class='dim'>e96</span></td><td>Run 5: original model (baseline)</td></tr><tr><td>regularization</td><td>2</td><td>0.31247 <span class='dim'>e111</span></td><td>CatBoost lr=0.01, iterations=1000, early stopping</td></tr></tbody></table></div></article><article class='gen'><header><h4>Generation 5</h4><div><span class='pill'>no new best</span></div><div class='nums'>val 0.31176 &middot; test gain +19.96% &middot; 28 runs, 0 failed &middot; read 0 tokens &middot; 8.9 min</div></header><div class='tablewrap'><table class='small'><thead><tr><th>Focus</th><th>Rank</th><th>Best val</th><th>Change</th></tr></thead><tbody><tr><td>regularization</td><td>1</td><td>0.31150 <span class='dim'>e122</span></td><td>Early stopping with validation split, then refit on full data</td></tr><tr><td>tuning</td><td>1</td><td>0.31167 <span class='dim'>e116</span></td><td>depth=8, l2=5</td></tr><tr><td>model type</td><td>1</td><td>0.31176 <span class='dim'>e113</span></td><td>Baseline CatBoost from prompt</td></tr><tr><td>ensembling</td><td>1</td><td>0.31176 <span class='dim'>e124</span></td><td>Single CatBoost same as baseline to verify</td></tr></tbody></table></div></article></div><div class='evo' id='evo-raw_log' hidden><article class='gen'><header><h4>Generation 1</h4><div><span class='pill good'>new best v1</span> CatBoost with 200 iterations, lr 0.05, depth 6</div><div class='nums'>val 0.31176 &middot; test gain +19.96% &middot; 28 runs, 3 failed &middot; read 0 tokens &middot; 12.5 min</div></header><div class='tablewrap'><table class='small'><thead><tr><th>Focus</th><th>Rank</th><th>Best val</th><th>Change</th></tr></thead><tbody><tr><td>model type</td><td>1</td><td>0.31176 <span class='dim'>e10</span></td><td>CatBoost with 200 iterations, lr 0.05, depth 6</td></tr><tr><td>features</td><td>1</td><td>0.31209 <span class='dim'>e21</span></td><td>CatBoost with more iterations, lower LR, deeper trees, higher reg</td></tr><tr><td>tuning</td><td>1</td><td>0.31224 <span class='dim'>e20</span></td><td>LightGBM lr=0.03, n_estimators=300, num_leaves=31</td></tr><tr><td>regularization</td><td>4</td><td>0.31596 <span class='dim'>e22</span></td><td>v4b: LightGBM with early stopping via callbacks</td></tr></tbody></table></div><details><summary>Memory after generation 1 (1929 tokens)</summary><pre>Generation 1, researcher-1 (features):
 
 
 Tried: LightGBM default, LightGBM with feature engineering, CatBoost with feature engineering, XGBoost with feature engineering, tuned CatBoost with more iterations and depth, tuned LightGBM similar to tuned CatBoost.
@@ -488,7 +488,1175 @@ Tried:
 
 Best run: e46
 Learned: The baseline CatBoost configuration (200 iterations, learning rate 0.05, depth 6) achieved the lowest validation log loss (0.31176) among all tested hyperparameter settings. Changes to iteration count, learning rate, depth, or adding L2 regularization did not improve performance, indicating the baseline is already well-tuned for this dataset.
-Next: With additional runs, consider feature engineering (interactions, ratios, polynomials) to boost performance, or explore other gradient boosting libraries (LightGBM, XGBoost) with similar tuning. Stacking or blending models could also be investigated.</pre></details></article></div><div class='evo' id='evo-shared_brain' ><article class='gen'><header><h4>Generation 1</h4><div><span class='pill good'>new best v1</span> CatBoost with 1000 iterations, learning_rate 0.01, depth 8, l2_leaf_reg 3, subsample 0.9, rsm 0.9</div><div class='nums'>val 0.31256 &middot; test gain +20.14% &middot; 27 runs, 2 failed &middot; read 0 tokens &middot; 10.0 min</div></header><div class='tablewrap'><table class='small'><thead><tr><th>Focus</th><th>Rank</th><th>Best val</th><th>Change</th></tr></thead><tbody><tr><td>model type</td><td>1</td><td>0.31238 <span class='dim'>e20</span></td><td>CatBoost with 1000 iterations, learning_rate 0.01, depth 8, l2_leaf_reg 3, subsample 0.9, rsm 0.9</td></tr><tr><td>regularization</td><td>1</td><td>0.31385 <span class='dim'>e15</span></td><td>LightGBM with early stopping using inner validation, then refit on full data</td></tr><tr><td>features</td><td>3</td><td>0.31599 <span class='dim'>e6</span></td><td>LightGBM with log transforms and interactions</td></tr><tr><td>tuning</td><td>4</td><td>0.32633 <span class='dim'>e19</span></td><td>Run 4: RF, n_estimators=300, max_depth=20, min_samples_leaf=5</td></tr></tbody></table></div><h5>Memory changes</h5><ul class='events'><li><b>upsert</b> <code>m1</code> works: CatBoost (1000 iters, lr 0.01, depth 8, l2 3, subsample/rsm 0.9) gets val log_loss ~0.3126, beating LR 0.3947 and RF/XGBoost. Re-checked: beats best. <span class='dim'>(add)</span></li><li><b>upsert</b> <code>m2</code> works: Boosted trees (GBM) outperform LR (0.394) and simple NN (0.319) on churn; LightGBM ~0.314-0.316, RF ~0.326. CatBoost edges them slightly. <span class='dim'>(add)</span></li><li><b>upsert</b> <code>m3</code> failed: class_weight/balanced (LR and RF) does not help churn log_loss; worsens when combined with deep trees + many estimators. <span class='dim'>(add)</span></li><li><b>upsert</b> <code>m4</code> failed: LogisticRegression with any C / no class_weight stays ~0.394-0.395, not competitive. <span class='dim'>(add)</span></li><li><b>upsert</b> <code>m5</code> try_next: In LightGBM early_stopping seemed unsupported in this env (researcher-1 e13/e24 errors); use hold-out set if needed. Unverified. <span class='dim'>(add)</span></li><li><b>upsert</b> <code>m6</code> try_next: CatBoost Bayesian hyperparameter tuning + ensembling (average tree models) may gain further; not yet tried. <span class='dim'>(add)</span></li><li><b>set best</b> <code>best</code> best: v1: val log_loss 0.31256 (mean of seeds 1, 2, 3), from run e20: CatBoost with 1000 iterations, learning_rate 0.01, depth 8, l2_leaf_reg 3, subsample 0.9, rsm 0.9 <span class='dim'>(new best v1, val 0.3126)</span></li></ul><p class='curator'><b>Curator:</b> Re-checked the top researcher&#x27;s best run (e20, CatBoost): it beats the best across seeds 1/2/3 (mean 0.31256, spread ~0.0001), confirming it as a new best.
+Next: With additional runs, consider feature engineering (interactions, ratios, polynomials) to boost performance, or explore other gradient boosting libraries (LightGBM, XGBoost) with similar tuning. Stacking or blending models could also be investigated.</pre></details></article><article class='gen'><header><h4>Generation 3</h4><div><span class='pill'>no new best</span></div><div class='nums'>val 0.31176 &middot; test gain +19.96% &middot; 27 runs, 2 failed &middot; read 4112 tokens &middot; 8.2 min</div></header><div class='tablewrap'><table class='small'><thead><tr><th>Focus</th><th>Rank</th><th>Best val</th><th>Change</th></tr></thead><tbody><tr><td>ensembling</td><td>1</td><td>0.31141 <span class='dim'>e55</span></td><td>Ensemble of two CatBoost models (original + engineered features)</td></tr><tr><td>regularization</td><td>1</td><td>0.31176 <span class='dim'>e52</span></td><td>Baseline from v1</td></tr><tr><td>model type</td><td>1</td><td>0.31176 <span class='dim'>e56</span></td><td>Baseline CatBoost</td></tr><tr><td>features</td><td>1</td><td>0.31209 <span class='dim'>e75</span></td><td>CatBoost tuned with feature engineering (extensive set)</td></tr></tbody></table></div><details><summary>Memory after generation 3 (5288 tokens)</summary><pre>Generation 1, researcher-1 (features):
+
+
+Tried: LightGBM default, LightGBM with feature engineering, CatBoost with feature engineering, XGBoost with feature engineering, tuned CatBoost with more iterations and depth, tuned LightGBM similar to tuned CatBoost.
+Best run: e21
+Learned: Feature engineering (interactions, ratios, squares) combined with gradient boosting (CatBoost, LightGBM, XGBoost) significantly improves over logistic regression. CatBoost with appropriate regularization and learning rate performed best. LightGBM and XGBoost were close but slightly worse. Over-engineering or too deep trees without regularization can lead to overfitting (warnings in LightGBM run).
+Next: If more runs were available, would try stacking or blending of models, further feature engineering like binning, or using embeddings for categorical features (though here they are already one-hot encoded). Also would try different seeds to ensure stability.
+
+Now produce the final solution.
+
+```python
+import numpy as np
+import pandas as pd
+from catboost import CatBoostClassifier
+
+def fit(train: pd.DataFrame, target: str, seed: int) -&gt; object:
+    X = train.drop(columns=[target])
+    y = train[target]
+    
+    # Feature engineering
+    X = X.copy()
+    # Avoid division by zero
+    X[&#x27;balance_per_tenure&#x27;] = X[&#x27;balance&#x27;] / (X[&#x27;tenure&#x27;] + 1)
+    X[&#x27;salary_per_tenure&#x27;] = X[&#x27;estimatedsalary&#x27;] / (X[&#x27;tenure&#x27;] + 1)
+    X[&#x27;balance_per_product&#x27;] = X[&#x27;balance&#x27;] / (X[&#x27;numofproducts&#x27;] + 1)
+    X[&#x27;salary_per_product&#x27;] = X[&#x27;estimatedsalary&#x27;] / (X[&#x27;numofproducts&#x27;] + 1)
+    X[&#x27;credit_score_times_balance&#x27;] = X[&#x27;creditscore&#x27;] * X[&#x27;balance&#x27;]
+    X[&#x27;age_times_credit&#x27;] = X[&#x27;age&#x27;] * X[&#x27;creditscore&#x27;]
+    X[&#x27;tenure_squared&#x27;] = X[&#x27;tenure&#x27;] ** 2
+    X[&#x27;age_squared&#x27;] = X[&#x27;age&#x27;] ** 2
+    X[&#x27;balance_squared&#x27;] = X[&#x27;balance&#x27;] ** 2
+    X[&#x27;estimatedsalary_squared&#x27;] = X[&#x27;estimatedsalary&#x27;] ** 2
+    X[&#x27;balance_times_numproducts&#x27;] = X[&#x27;balance&#x27;] * X[&#x27;numofproducts&#x27;]
+    X[&#x27;salary_times_numproducts&#x27;] = X[&#x27;estimatedsalary&#x27;] * X[&#x27;numofproducts&#x27;]
+    X[&#x27;credit_score_times_age&#x27;] = X[&#x27;creditscore&#x27;] * X[&#x27;age&#x27;]
+    X[&#x27;credit_score_times_tenure&#x27;] = X[&#x27;creditscore&#x27;] * X[&#x27;tenure&#x27;]
+    X[&#x27;age_times_tenure&#x27;] = X[&#x27;age&#x27;] * X[&#x27;tenure&#x27;]
+    X[&#x27;balance_plus_salary&#x27;] = X[&#x27;balance&#x27;] + X[&#x27;estimatedsalary&#x27;]
+    X[&#x27;balance_per_salary&#x27;] = X[&#x27;balance&#x27;] / (X[&#x27;estimatedsalary&#x27;] + 1)
+    X[&#x27;salary_per_balance&#x27;] = X[&#x27;estimatedsalary&#x27;] / (X[&#x27;balance&#x27;] + 1)
+    X[&#x27;tenure_times_numproducts&#x27;] = X[&#x27;tenure&#x27;] * X[&#x27;numofproducts&#x27;]
+    X[&#x27;age_times_numproducts&#x27;] = X[&#x27;age&#x27;] * X[&#x27;numofproducts&#x27;]
+    
+    model = CatBoostClassifier(
+        iterations=500,
+        learning_rate=0.02,
+        depth=8,
+        l2_leaf_reg=5,
+        random_seed=seed,
+        loss_function=&#x27;Logloss&#x27;,
+        verbose=False,
+        thread_count=2
+    )
+    model.fit(X, y)
+    return model
+
+def predict(model: object, X: pd.DataFrame) -&gt; np.ndarray:
+    # Apply same feature engineering to X
+    X = X.copy()
+    X[&#x27;balance_per_tenure&#x27;] = X[&#x27;balance&#x27;] / (X[&#x27;tenure&#x27;] + 1)
+    X[&#x27;salary_per_tenure&#x27;] = X[&#x27;estimatedsalary&#x27;] / (X[&#x27;tenure&#x27;] + 1)
+    X[&#x27;balance_per_product&#x27;] = X[&#x27;balance&#x27;] / (X[&#x27;numofproducts&#x27;] + 1)
+    X[&#x27;salary_per_product&#x27;] = X[&#x27;estimatedsalary&#x27;] / (X[&#x27;numofproducts&#x27;] + 1)
+    X[&#x27;credit_score_times_balance&#x27;] = X[&#x27;creditscore&#x27;] * X[&#x27;balance&#x27;]
+    X[&#x27;age_times_credit&#x27;] = X[&#x27;age&#x27;] * X[&#x27;creditscore&#x27;]
+    X[&#x27;tenure_squared&#x27;] = X[&#x27;tenure&#x27;] ** 2
+    X[&#x27;age_squared&#x27;] = X[&#x27;age&#x27;] ** 2
+    X[&#x27;balance_squared&#x27;] = X[&#x27;balance&#x27;] ** 2
+    X[&#x27;estimatedsalary_squared&#x27;] = X[&#x27;estimatedsalary&#x27;] ** 2
+    X[&#x27;balance_times_numproducts&#x27;] = X[&#x27;balance&#x27;] * X[&#x27;numofproducts&#x27;]
+    X[&#x27;salary_times_numproducts&#x27;] = X[&#x27;estimatedsalary&#x27;] * X[&#x27;numofproducts&#x27;]
+    X[&#x27;credit_score_times_age&#x27;] = X[&#x27;creditscore&#x27;] * X[&#x27;age&#x27;]
+    X[&#x27;credit_score_times_tenure&#x27;] = X[&#x27;creditscore&#x27;] * X[&#x27;tenure&#x27;]
+    X[&#x27;age_times_tenure&#x27;] = X[&#x27;age&#x27;] * X[&#x27;tenure&#x27;]
+    X[&#x27;balance_plus_salary&#x27;] = X[&#x27;balance&#x27;] + X[&#x27;estimatedsalary&#x27;]
+    X[&#x27;balance_per_salary&#x27;] = X[&#x27;balance&#x27;] / (X[&#x27;estimatedsalary&#x27;] + 1)
+    X[&#x27;salary_per_balance&#x27;] = X[&#x27;estimatedsalary&#x27;] / (X[&#x27;balance&#x27;] + 1)
+    X[&#x27;tenure_times_numproducts&#x27;] = X[&#x27;tenure&#x27;] * X[&#x27;numofproducts&#x27;]
+    X[&#x27;age_times_numproducts&#x27;] = X[&#x27;age&#x27;] * X[&#x27;numofproducts&#x27;]
+    return model.predict_proba(X)[:, 1]
+```
+
+---
+
+Generation 1, researcher-2 (model type):
+
+Tried:
+- LightGBM (200 estimators, lr 0.05, class_weight balanced): val_loss 0.3930
+- XGBoost (200 estimators, lr 0.05, max_depth 6, subsample/colsample 0.8, scale_pos_weight): val_loss 0.3888
+- CatBoost (200 iterations, lr 0.05, depth 6): val_loss 0.3118
+- PyTorch MLP (two hidden layers, dropout, early stopping): val_loss 0.3206
+- CatBoost (500 iterations, lr 0.02, depth 8, l2_leaf_reg 3): val_loss 0.3132
+- HistGradientBoostingClassifier (sample weighted): val_loss 0.4033
+- CatBoost (1000 iterations, lr 0.01, depth 7, l2_leaf_reg 5): val_loss 0.3121
+
+Best run: e10
+Learned: CatBoost with moderate depth and learning rate gave the best validation log loss, outperforming other boosted trees, linear models, and neural networks. The dataset appears to respond well to ordered boosting with symmetric trees. Neural nets with early stopping were competitive but required more tuning and time.
+Next: Try more extensive hyperparameter search for CatBoost (e.g., learning rate 0.03, depth 4-10, l2_leaf_reg 1-10), try feature interactions, or try stacking of multiple models.
+
+---
+
+Generation 1, researcher-3 (tuning):
+
+
+Tried: baseline LogisticRegression (C=1.0) -&gt; 0.3947; LogisticRegression (C=0.01) -&gt; 0.3962; LightGBM default-ish (n_estimators=100, lr=0.1, num_leaves=31) -&gt; 0.3163; LightGBM more trees (n_estimators=500, lr=0.05, num_leaves=63) -&gt; 0.3275; LightGBM tuned (n_estimators=1000, lr=0.01, num_leaves=127, subsample=0.8, colsample=0.8) -&gt; 0.3186; LightGBM (n_estimators=200, lr=0.05, num_leaves=31) -&gt; 0.3149; LightGBM (n_estimators=300, lr=0.03, num_leaves=31) -&gt; 0.3122.
+Best run: e20
+Learned: LightGBM outperforms logistic regression significantly. Lower learning rate with more trees (n_estimators=300, lr=0.03) gave the best validation log_loss among tried configurations. Increasing trees too much with low learning rate (n_estimators=1000, lr=0.01) did not improve and may have overfit slightly. Simpler trees (num_leaves=31) worked well; increasing num_leaves to 63 or 127 without adjusting other parameters did not help.
+Next: Try XGBoost or CatBoost with similar hyperparameter tuning; experiment with feature interactions or polynomial features; use early stopping based on validation loss (though we cannot see validation labels, we could use internal validation). Also try different subsample and colsample values. However, no runs remain.
+
+---
+
+Generation 1, researcher-4 (regularization):
+
+
+Tried: v1: LogisticRegression C=0.1 (more regularization) -&gt; val_loss 0.39526; v2: LogisticRegression C=10.0 (less regularization) -&gt; val_loss 0.39465; v3: LightGBM default-ish (n_estimators=100, learning_rate=0.1) -&gt; val_loss 0.31626; v4: LightGBM with early stopping via callbacks and regularization (subsample=0.8, colsample=0.8, reg_alpha=0.1, reg_lambda=0.1) -&gt; val_loss 0.31596; v5: XGBoost with early stopping (error due to API); v5b: XGBoost with callbacks (error due to API)
+Best run: e22
+Learned: LightGBM with early stopping and regularization outperforms logistic regression by capturing non-linear patterns and interactions. Regularization (subsample, colsample, L1/L2) helps prevent overfitting. Logistic regression changes in C had minimal effect. XGBoost attempts failed due to API mismatches in the available version.
+Next: Tune LightGBM hyperparameters (num_leaves, min_child_samples, learning_rate); try XGBoost with correct early stopping API; consider feature selection or stacking.
+
+---
+
+Generation 2, researcher-1 (ensembling):
+
+Tried: Simple average ensemble of CatBoost, LightGBM, XGBoost; CatBoost with feature engineering and tuned hyperparameters; Ensemble of two CatBoost models (original features + engineered features).
+Best run: e38
+Learned: Ensembling diverse models (CatBoost, LightGBM, XGBoost) did not improve over the best single model, likely due to correlation and similar performance. However, ensembling two CatBoost models with different feature sets (original vs engineered) slightly improved validation log loss, suggesting that feature engineering complements the original features and reduces variance.
+Next: Try stacking with a meta-learner (e.g., logistic regression) on top of base model predictions; try more diverse feature engineering (e.g., binning, target encoding); try varying hyperparameters for each base model to increase diversity; try weighted averaging based on validation performance.
+
+```python
+import numpy as np
+import pandas as pd
+from catboost import CatBoostClassifier
+
+def fit(train: pd.DataFrame, target: str, seed: int) -&gt; object:
+    X = train.drop(columns=[target])
+    y = train[target]
+    
+    # Model 1: original features, hyperparameters from v1
+    model1 = CatBoostClassifier(
+        iterations=200,
+        learning_rate=0.05,
+        depth=6,
+        loss_function=&#x27;Logloss&#x27;,
+        random_seed=seed,
+        verbose=False,
+        thread_count=2
+    )
+    model1.fit(X, y)
+    
+    # Model 2: engineered features, hyperparameters from e34
+    X_eng = X.copy()
+    # Feature engineering
+    X_eng[&#x27;balance_per_tenure&#x27;] = X_eng[&#x27;balance&#x27;] / (X_eng[&#x27;tenure&#x27;] + 1)
+    X_eng[&#x27;salary_per_tenure&#x27;] = X_eng[&#x27;estimatedsalary&#x27;] / (X_eng[&#x27;tenure&#x27;] + 1)
+    X_eng[&#x27;balance_per_product&#x27;] = X_eng[&#x27;balance&#x27;] / (X_eng[&#x27;numofproducts&#x27;] + 1)
+    X_eng[&#x27;salary_per_product&#x27;] = X_eng[&#x27;estimatedsalary&#x27;] / (X_eng[&#x27;numofproducts&#x27;] + 1)
+    X_eng[&#x27;credit_score_times_balance&#x27;] = X_eng[&#x27;creditscore&#x27;] * X_eng[&#x27;balance&#x27;]
+    X_eng[&#x27;age_times_credit&#x27;] = X_eng[&#x27;age&#x27;] * X_eng[&#x27;creditscore&#x27;]
+    X_eng[&#x27;tenure_squared&#x27;] = X_eng[&#x27;tenure&#x27;] ** 2
+    X_eng[&#x27;age_squared&#x27;] = X_eng[&#x27;age&#x27;] ** 2
+    X_eng[&#x27;balance_squared&#x27;] = X_eng[&#x27;balance&#x27;] ** 2
+    X_eng[&#x27;estimatedsalary_squared&#x27;] = X_eng[&#x27;estimatedsalary&#x27;] ** 2
+    X_eng[&#x27;balance_times_numproducts&#x27;] = X_eng[&#x27;balance&#x27;] * X_eng[&#x27;numofproducts&#x27;]
+    X_eng[&#x27;salary_times_numproducts&#x27;] = X_eng[&#x27;estimatedsalary&#x27;] * X_eng[&#x27;numofproducts&#x27;]
+    X_eng[&#x27;credit_score_times_age&#x27;] = X_eng[&#x27;creditscore&#x27;] * X_eng[&#x27;age&#x27;]
+    X_eng[&#x27;credit_score_times_tenure&#x27;] = X_eng[&#x27;creditscore&#x27;] * X_eng[&#x27;tenure&#x27;]
+    X_eng[&#x27;age_times_tenure&#x27;] = X_eng[&#x27;age&#x27;] * X_eng[&#x27;tenure&#x27;]
+    X_eng[&#x27;balance_plus_salary&#x27;] = X_eng[&#x27;balance&#x27;] + X_eng[&#x27;estimatedsalary&#x27;]
+    X_eng[&#x27;balance_per_salary&#x27;] = X_eng[&#x27;balance&#x27;] / (X_eng[&#x27;estimatedsalary&#x27;] + 1)
+    X_eng[&#x27;salary_per_balance&#x27;] = X_eng[&#x27;estimatedsalary&#x27;] / (X_eng[&#x27;balance&#x27;] + 1)
+    X_eng[&#x27;tenure_times_numproducts&#x27;] = X_eng[&#x27;tenure&#x27;] * X_eng[&#x27;numofproducts&#x27;]
+    X_eng[&#x27;age_times_numproducts&#x27;] = X_eng[&#x27;age&#x27;] * X_eng[&#x27;numofproducts&#x27;]
+    
+    model2 = CatBoostClassifier(
+        iterations=500,
+        learning_rate=0.02,
+        depth=8,
+        l2_leaf_reg=5,
+        random_seed=seed,
+        loss_function=&#x27;Logloss&#x27;,
+        verbose=False,
+        thread_count=2
+    )
+    model2.fit(X_eng, y)
+    
+    return (model1, model2)
+
+def predict(model: object, X: pd.DataFrame) -&gt; np.ndarray:
+    model1, model2 = model
+    # Predict with model1 on original features
+    prob1 = model1.predict_proba(X)[:, 1]
+    
+    # Predict with model2 on engineered features
+    X_eng = X.copy()
+    X_eng[&#x27;balance_per_tenure&#x27;] = X_eng[&#x27;balance&#x27;] / (X_eng[&#x27;tenure&#x27;] + 1)
+    X_eng[&#x27;salary_per_tenure&#x27;] = X_eng[&#x27;estimatedsalary&#x27;] / (X_eng[&#x27;tenure&#x27;] + 1)
+    X_eng[&#x27;balance_per_product&#x27;] = X_eng[&#x27;balance&#x27;] / (X_eng[&#x27;numofproducts&#x27;] + 1)
+    X_eng[&#x27;salary_per_product&#x27;] = X_eng[&#x27;estimatedsalary&#x27;] / (X_eng[&#x27;numofproducts&#x27;] + 1)
+    X_eng[&#x27;credit_score_times_balance&#x27;] = X_eng[&#x27;creditscore&#x27;] * X_eng[&#x27;balance&#x27;]
+    X_eng[&#x27;age_times_credit&#x27;] = X_eng[&#x27;age&#x27;] * X_eng[&#x27;creditscore&#x27;]
+    X_eng[&#x27;tenure_squared&#x27;] = X_eng[&#x27;tenure&#x27;] ** 2
+    X_eng[&#x27;age_squared&#x27;] = X_eng[&#x27;age&#x27;] ** 2
+    X_eng[&#x27;balance_squared&#x27;] = X_eng[&#x27;balance&#x27;] ** 2
+    X_eng[&#x27;estimatedsalary_squared&#x27;] = X_eng[&#x27;estimatedsalary&#x27;] ** 2
+    X_eng[&#x27;balance_times_numproducts&#x27;] = X_eng[&#x27;balance&#x27;] * X_eng[&#x27;numofproducts&#x27;]
+    X_eng[&#x27;salary_times_numproducts&#x27;] = X_eng[&#x27;estimatedsalary&#x27;] * X_eng[&#x27;numofproducts&#x27;]
+    X_eng[&#x27;credit_score_times_age&#x27;] = X_eng[&#x27;creditscore&#x27;] * X_eng[&#x27;age&#x27;]
+    X_eng[&#x27;credit_score_times_tenure&#x27;] = X_eng[&#x27;creditscore&#x27;] * X_eng[&#x27;tenure&#x27;]
+    X_eng[&#x27;age_times_tenure&#x27;] = X_eng[&#x27;age&#x27;] * X_eng[&#x27;tenure&#x27;]
+    X_eng[&#x27;balance_plus_salary&#x27;] = X_eng[&#x27;balance&#x27;] + X_eng[&#x27;estimatedsalary&#x27;]
+    X_eng[&#x27;balance_per_salary&#x27;] = X_eng[&#x27;balance&#x27;] / (X_eng[&#x27;estimatedsalary&#x27;] + 1)
+    X_eng[&#x27;salary_per_balance&#x27;] = X_eng[&#x27;estimatedsalary&#x27;] / (X_eng[&#x27;balance&#x27;] + 1)
+    X_eng[&#x27;tenure_times_numproducts&#x27;] = X_eng[&#x27;tenure&#x27;] * X_eng[&#x27;numofproducts&#x27;]
+    X_eng[&#x27;age_times_numproducts&#x27;] = X_eng[&#x27;age&#x27;] * X_eng[&#x27;numofproducts&#x27;]
+    prob2 = model2.predict_proba(X_eng)[:, 1]
+    
+    # Average probabilities
+    avg_prob = (prob1 + prob2) / 2.0
+    return avg_prob
+```
+
+---
+
+Generation 2, researcher-2 (features):
+
+
+Tried: Baseline CatBoost (200,0.05,6); Feature engineering with many interactions/squares + same CatBoost; Feature engineering + tuned CatBoost (500 iter, lr 0.02, depth 8, l2 5); Feature engineering with log, ratios, interactions, encoded combos + baseline CatBoost; Small set of interaction features + baseline CatBoost; LightGBM with feature engineering; Feature engineering + CatBoost (1000 iter, lr 0.01, depth 7, l2 5).
+Best run: e50
+Learned: The baseline CatBoost model without any additional feature engineering achieved the lowest validation log loss (0.311757). All attempts at feature engineering (including interactions, squares, logs, ratios, and encoded combinations) resulted in equal or worse performance, likely due to overfitting or introducing noise given the dataset already contains many engineered features (surname TF-IDF, one-hot encoded geography and gender, etc.). The model appears to benefit from its ability to handle raw features effectively, and extra features did not improve generalization.
+Next: With more runs, I would try feature selection to remove redundant or noisy features, explore stacking or blending of multiple models (e.g., CatBoost, LightGBM, XGBoost), and test different random seeds to ensure stability of the best model. I would also consider using early stopping with a validation split (if allowed) to tune iterations more precisely.
+
+---
+
+Generation 2, researcher-3 (model type):
+
+
+Tried: Neural network MLP with standardization and early stopping; CatBoost with feature engineering and tuned hyperparameters; LightGBM with feature engineering and balanced class weight; CatBoost tuned with more iterations and lower learning rate; CatBoost with auto_class_weights; CatBoost without feature engineering; CatBoost with increased depth and regularization.
+Best run: e36
+Learned: Simple CatBoost models without feature engineering performed best; feature engineering did not improve and sometimes worsened performance. Neural networks were competitive but required careful tuning and more time. LightGBM with class weighting underperformed relative to CatBoost on this dataset.
+Next: With more runs, would try stacking or blending of models, further feature engineering like binning or target encoding, and a more thorough hyperparameter search for CatBoost (learning rate, depth, regularization). Also would experiment with different seeds to validate stability.
+
+---
+
+Generation 2, researcher-4 (tuning):
+
+
+Tried: 
+- Run e37: 500 iterations, lr=0.02, depth=8, l2_leaf_reg=5
+- Run e40: 300 iterations, lr=0.03, depth=7, l2_leaf_reg=3
+- Run e41: 800 iterations, lr=0.015, depth=7, l2_leaf_reg=4
+- Run e42: 1000 iterations, lr=0.01, depth=6, l2_leaf_reg=3
+- Run e44: 150 iterations, lr=0.06, depth=5, l2_leaf_reg=3
+- Run e46: baseline (200 iterations, lr=0.05, depth=6)
+
+Best run: e46
+Learned: The baseline CatBoost configuration (200 iterations, learning rate 0.05, depth 6) achieved the lowest validation log loss (0.31176) among all tested hyperparameter settings. Changes to iteration count, learning rate, depth, or adding L2 regularization did not improve performance, indicating the baseline is already well-tuned for this dataset.
+Next: With additional runs, consider feature engineering (interactions, ratios, polynomials) to boost performance, or explore other gradient boosting libraries (LightGBM, XGBoost) with similar tuning. Stacking or blending models could also be investigated.
+
+---
+
+Generation 3, researcher-1 (regularization):
+
+
+Tried: Baseline CatBoost (iterations=200, learning_rate=0.05, depth=6); increased l2_leaf_reg to 10; decreased l2_leaf_reg to 1.0; reduced depth to 5 with l2_leaf_reg=3; early stopping with holdout validation (20% holdout, 50 early stopping rounds); CatBoost&#x27;s built-in overfitting detection (ODType=Iter, ODWait=50).
+Best run: e52
+Learned: The baseline CatBoost model with default regularization (l2_leaf_reg=3) achieved the lowest validation log loss. Increasing or decreasing l2_leaf_reg worsened performance, indicating the default is well-tuned. Early stopping approaches that reduced the effective training data (by holding out a validation set) led to higher loss, likely due to underfitting. CatBoost&#x27;s overfitting detection also performed worse, possibly because it stopped too early or too late without improving generalization.
+Next: With more runs, would try early stopping with holdout but refitting on the full dataset using the best iteration found; try different random seeds to ensure stability; explore feature selection to remove redundant features; attempt stacking or blending of multiple models to reduce variance.
+
+---
+
+Generation 3, researcher-2 (ensembling):
+
+
+Tried: Simple average of two CatBoost models (original + engineered features), weighted ensemble of two models with internal validation, simple average of 5 CatBoost models with different seeds, stacking with logistic regression meta-learner, simple average of three CatBoost models (original, engineered, original with different hyperparams), weighted ensemble of three models with internal validation.
+Best run: e55
+Learned: The best performance came from a simple average of two CatBoost models: one trained on the original features (iterations=200, learning_rate=0.05, depth=6) and another on a set of engineered features (iterations=500, learning_rate=0.02, depth=8, l2_leaf_reg=5). This ensemble improved validation log loss from 0.31176 to 0.31141. Weighted ensembles and stacking did not improve further, likely due to overfitting on the internal validation split used to tune weights or meta-learners. More diverse models (e.g., including LightGBM or XGBoost) might help, but time was limited.
+Next: With more runs, try blending different algorithm families (CatBoost, LightGBM, XGBoost) and use a hold-out set (if allowed) to tune ensemble weights without overfitting. Also consider feature selection to reduce redundancy in engineered features.
+
+---
+
+Generation 3, researcher-3 (features):
+
+
+Tried: Feature engineering with interactions and squares (CatBoost baseline), LightGBM with same feature engineering, target encoding for surname with dropping TF-IDF and adding interactions, dropping surname and TF-IDF with selected interactions, extensive feature engineering with tuned CatBoost, and a few interaction features with baseline CatBoost.
+Best run: The baseline CatBoost from the team log (val_loss 0.31176) remains the best. Among our runs, e75 (tuned CatBoost with extensive feature engineering) achieved 0.312085, which is close but slightly worse.
+Learned: The dataset already contains many engineered features (surname TF-IDF, one-hot encoded geography and gender, etc.). Additional feature engineering did not improve performance and may have introduced noise or overfitting. The baseline CatBoost with default hyperparameters (200 iterations, learning rate 0.05, depth 6) is already well-tuned for this dataset.
+Next: If more runs were available, we would try feature selection to remove redundant features, stacking or blending of multiple models (e.g., CatBoost, LightGBM, XGBoost), and further hyperparameter tuning (e.g., learning rate, depth, regularization) to potentially squeeze out small improvements. We would also experiment with different random seeds to ensure stability.
+
+---
+
+Generation 3, researcher-4 (model type):
+
+
+Tried: LightGBM, Logistic Regression, XGBoost, PyTorch MLP, tuned CatBoost (with auto class weights), and another Catboost configuration.
+Best run: e56
+Learned: The baseline CatBoost model (200 iterations, learning rate 0.05, depth 6) achieved the lowest validation log loss among all models tried. Other models such as LightGBM, XGBoost, logistic regression, and neural networks performed worse. Tuning CatBoost with different hyperparameters did not improve over the baseline, suggesting the baseline is well-suited for this dataset.
+Next: If more runs were available, would try stacking or blending of models, feature selection to remove redundant features, and further hyperparameter tuning with a focus on learning rate and depth combinations. Also would try different random seeds to ensure stability.</pre></details></article><article class='gen'><header><h4>Generation 4</h4><div><span class='pill'>no new best</span></div><div class='nums'>val 0.31176 &middot; test gain +19.96% &middot; 28 runs, 3 failed &middot; read 5288 tokens &middot; 6.9 min</div></header><div class='tablewrap'><table class='small'><thead><tr><th>Focus</th><th>Rank</th><th>Best val</th><th>Change</th></tr></thead><tbody><tr><td>ensembling</td><td>1</td><td>0.31088 <span class='dim'>e105</span></td><td>Weighted average of CatBoost and LightGBM, weights based on inverse CV log loss</td></tr><tr><td>features</td><td>1</td><td>0.31141 <span class='dim'>e103</span></td><td>Ensemble of two CatBoost models: original features and engineered features (from e34)</td></tr><tr><td>regularization</td><td>1</td><td>0.31176 <span class='dim'>e79</span></td><td>Baseline CatBoost</td></tr><tr><td>tuning</td><td>1</td><td>0.31222 <span class='dim'>e86</span></td><td>Run 3: 1000 iter, lr 0.01, depth 6, l2 3</td></tr></tbody></table></div><details><summary>Memory after generation 4 (6879 tokens)</summary><pre>Generation 1, researcher-1 (features):
+
+
+Tried: LightGBM default, LightGBM with feature engineering, CatBoost with feature engineering, XGBoost with feature engineering, tuned CatBoost with more iterations and depth, tuned LightGBM similar to tuned CatBoost.
+Best run: e21
+Learned: Feature engineering (interactions, ratios, squares) combined with gradient boosting (CatBoost, LightGBM, XGBoost) significantly improves over logistic regression. CatBoost with appropriate regularization and learning rate performed best. LightGBM and XGBoost were close but slightly worse. Over-engineering or too deep trees without regularization can lead to overfitting (warnings in LightGBM run).
+Next: If more runs were available, would try stacking or blending of models, further feature engineering like binning, or using embeddings for categorical features (though here they are already one-hot encoded). Also would try different seeds to ensure stability.
+
+Now produce the final solution.
+
+```python
+import numpy as np
+import pandas as pd
+from catboost import CatBoostClassifier
+
+def fit(train: pd.DataFrame, target: str, seed: int) -&gt; object:
+    X = train.drop(columns=[target])
+    y = train[target]
+    
+    # Feature engineering
+    X = X.copy()
+    # Avoid division by zero
+    X[&#x27;balance_per_tenure&#x27;] = X[&#x27;balance&#x27;] / (X[&#x27;tenure&#x27;] + 1)
+    X[&#x27;salary_per_tenure&#x27;] = X[&#x27;estimatedsalary&#x27;] / (X[&#x27;tenure&#x27;] + 1)
+    X[&#x27;balance_per_product&#x27;] = X[&#x27;balance&#x27;] / (X[&#x27;numofproducts&#x27;] + 1)
+    X[&#x27;salary_per_product&#x27;] = X[&#x27;estimatedsalary&#x27;] / (X[&#x27;numofproducts&#x27;] + 1)
+    X[&#x27;credit_score_times_balance&#x27;] = X[&#x27;creditscore&#x27;] * X[&#x27;balance&#x27;]
+    X[&#x27;age_times_credit&#x27;] = X[&#x27;age&#x27;] * X[&#x27;creditscore&#x27;]
+    X[&#x27;tenure_squared&#x27;] = X[&#x27;tenure&#x27;] ** 2
+    X[&#x27;age_squared&#x27;] = X[&#x27;age&#x27;] ** 2
+    X[&#x27;balance_squared&#x27;] = X[&#x27;balance&#x27;] ** 2
+    X[&#x27;estimatedsalary_squared&#x27;] = X[&#x27;estimatedsalary&#x27;] ** 2
+    X[&#x27;balance_times_numproducts&#x27;] = X[&#x27;balance&#x27;] * X[&#x27;numofproducts&#x27;]
+    X[&#x27;salary_times_numproducts&#x27;] = X[&#x27;estimatedsalary&#x27;] * X[&#x27;numofproducts&#x27;]
+    X[&#x27;credit_score_times_age&#x27;] = X[&#x27;creditscore&#x27;] * X[&#x27;age&#x27;]
+    X[&#x27;credit_score_times_tenure&#x27;] = X[&#x27;creditscore&#x27;] * X[&#x27;tenure&#x27;]
+    X[&#x27;age_times_tenure&#x27;] = X[&#x27;age&#x27;] * X[&#x27;tenure&#x27;]
+    X[&#x27;balance_plus_salary&#x27;] = X[&#x27;balance&#x27;] + X[&#x27;estimatedsalary&#x27;]
+    X[&#x27;balance_per_salary&#x27;] = X[&#x27;balance&#x27;] / (X[&#x27;estimatedsalary&#x27;] + 1)
+    X[&#x27;salary_per_balance&#x27;] = X[&#x27;estimatedsalary&#x27;] / (X[&#x27;balance&#x27;] + 1)
+    X[&#x27;tenure_times_numproducts&#x27;] = X[&#x27;tenure&#x27;] * X[&#x27;numofproducts&#x27;]
+    X[&#x27;age_times_numproducts&#x27;] = X[&#x27;age&#x27;] * X[&#x27;numofproducts&#x27;]
+    
+    model = CatBoostClassifier(
+        iterations=500,
+        learning_rate=0.02,
+        depth=8,
+        l2_leaf_reg=5,
+        random_seed=seed,
+        loss_function=&#x27;Logloss&#x27;,
+        verbose=False,
+        thread_count=2
+    )
+    model.fit(X, y)
+    return model
+
+def predict(model: object, X: pd.DataFrame) -&gt; np.ndarray:
+    # Apply same feature engineering to X
+    X = X.copy()
+    X[&#x27;balance_per_tenure&#x27;] = X[&#x27;balance&#x27;] / (X[&#x27;tenure&#x27;] + 1)
+    X[&#x27;salary_per_tenure&#x27;] = X[&#x27;estimatedsalary&#x27;] / (X[&#x27;tenure&#x27;] + 1)
+    X[&#x27;balance_per_product&#x27;] = X[&#x27;balance&#x27;] / (X[&#x27;numofproducts&#x27;] + 1)
+    X[&#x27;salary_per_product&#x27;] = X[&#x27;estimatedsalary&#x27;] / (X[&#x27;numofproducts&#x27;] + 1)
+    X[&#x27;credit_score_times_balance&#x27;] = X[&#x27;creditscore&#x27;] * X[&#x27;balance&#x27;]
+    X[&#x27;age_times_credit&#x27;] = X[&#x27;age&#x27;] * X[&#x27;creditscore&#x27;]
+    X[&#x27;tenure_squared&#x27;] = X[&#x27;tenure&#x27;] ** 2
+    X[&#x27;age_squared&#x27;] = X[&#x27;age&#x27;] ** 2
+    X[&#x27;balance_squared&#x27;] = X[&#x27;balance&#x27;] ** 2
+    X[&#x27;estimatedsalary_squared&#x27;] = X[&#x27;estimatedsalary&#x27;] ** 2
+    X[&#x27;balance_times_numproducts&#x27;] = X[&#x27;balance&#x27;] * X[&#x27;numofproducts&#x27;]
+    X[&#x27;salary_times_numproducts&#x27;] = X[&#x27;estimatedsalary&#x27;] * X[&#x27;numofproducts&#x27;]
+    X[&#x27;credit_score_times_age&#x27;] = X[&#x27;creditscore&#x27;] * X[&#x27;age&#x27;]
+    X[&#x27;credit_score_times_tenure&#x27;] = X[&#x27;creditscore&#x27;] * X[&#x27;tenure&#x27;]
+    X[&#x27;age_times_tenure&#x27;] = X[&#x27;age&#x27;] * X[&#x27;tenure&#x27;]
+    X[&#x27;balance_plus_salary&#x27;] = X[&#x27;balance&#x27;] + X[&#x27;estimatedsalary&#x27;]
+    X[&#x27;balance_per_salary&#x27;] = X[&#x27;balance&#x27;] / (X[&#x27;estimatedsalary&#x27;] + 1)
+    X[&#x27;salary_per_balance&#x27;] = X[&#x27;estimatedsalary&#x27;] / (X[&#x27;balance&#x27;] + 1)
+    X[&#x27;tenure_times_numproducts&#x27;] = X[&#x27;tenure&#x27;] * X[&#x27;numofproducts&#x27;]
+    X[&#x27;age_times_numproducts&#x27;] = X[&#x27;age&#x27;] * X[&#x27;numofproducts&#x27;]
+    return model.predict_proba(X)[:, 1]
+```
+
+---
+
+Generation 1, researcher-2 (model type):
+
+Tried:
+- LightGBM (200 estimators, lr 0.05, class_weight balanced): val_loss 0.3930
+- XGBoost (200 estimators, lr 0.05, max_depth 6, subsample/colsample 0.8, scale_pos_weight): val_loss 0.3888
+- CatBoost (200 iterations, lr 0.05, depth 6): val_loss 0.3118
+- PyTorch MLP (two hidden layers, dropout, early stopping): val_loss 0.3206
+- CatBoost (500 iterations, lr 0.02, depth 8, l2_leaf_reg 3): val_loss 0.3132
+- HistGradientBoostingClassifier (sample weighted): val_loss 0.4033
+- CatBoost (1000 iterations, lr 0.01, depth 7, l2_leaf_reg 5): val_loss 0.3121
+
+Best run: e10
+Learned: CatBoost with moderate depth and learning rate gave the best validation log loss, outperforming other boosted trees, linear models, and neural networks. The dataset appears to respond well to ordered boosting with symmetric trees. Neural nets with early stopping were competitive but required more tuning and time.
+Next: Try more extensive hyperparameter search for CatBoost (e.g., learning rate 0.03, depth 4-10, l2_leaf_reg 1-10), try feature interactions, or try stacking of multiple models.
+
+---
+
+Generation 1, researcher-3 (tuning):
+
+
+Tried: baseline LogisticRegression (C=1.0) -&gt; 0.3947; LogisticRegression (C=0.01) -&gt; 0.3962; LightGBM default-ish (n_estimators=100, lr=0.1, num_leaves=31) -&gt; 0.3163; LightGBM more trees (n_estimators=500, lr=0.05, num_leaves=63) -&gt; 0.3275; LightGBM tuned (n_estimators=1000, lr=0.01, num_leaves=127, subsample=0.8, colsample=0.8) -&gt; 0.3186; LightGBM (n_estimators=200, lr=0.05, num_leaves=31) -&gt; 0.3149; LightGBM (n_estimators=300, lr=0.03, num_leaves=31) -&gt; 0.3122.
+Best run: e20
+Learned: LightGBM outperforms logistic regression significantly. Lower learning rate with more trees (n_estimators=300, lr=0.03) gave the best validation log_loss among tried configurations. Increasing trees too much with low learning rate (n_estimators=1000, lr=0.01) did not improve and may have overfit slightly. Simpler trees (num_leaves=31) worked well; increasing num_leaves to 63 or 127 without adjusting other parameters did not help.
+Next: Try XGBoost or CatBoost with similar hyperparameter tuning; experiment with feature interactions or polynomial features; use early stopping based on validation loss (though we cannot see validation labels, we could use internal validation). Also try different subsample and colsample values. However, no runs remain.
+
+---
+
+Generation 1, researcher-4 (regularization):
+
+
+Tried: v1: LogisticRegression C=0.1 (more regularization) -&gt; val_loss 0.39526; v2: LogisticRegression C=10.0 (less regularization) -&gt; val_loss 0.39465; v3: LightGBM default-ish (n_estimators=100, learning_rate=0.1) -&gt; val_loss 0.31626; v4: LightGBM with early stopping via callbacks and regularization (subsample=0.8, colsample=0.8, reg_alpha=0.1, reg_lambda=0.1) -&gt; val_loss 0.31596; v5: XGBoost with early stopping (error due to API); v5b: XGBoost with callbacks (error due to API)
+Best run: e22
+Learned: LightGBM with early stopping and regularization outperforms logistic regression by capturing non-linear patterns and interactions. Regularization (subsample, colsample, L1/L2) helps prevent overfitting. Logistic regression changes in C had minimal effect. XGBoost attempts failed due to API mismatches in the available version.
+Next: Tune LightGBM hyperparameters (num_leaves, min_child_samples, learning_rate); try XGBoost with correct early stopping API; consider feature selection or stacking.
+
+---
+
+Generation 2, researcher-1 (ensembling):
+
+Tried: Simple average ensemble of CatBoost, LightGBM, XGBoost; CatBoost with feature engineering and tuned hyperparameters; Ensemble of two CatBoost models (original features + engineered features).
+Best run: e38
+Learned: Ensembling diverse models (CatBoost, LightGBM, XGBoost) did not improve over the best single model, likely due to correlation and similar performance. However, ensembling two CatBoost models with different feature sets (original vs engineered) slightly improved validation log loss, suggesting that feature engineering complements the original features and reduces variance.
+Next: Try stacking with a meta-learner (e.g., logistic regression) on top of base model predictions; try more diverse feature engineering (e.g., binning, target encoding); try varying hyperparameters for each base model to increase diversity; try weighted averaging based on validation performance.
+
+```python
+import numpy as np
+import pandas as pd
+from catboost import CatBoostClassifier
+
+def fit(train: pd.DataFrame, target: str, seed: int) -&gt; object:
+    X = train.drop(columns=[target])
+    y = train[target]
+    
+    # Model 1: original features, hyperparameters from v1
+    model1 = CatBoostClassifier(
+        iterations=200,
+        learning_rate=0.05,
+        depth=6,
+        loss_function=&#x27;Logloss&#x27;,
+        random_seed=seed,
+        verbose=False,
+        thread_count=2
+    )
+    model1.fit(X, y)
+    
+    # Model 2: engineered features, hyperparameters from e34
+    X_eng = X.copy()
+    # Feature engineering
+    X_eng[&#x27;balance_per_tenure&#x27;] = X_eng[&#x27;balance&#x27;] / (X_eng[&#x27;tenure&#x27;] + 1)
+    X_eng[&#x27;salary_per_tenure&#x27;] = X_eng[&#x27;estimatedsalary&#x27;] / (X_eng[&#x27;tenure&#x27;] + 1)
+    X_eng[&#x27;balance_per_product&#x27;] = X_eng[&#x27;balance&#x27;] / (X_eng[&#x27;numofproducts&#x27;] + 1)
+    X_eng[&#x27;salary_per_product&#x27;] = X_eng[&#x27;estimatedsalary&#x27;] / (X_eng[&#x27;numofproducts&#x27;] + 1)
+    X_eng[&#x27;credit_score_times_balance&#x27;] = X_eng[&#x27;creditscore&#x27;] * X_eng[&#x27;balance&#x27;]
+    X_eng[&#x27;age_times_credit&#x27;] = X_eng[&#x27;age&#x27;] * X_eng[&#x27;creditscore&#x27;]
+    X_eng[&#x27;tenure_squared&#x27;] = X_eng[&#x27;tenure&#x27;] ** 2
+    X_eng[&#x27;age_squared&#x27;] = X_eng[&#x27;age&#x27;] ** 2
+    X_eng[&#x27;balance_squared&#x27;] = X_eng[&#x27;balance&#x27;] ** 2
+    X_eng[&#x27;estimatedsalary_squared&#x27;] = X_eng[&#x27;estimatedsalary&#x27;] ** 2
+    X_eng[&#x27;balance_times_numproducts&#x27;] = X_eng[&#x27;balance&#x27;] * X_eng[&#x27;numofproducts&#x27;]
+    X_eng[&#x27;salary_times_numproducts&#x27;] = X_eng[&#x27;estimatedsalary&#x27;] * X_eng[&#x27;numofproducts&#x27;]
+    X_eng[&#x27;credit_score_times_age&#x27;] = X_eng[&#x27;creditscore&#x27;] * X_eng[&#x27;age&#x27;]
+    X_eng[&#x27;credit_score_times_tenure&#x27;] = X_eng[&#x27;creditscore&#x27;] * X_eng[&#x27;tenure&#x27;]
+    X_eng[&#x27;age_times_tenure&#x27;] = X_eng[&#x27;age&#x27;] * X_eng[&#x27;tenure&#x27;]
+    X_eng[&#x27;balance_plus_salary&#x27;] = X_eng[&#x27;balance&#x27;] + X_eng[&#x27;estimatedsalary&#x27;]
+    X_eng[&#x27;balance_per_salary&#x27;] = X_eng[&#x27;balance&#x27;] / (X_eng[&#x27;estimatedsalary&#x27;] + 1)
+    X_eng[&#x27;salary_per_balance&#x27;] = X_eng[&#x27;estimatedsalary&#x27;] / (X_eng[&#x27;balance&#x27;] + 1)
+    X_eng[&#x27;tenure_times_numproducts&#x27;] = X_eng[&#x27;tenure&#x27;] * X_eng[&#x27;numofproducts&#x27;]
+    X_eng[&#x27;age_times_numproducts&#x27;] = X_eng[&#x27;age&#x27;] * X_eng[&#x27;numofproducts&#x27;]
+    
+    model2 = CatBoostClassifier(
+        iterations=500,
+        learning_rate=0.02,
+        depth=8,
+        l2_leaf_reg=5,
+        random_seed=seed,
+        loss_function=&#x27;Logloss&#x27;,
+        verbose=False,
+        thread_count=2
+    )
+    model2.fit(X_eng, y)
+    
+    return (model1, model2)
+
+def predict(model: object, X: pd.DataFrame) -&gt; np.ndarray:
+    model1, model2 = model
+    # Predict with model1 on original features
+    prob1 = model1.predict_proba(X)[:, 1]
+    
+    # Predict with model2 on engineered features
+    X_eng = X.copy()
+    X_eng[&#x27;balance_per_tenure&#x27;] = X_eng[&#x27;balance&#x27;] / (X_eng[&#x27;tenure&#x27;] + 1)
+    X_eng[&#x27;salary_per_tenure&#x27;] = X_eng[&#x27;estimatedsalary&#x27;] / (X_eng[&#x27;tenure&#x27;] + 1)
+    X_eng[&#x27;balance_per_product&#x27;] = X_eng[&#x27;balance&#x27;] / (X_eng[&#x27;numofproducts&#x27;] + 1)
+    X_eng[&#x27;salary_per_product&#x27;] = X_eng[&#x27;estimatedsalary&#x27;] / (X_eng[&#x27;numofproducts&#x27;] + 1)
+    X_eng[&#x27;credit_score_times_balance&#x27;] = X_eng[&#x27;creditscore&#x27;] * X_eng[&#x27;balance&#x27;]
+    X_eng[&#x27;age_times_credit&#x27;] = X_eng[&#x27;age&#x27;] * X_eng[&#x27;creditscore&#x27;]
+    X_eng[&#x27;tenure_squared&#x27;] = X_eng[&#x27;tenure&#x27;] ** 2
+    X_eng[&#x27;age_squared&#x27;] = X_eng[&#x27;age&#x27;] ** 2
+    X_eng[&#x27;balance_squared&#x27;] = X_eng[&#x27;balance&#x27;] ** 2
+    X_eng[&#x27;estimatedsalary_squared&#x27;] = X_eng[&#x27;estimatedsalary&#x27;] ** 2
+    X_eng[&#x27;balance_times_numproducts&#x27;] = X_eng[&#x27;balance&#x27;] * X_eng[&#x27;numofproducts&#x27;]
+    X_eng[&#x27;salary_times_numproducts&#x27;] = X_eng[&#x27;estimatedsalary&#x27;] * X_eng[&#x27;numofproducts&#x27;]
+    X_eng[&#x27;credit_score_times_age&#x27;] = X_eng[&#x27;creditscore&#x27;] * X_eng[&#x27;age&#x27;]
+    X_eng[&#x27;credit_score_times_tenure&#x27;] = X_eng[&#x27;creditscore&#x27;] * X_eng[&#x27;tenure&#x27;]
+    X_eng[&#x27;age_times_tenure&#x27;] = X_eng[&#x27;age&#x27;] * X_eng[&#x27;tenure&#x27;]
+    X_eng[&#x27;balance_plus_salary&#x27;] = X_eng[&#x27;balance&#x27;] + X_eng[&#x27;estimatedsalary&#x27;]
+    X_eng[&#x27;balance_per_salary&#x27;] = X_eng[&#x27;balance&#x27;] / (X_eng[&#x27;estimatedsalary&#x27;] + 1)
+    X_eng[&#x27;salary_per_balance&#x27;] = X_eng[&#x27;estimatedsalary&#x27;] / (X_eng[&#x27;balance&#x27;] + 1)
+    X_eng[&#x27;tenure_times_numproducts&#x27;] = X_eng[&#x27;tenure&#x27;] * X_eng[&#x27;numofproducts&#x27;]
+    X_eng[&#x27;age_times_numproducts&#x27;] = X_eng[&#x27;age&#x27;] * X_eng[&#x27;numofproducts&#x27;]
+    prob2 = model2.predict_proba(X_eng)[:, 1]
+    
+    # Average probabilities
+    avg_prob = (prob1 + prob2) / 2.0
+    return avg_prob
+```
+
+---
+
+Generation 2, researcher-2 (features):
+
+
+Tried: Baseline CatBoost (200,0.05,6); Feature engineering with many interactions/squares + same CatBoost; Feature engineering + tuned CatBoost (500 iter, lr 0.02, depth 8, l2 5); Feature engineering with log, ratios, interactions, encoded combos + baseline CatBoost; Small set of interaction features + baseline CatBoost; LightGBM with feature engineering; Feature engineering + CatBoost (1000 iter, lr 0.01, depth 7, l2 5).
+Best run: e50
+Learned: The baseline CatBoost model without any additional feature engineering achieved the lowest validation log loss (0.311757). All attempts at feature engineering (including interactions, squares, logs, ratios, and encoded combinations) resulted in equal or worse performance, likely due to overfitting or introducing noise given the dataset already contains many engineered features (surname TF-IDF, one-hot encoded geography and gender, etc.). The model appears to benefit from its ability to handle raw features effectively, and extra features did not improve generalization.
+Next: With more runs, I would try feature selection to remove redundant or noisy features, explore stacking or blending of multiple models (e.g., CatBoost, LightGBM, XGBoost), and test different random seeds to ensure stability of the best model. I would also consider using early stopping with a validation split (if allowed) to tune iterations more precisely.
+
+---
+
+Generation 2, researcher-3 (model type):
+
+
+Tried: Neural network MLP with standardization and early stopping; CatBoost with feature engineering and tuned hyperparameters; LightGBM with feature engineering and balanced class weight; CatBoost tuned with more iterations and lower learning rate; CatBoost with auto_class_weights; CatBoost without feature engineering; CatBoost with increased depth and regularization.
+Best run: e36
+Learned: Simple CatBoost models without feature engineering performed best; feature engineering did not improve and sometimes worsened performance. Neural networks were competitive but required careful tuning and more time. LightGBM with class weighting underperformed relative to CatBoost on this dataset.
+Next: With more runs, would try stacking or blending of models, further feature engineering like binning or target encoding, and a more thorough hyperparameter search for CatBoost (learning rate, depth, regularization). Also would experiment with different seeds to validate stability.
+
+---
+
+Generation 2, researcher-4 (tuning):
+
+
+Tried: 
+- Run e37: 500 iterations, lr=0.02, depth=8, l2_leaf_reg=5
+- Run e40: 300 iterations, lr=0.03, depth=7, l2_leaf_reg=3
+- Run e41: 800 iterations, lr=0.015, depth=7, l2_leaf_reg=4
+- Run e42: 1000 iterations, lr=0.01, depth=6, l2_leaf_reg=3
+- Run e44: 150 iterations, lr=0.06, depth=5, l2_leaf_reg=3
+- Run e46: baseline (200 iterations, lr=0.05, depth=6)
+
+Best run: e46
+Learned: The baseline CatBoost configuration (200 iterations, learning rate 0.05, depth 6) achieved the lowest validation log loss (0.31176) among all tested hyperparameter settings. Changes to iteration count, learning rate, depth, or adding L2 regularization did not improve performance, indicating the baseline is already well-tuned for this dataset.
+Next: With additional runs, consider feature engineering (interactions, ratios, polynomials) to boost performance, or explore other gradient boosting libraries (LightGBM, XGBoost) with similar tuning. Stacking or blending models could also be investigated.
+
+---
+
+Generation 3, researcher-1 (regularization):
+
+
+Tried: Baseline CatBoost (iterations=200, learning_rate=0.05, depth=6); increased l2_leaf_reg to 10; decreased l2_leaf_reg to 1.0; reduced depth to 5 with l2_leaf_reg=3; early stopping with holdout validation (20% holdout, 50 early stopping rounds); CatBoost&#x27;s built-in overfitting detection (ODType=Iter, ODWait=50).
+Best run: e52
+Learned: The baseline CatBoost model with default regularization (l2_leaf_reg=3) achieved the lowest validation log loss. Increasing or decreasing l2_leaf_reg worsened performance, indicating the default is well-tuned. Early stopping approaches that reduced the effective training data (by holding out a validation set) led to higher loss, likely due to underfitting. CatBoost&#x27;s overfitting detection also performed worse, possibly because it stopped too early or too late without improving generalization.
+Next: With more runs, would try early stopping with holdout but refitting on the full dataset using the best iteration found; try different random seeds to ensure stability; explore feature selection to remove redundant features; attempt stacking or blending of multiple models to reduce variance.
+
+---
+
+Generation 3, researcher-2 (ensembling):
+
+
+Tried: Simple average of two CatBoost models (original + engineered features), weighted ensemble of two models with internal validation, simple average of 5 CatBoost models with different seeds, stacking with logistic regression meta-learner, simple average of three CatBoost models (original, engineered, original with different hyperparams), weighted ensemble of three models with internal validation.
+Best run: e55
+Learned: The best performance came from a simple average of two CatBoost models: one trained on the original features (iterations=200, learning_rate=0.05, depth=6) and another on a set of engineered features (iterations=500, learning_rate=0.02, depth=8, l2_leaf_reg=5). This ensemble improved validation log loss from 0.31176 to 0.31141. Weighted ensembles and stacking did not improve further, likely due to overfitting on the internal validation split used to tune weights or meta-learners. More diverse models (e.g., including LightGBM or XGBoost) might help, but time was limited.
+Next: With more runs, try blending different algorithm families (CatBoost, LightGBM, XGBoost) and use a hold-out set (if allowed) to tune ensemble weights without overfitting. Also consider feature selection to reduce redundancy in engineered features.
+
+---
+
+Generation 3, researcher-3 (features):
+
+
+Tried: Feature engineering with interactions and squares (CatBoost baseline), LightGBM with same feature engineering, target encoding for surname with dropping TF-IDF and adding interactions, dropping surname and TF-IDF with selected interactions, extensive feature engineering with tuned CatBoost, and a few interaction features with baseline CatBoost.
+Best run: The baseline CatBoost from the team log (val_loss 0.31176) remains the best. Among our runs, e75 (tuned CatBoost with extensive feature engineering) achieved 0.312085, which is close but slightly worse.
+Learned: The dataset already contains many engineered features (surname TF-IDF, one-hot encoded geography and gender, etc.). Additional feature engineering did not improve performance and may have introduced noise or overfitting. The baseline CatBoost with default hyperparameters (200 iterations, learning rate 0.05, depth 6) is already well-tuned for this dataset.
+Next: If more runs were available, we would try feature selection to remove redundant features, stacking or blending of multiple models (e.g., CatBoost, LightGBM, XGBoost), and further hyperparameter tuning (e.g., learning rate, depth, regularization) to potentially squeeze out small improvements. We would also experiment with different random seeds to ensure stability.
+
+---
+
+Generation 3, researcher-4 (model type):
+
+
+Tried: LightGBM, Logistic Regression, XGBoost, PyTorch MLP, tuned CatBoost (with auto class weights), and another Catboost configuration.
+Best run: e56
+Learned: The baseline CatBoost model (200 iterations, learning rate 0.05, depth 6) achieved the lowest validation log loss among all models tried. Other models such as LightGBM, XGBoost, logistic regression, and neural networks performed worse. Tuning CatBoost with different hyperparameters did not improve over the baseline, suggesting the baseline is well-suited for this dataset.
+Next: If more runs were available, would try stacking or blending of models, feature selection to remove redundant features, and further hyperparameter tuning with a focus on learning rate and depth combinations. Also would try different random seeds to ensure stability.
+
+---
+
+Generation 4, researcher-1 (tuning):
+
+
+Tried: Various CatBoost hyperparameter adjustments: increased iterations with lower learning rate (500 iter, lr 0.02, depth 8, l2 5); 300 iter, lr 0.03, depth 7, l2 3; 1000 iter, lr 0.01, depth 6, l2 3; increased l2_leaf_reg to 10; decreased depth to 4 and 5; enabled auto_class_weights Balanced.
+Best run: Baseline from team log (val_loss 0.31176) remains best; all tuned runs had higher validation loss.
+Learned: The baseline CatBoost model (iterations=200, learning_rate=0.05, depth=6, l2_leaf_reg=3) is already well-tuned for this dataset. Changes to iteration count, learning rate, depth, regularization, or class weighting did not improve validation log loss and often worsened it, suggesting the default hyperparameters are near optimal.
+Next: With more runs, consider feature selection to remove redundant features, stacking or blending with other model families (LightGBM, XGBoost), or trying different random seeds to verify stability. However, based on tuning experiments, the baseline model is recommended.
+
+---
+
+Generation 4, researcher-2 (regularization):
+
+
+Tried: Baseline CatBoost (iterations=200, learning_rate=0.05, depth=6) -&gt; val_loss 0.311757; increased l2_leaf_reg to 10 -&gt; 0.312607; decreased l2_leaf_reg to 1.0 -&gt; 0.313747; reduced depth to 5 -&gt; 0.313173; increased min_child_samples to 10 -&gt; 0.311757; overfitting detection with ODType=Iter and od_wait -&gt; API errors.
+Best run: e79
+Learned: The baseline CatBoost model with default regularization (l2_leaf_reg=3) is already well-tuned for this dataset. Adjusting regularization parameters (l2_leaf_reg, depth) or adding constraints like min_child_samples did not improve validation log loss. Overfitting detection could not be used properly due to API constraints requiring an evaluation set, which is not available in the training-only setting. Feature engineering and ensembling attempts from previous generations also did not consistently improve over the baseline.
+Next: If more runs were available, could try stacking with a hold-out set for tuning weights, or experiment with different random seeds to verify stability. However, given the consistent performance of the baseline, it is likely a strong model for this dataset.
+
+---
+
+Generation 4, researcher-3 (ensembling):
+
+
+Tried: Simple average of CatBoost and LightGBM; weighted average based on CV log loss; stacking with logistic regression meta-learner; average of three models (CatBoost, LightGBM, XGBoost).  
+Best run: e105  
+Learned: Ensembling CatBoost and LightGBM (either simple or weighted average) improved validation log loss over the baseline CatBoost model. Weighted averaging using inverse CV log loss gave a slight edge. Stacking and adding a third model did not help, likely due to overfitting or similarity of models.  
+Next: With more runs, would try different seeds for stability, more diverse feature sets for each model, and blending with optimal weights from a hold-out set.
+
+```python
+import numpy as np
+import pandas as pd
+from catboost import CatBoostClassifier
+from lightgbm import LGBMClassifier
+from sklearn.model_selection import KFold
+from sklearn.metrics import log_loss
+
+def fit(train: pd.DataFrame, target: str, seed: int) -&gt; object:
+    X = train.drop(columns=[target])
+    y = train[target]
+    
+    # Define base models
+    def get_catboost():
+        return CatBoostClassifier(
+            iterations=200,
+            learning_rate=0.05,
+            depth=6,
+            loss_function=&#x27;Logloss&#x27;,
+            random_seed=seed,
+            verbose=False,
+            thread_count=2
+        )
+    def get_lightgbm():
+        return LGBMClassifier(
+            n_estimators=300,
+            learning_rate=0.03,
+            num_leaves=31,
+            subsample=0.8,
+            colsample_bytree=0.8,
+            random_state=seed,
+            n_jobs=2
+        )
+    
+    # Generate out-of-fold predictions
+    n_splits = 5
+    kf = KFold(n_splits=n_splits, shuffle=True, random_state=seed)
+    oof_cb = np.zeros(len(X))
+    oof_lgb = np.zeros(len(X))
+    
+    for fold, (train_idx, val_idx) in enumerate(kf.split(X)):
+        X_tr, X_val = X.iloc[train_idx], X.iloc[val_idx]
+        y_tr, y_val = y.iloc[train_idx], y.iloc[val_idx]
+        
+        # CatBoost
+        cb = get_catboost()
+        cb.fit(X_tr, y_tr)
+        oof_cb[val_idx] = cb.predict_proba(X_val)[:, 1]
+        
+        # LightGBM
+        lgb = get_lightgbm()
+        lgb.fit(X_tr, y_tr)
+        oof_lgb[val_idx] = lgb.predict_proba(X_val)[:, 1]
+    
+    # Compute CV log loss for each model
+    loss_cb = log_loss(y, oof_cb)
+    loss_lgb = log_loss(y, oof_lgb)
+    
+    # Compute weights: inverse loss, normalized
+    w_cb = 1.0 / loss_cb
+    w_lgb = 1.0 / loss_lgb
+    total = w_cb + w_lgb
+    w_cb /= total
+    w_lgb /= total
+    
+    # Retrain base models on full data
+    model_cb_full = get_catboost()
+    model_cb_full.fit(X, y)
+    model_lgb_full = get_lightgbm()
+    model_lgb_full.fit(X, y)
+    
+    return (model_cb_full, model_lgb_full, w_cb, w_lgb)
+
+def predict(model: object, X: pd.DataFrame) -&gt; np.ndarray:
+    model_cb_full, model_lgb_full, w_cb, w_lgb = model
+    prob_cb = model_cb_full.predict_proba(X)[:, 1]
+    prob_lgb = model_lgb_full.predict_proba(X)[:, 1]
+    return w_cb * prob_cb + w_lgb * prob_lgb
+```
+
+---
+
+Generation 4, researcher-4 (features):
+
+
+Tried: Various feature engineering approaches (interactions, squares, log transforms, ratios) with single CatBoost models; dropping surname TF-IDF features; ensemble of two CatBoost models (original features and engineered features).
+Best run: e103
+Learned: Single-model feature engineering did not improve over the baseline CatBoost (iterations=200, learning_rate=0.05, depth=6) and sometimes worsened performance slightly. However, an ensemble of two CatBoost models&#8212;one trained on original features and another on a set of engineered features (including ratios, products, and squares)&#8212;reduced validation log loss from 0.31176 to 0.31141. This suggests that feature engineering complements the original features and reduces variance when combined in an ensemble.
+Next: With more runs, would try stacking with a meta-learner, blending more diverse models (e.g., LightGBM, XGBoost), and further refining the engineered feature set to reduce redundancy. Also would test different random seeds for stability.</pre></details></article><article class='gen'><header><h4>Generation 5</h4><div><span class='pill'>no new best</span></div><div class='nums'>val 0.31176 &middot; test gain +19.96% &middot; 25 runs, 0 failed &middot; read 6879 tokens &middot; 3.4 min</div></header><div class='tablewrap'><table class='small'><thead><tr><th>Focus</th><th>Rank</th><th>Best val</th><th>Change</th></tr></thead><tbody><tr><td>ensembling</td><td>1</td><td>0.31088 <span class='dim'>e111</span></td><td>Blend of CatBoost and LightGBM with weights from inverse CV log loss</td></tr><tr><td>regularization</td><td>1</td><td>0.31150 <span class='dim'>e120</span></td><td>Early stopping with holdout, refit on full data</td></tr><tr><td>model type</td><td>1</td><td>0.31176 <span class='dim'>e130</span></td><td>CatBoost baseline with seed=1</td></tr><tr><td>tuning</td><td>1</td><td>0.31222 <span class='dim'>e109</span></td><td>Run 2: iterations=1000, lr=0.01, depth=6, l2_leaf_reg=3</td></tr></tbody></table></div><details><summary>Memory after generation 5 (8153 tokens)</summary><pre>Generation 1, researcher-1 (features):
+
+
+Tried: LightGBM default, LightGBM with feature engineering, CatBoost with feature engineering, XGBoost with feature engineering, tuned CatBoost with more iterations and depth, tuned LightGBM similar to tuned CatBoost.
+Best run: e21
+Learned: Feature engineering (interactions, ratios, squares) combined with gradient boosting (CatBoost, LightGBM, XGBoost) significantly improves over logistic regression. CatBoost with appropriate regularization and learning rate performed best. LightGBM and XGBoost were close but slightly worse. Over-engineering or too deep trees without regularization can lead to overfitting (warnings in LightGBM run).
+Next: If more runs were available, would try stacking or blending of models, further feature engineering like binning, or using embeddings for categorical features (though here they are already one-hot encoded). Also would try different seeds to ensure stability.
+
+Now produce the final solution.
+
+```python
+import numpy as np
+import pandas as pd
+from catboost import CatBoostClassifier
+
+def fit(train: pd.DataFrame, target: str, seed: int) -&gt; object:
+    X = train.drop(columns=[target])
+    y = train[target]
+    
+    # Feature engineering
+    X = X.copy()
+    # Avoid division by zero
+    X[&#x27;balance_per_tenure&#x27;] = X[&#x27;balance&#x27;] / (X[&#x27;tenure&#x27;] + 1)
+    X[&#x27;salary_per_tenure&#x27;] = X[&#x27;estimatedsalary&#x27;] / (X[&#x27;tenure&#x27;] + 1)
+    X[&#x27;balance_per_product&#x27;] = X[&#x27;balance&#x27;] / (X[&#x27;numofproducts&#x27;] + 1)
+    X[&#x27;salary_per_product&#x27;] = X[&#x27;estimatedsalary&#x27;] / (X[&#x27;numofproducts&#x27;] + 1)
+    X[&#x27;credit_score_times_balance&#x27;] = X[&#x27;creditscore&#x27;] * X[&#x27;balance&#x27;]
+    X[&#x27;age_times_credit&#x27;] = X[&#x27;age&#x27;] * X[&#x27;creditscore&#x27;]
+    X[&#x27;tenure_squared&#x27;] = X[&#x27;tenure&#x27;] ** 2
+    X[&#x27;age_squared&#x27;] = X[&#x27;age&#x27;] ** 2
+    X[&#x27;balance_squared&#x27;] = X[&#x27;balance&#x27;] ** 2
+    X[&#x27;estimatedsalary_squared&#x27;] = X[&#x27;estimatedsalary&#x27;] ** 2
+    X[&#x27;balance_times_numproducts&#x27;] = X[&#x27;balance&#x27;] * X[&#x27;numofproducts&#x27;]
+    X[&#x27;salary_times_numproducts&#x27;] = X[&#x27;estimatedsalary&#x27;] * X[&#x27;numofproducts&#x27;]
+    X[&#x27;credit_score_times_age&#x27;] = X[&#x27;creditscore&#x27;] * X[&#x27;age&#x27;]
+    X[&#x27;credit_score_times_tenure&#x27;] = X[&#x27;creditscore&#x27;] * X[&#x27;tenure&#x27;]
+    X[&#x27;age_times_tenure&#x27;] = X[&#x27;age&#x27;] * X[&#x27;tenure&#x27;]
+    X[&#x27;balance_plus_salary&#x27;] = X[&#x27;balance&#x27;] + X[&#x27;estimatedsalary&#x27;]
+    X[&#x27;balance_per_salary&#x27;] = X[&#x27;balance&#x27;] / (X[&#x27;estimatedsalary&#x27;] + 1)
+    X[&#x27;salary_per_balance&#x27;] = X[&#x27;estimatedsalary&#x27;] / (X[&#x27;balance&#x27;] + 1)
+    X[&#x27;tenure_times_numproducts&#x27;] = X[&#x27;tenure&#x27;] * X[&#x27;numofproducts&#x27;]
+    X[&#x27;age_times_numproducts&#x27;] = X[&#x27;age&#x27;] * X[&#x27;numofproducts&#x27;]
+    
+    model = CatBoostClassifier(
+        iterations=500,
+        learning_rate=0.02,
+        depth=8,
+        l2_leaf_reg=5,
+        random_seed=seed,
+        loss_function=&#x27;Logloss&#x27;,
+        verbose=False,
+        thread_count=2
+    )
+    model.fit(X, y)
+    return model
+
+def predict(model: object, X: pd.DataFrame) -&gt; np.ndarray:
+    # Apply same feature engineering to X
+    X = X.copy()
+    X[&#x27;balance_per_tenure&#x27;] = X[&#x27;balance&#x27;] / (X[&#x27;tenure&#x27;] + 1)
+    X[&#x27;salary_per_tenure&#x27;] = X[&#x27;estimatedsalary&#x27;] / (X[&#x27;tenure&#x27;] + 1)
+    X[&#x27;balance_per_product&#x27;] = X[&#x27;balance&#x27;] / (X[&#x27;numofproducts&#x27;] + 1)
+    X[&#x27;salary_per_product&#x27;] = X[&#x27;estimatedsalary&#x27;] / (X[&#x27;numofproducts&#x27;] + 1)
+    X[&#x27;credit_score_times_balance&#x27;] = X[&#x27;creditscore&#x27;] * X[&#x27;balance&#x27;]
+    X[&#x27;age_times_credit&#x27;] = X[&#x27;age&#x27;] * X[&#x27;creditscore&#x27;]
+    X[&#x27;tenure_squared&#x27;] = X[&#x27;tenure&#x27;] ** 2
+    X[&#x27;age_squared&#x27;] = X[&#x27;age&#x27;] ** 2
+    X[&#x27;balance_squared&#x27;] = X[&#x27;balance&#x27;] ** 2
+    X[&#x27;estimatedsalary_squared&#x27;] = X[&#x27;estimatedsalary&#x27;] ** 2
+    X[&#x27;balance_times_numproducts&#x27;] = X[&#x27;balance&#x27;] * X[&#x27;numofproducts&#x27;]
+    X[&#x27;salary_times_numproducts&#x27;] = X[&#x27;estimatedsalary&#x27;] * X[&#x27;numofproducts&#x27;]
+    X[&#x27;credit_score_times_age&#x27;] = X[&#x27;creditscore&#x27;] * X[&#x27;age&#x27;]
+    X[&#x27;credit_score_times_tenure&#x27;] = X[&#x27;creditscore&#x27;] * X[&#x27;tenure&#x27;]
+    X[&#x27;age_times_tenure&#x27;] = X[&#x27;age&#x27;] * X[&#x27;tenure&#x27;]
+    X[&#x27;balance_plus_salary&#x27;] = X[&#x27;balance&#x27;] + X[&#x27;estimatedsalary&#x27;]
+    X[&#x27;balance_per_salary&#x27;] = X[&#x27;balance&#x27;] / (X[&#x27;estimatedsalary&#x27;] + 1)
+    X[&#x27;salary_per_balance&#x27;] = X[&#x27;estimatedsalary&#x27;] / (X[&#x27;balance&#x27;] + 1)
+    X[&#x27;tenure_times_numproducts&#x27;] = X[&#x27;tenure&#x27;] * X[&#x27;numofproducts&#x27;]
+    X[&#x27;age_times_numproducts&#x27;] = X[&#x27;age&#x27;] * X[&#x27;numofproducts&#x27;]
+    return model.predict_proba(X)[:, 1]
+```
+
+---
+
+Generation 1, researcher-2 (model type):
+
+Tried:
+- LightGBM (200 estimators, lr 0.05, class_weight balanced): val_loss 0.3930
+- XGBoost (200 estimators, lr 0.05, max_depth 6, subsample/colsample 0.8, scale_pos_weight): val_loss 0.3888
+- CatBoost (200 iterations, lr 0.05, depth 6): val_loss 0.3118
+- PyTorch MLP (two hidden layers, dropout, early stopping): val_loss 0.3206
+- CatBoost (500 iterations, lr 0.02, depth 8, l2_leaf_reg 3): val_loss 0.3132
+- HistGradientBoostingClassifier (sample weighted): val_loss 0.4033
+- CatBoost (1000 iterations, lr 0.01, depth 7, l2_leaf_reg 5): val_loss 0.3121
+
+Best run: e10
+Learned: CatBoost with moderate depth and learning rate gave the best validation log loss, outperforming other boosted trees, linear models, and neural networks. The dataset appears to respond well to ordered boosting with symmetric trees. Neural nets with early stopping were competitive but required more tuning and time.
+Next: Try more extensive hyperparameter search for CatBoost (e.g., learning rate 0.03, depth 4-10, l2_leaf_reg 1-10), try feature interactions, or try stacking of multiple models.
+
+---
+
+Generation 1, researcher-3 (tuning):
+
+
+Tried: baseline LogisticRegression (C=1.0) -&gt; 0.3947; LogisticRegression (C=0.01) -&gt; 0.3962; LightGBM default-ish (n_estimators=100, lr=0.1, num_leaves=31) -&gt; 0.3163; LightGBM more trees (n_estimators=500, lr=0.05, num_leaves=63) -&gt; 0.3275; LightGBM tuned (n_estimators=1000, lr=0.01, num_leaves=127, subsample=0.8, colsample=0.8) -&gt; 0.3186; LightGBM (n_estimators=200, lr=0.05, num_leaves=31) -&gt; 0.3149; LightGBM (n_estimators=300, lr=0.03, num_leaves=31) -&gt; 0.3122.
+Best run: e20
+Learned: LightGBM outperforms logistic regression significantly. Lower learning rate with more trees (n_estimators=300, lr=0.03) gave the best validation log_loss among tried configurations. Increasing trees too much with low learning rate (n_estimators=1000, lr=0.01) did not improve and may have overfit slightly. Simpler trees (num_leaves=31) worked well; increasing num_leaves to 63 or 127 without adjusting other parameters did not help.
+Next: Try XGBoost or CatBoost with similar hyperparameter tuning; experiment with feature interactions or polynomial features; use early stopping based on validation loss (though we cannot see validation labels, we could use internal validation). Also try different subsample and colsample values. However, no runs remain.
+
+---
+
+Generation 1, researcher-4 (regularization):
+
+
+Tried: v1: LogisticRegression C=0.1 (more regularization) -&gt; val_loss 0.39526; v2: LogisticRegression C=10.0 (less regularization) -&gt; val_loss 0.39465; v3: LightGBM default-ish (n_estimators=100, learning_rate=0.1) -&gt; val_loss 0.31626; v4: LightGBM with early stopping via callbacks and regularization (subsample=0.8, colsample=0.8, reg_alpha=0.1, reg_lambda=0.1) -&gt; val_loss 0.31596; v5: XGBoost with early stopping (error due to API); v5b: XGBoost with callbacks (error due to API)
+Best run: e22
+Learned: LightGBM with early stopping and regularization outperforms logistic regression by capturing non-linear patterns and interactions. Regularization (subsample, colsample, L1/L2) helps prevent overfitting. Logistic regression changes in C had minimal effect. XGBoost attempts failed due to API mismatches in the available version.
+Next: Tune LightGBM hyperparameters (num_leaves, min_child_samples, learning_rate); try XGBoost with correct early stopping API; consider feature selection or stacking.
+
+---
+
+Generation 2, researcher-1 (ensembling):
+
+Tried: Simple average ensemble of CatBoost, LightGBM, XGBoost; CatBoost with feature engineering and tuned hyperparameters; Ensemble of two CatBoost models (original features + engineered features).
+Best run: e38
+Learned: Ensembling diverse models (CatBoost, LightGBM, XGBoost) did not improve over the best single model, likely due to correlation and similar performance. However, ensembling two CatBoost models with different feature sets (original vs engineered) slightly improved validation log loss, suggesting that feature engineering complements the original features and reduces variance.
+Next: Try stacking with a meta-learner (e.g., logistic regression) on top of base model predictions; try more diverse feature engineering (e.g., binning, target encoding); try varying hyperparameters for each base model to increase diversity; try weighted averaging based on validation performance.
+
+```python
+import numpy as np
+import pandas as pd
+from catboost import CatBoostClassifier
+
+def fit(train: pd.DataFrame, target: str, seed: int) -&gt; object:
+    X = train.drop(columns=[target])
+    y = train[target]
+    
+    # Model 1: original features, hyperparameters from v1
+    model1 = CatBoostClassifier(
+        iterations=200,
+        learning_rate=0.05,
+        depth=6,
+        loss_function=&#x27;Logloss&#x27;,
+        random_seed=seed,
+        verbose=False,
+        thread_count=2
+    )
+    model1.fit(X, y)
+    
+    # Model 2: engineered features, hyperparameters from e34
+    X_eng = X.copy()
+    # Feature engineering
+    X_eng[&#x27;balance_per_tenure&#x27;] = X_eng[&#x27;balance&#x27;] / (X_eng[&#x27;tenure&#x27;] + 1)
+    X_eng[&#x27;salary_per_tenure&#x27;] = X_eng[&#x27;estimatedsalary&#x27;] / (X_eng[&#x27;tenure&#x27;] + 1)
+    X_eng[&#x27;balance_per_product&#x27;] = X_eng[&#x27;balance&#x27;] / (X_eng[&#x27;numofproducts&#x27;] + 1)
+    X_eng[&#x27;salary_per_product&#x27;] = X_eng[&#x27;estimatedsalary&#x27;] / (X_eng[&#x27;numofproducts&#x27;] + 1)
+    X_eng[&#x27;credit_score_times_balance&#x27;] = X_eng[&#x27;creditscore&#x27;] * X_eng[&#x27;balance&#x27;]
+    X_eng[&#x27;age_times_credit&#x27;] = X_eng[&#x27;age&#x27;] * X_eng[&#x27;creditscore&#x27;]
+    X_eng[&#x27;tenure_squared&#x27;] = X_eng[&#x27;tenure&#x27;] ** 2
+    X_eng[&#x27;age_squared&#x27;] = X_eng[&#x27;age&#x27;] ** 2
+    X_eng[&#x27;balance_squared&#x27;] = X_eng[&#x27;balance&#x27;] ** 2
+    X_eng[&#x27;estimatedsalary_squared&#x27;] = X_eng[&#x27;estimatedsalary&#x27;] ** 2
+    X_eng[&#x27;balance_times_numproducts&#x27;] = X_eng[&#x27;balance&#x27;] * X_eng[&#x27;numofproducts&#x27;]
+    X_eng[&#x27;salary_times_numproducts&#x27;] = X_eng[&#x27;estimatedsalary&#x27;] * X_eng[&#x27;numofproducts&#x27;]
+    X_eng[&#x27;credit_score_times_age&#x27;] = X_eng[&#x27;creditscore&#x27;] * X_eng[&#x27;age&#x27;]
+    X_eng[&#x27;credit_score_times_tenure&#x27;] = X_eng[&#x27;creditscore&#x27;] * X_eng[&#x27;tenure&#x27;]
+    X_eng[&#x27;age_times_tenure&#x27;] = X_eng[&#x27;age&#x27;] * X_eng[&#x27;tenure&#x27;]
+    X_eng[&#x27;balance_plus_salary&#x27;] = X_eng[&#x27;balance&#x27;] + X_eng[&#x27;estimatedsalary&#x27;]
+    X_eng[&#x27;balance_per_salary&#x27;] = X_eng[&#x27;balance&#x27;] / (X_eng[&#x27;estimatedsalary&#x27;] + 1)
+    X_eng[&#x27;salary_per_balance&#x27;] = X_eng[&#x27;estimatedsalary&#x27;] / (X_eng[&#x27;balance&#x27;] + 1)
+    X_eng[&#x27;tenure_times_numproducts&#x27;] = X_eng[&#x27;tenure&#x27;] * X_eng[&#x27;numofproducts&#x27;]
+    X_eng[&#x27;age_times_numproducts&#x27;] = X_eng[&#x27;age&#x27;] * X_eng[&#x27;numofproducts&#x27;]
+    
+    model2 = CatBoostClassifier(
+        iterations=500,
+        learning_rate=0.02,
+        depth=8,
+        l2_leaf_reg=5,
+        random_seed=seed,
+        loss_function=&#x27;Logloss&#x27;,
+        verbose=False,
+        thread_count=2
+    )
+    model2.fit(X_eng, y)
+    
+    return (model1, model2)
+
+def predict(model: object, X: pd.DataFrame) -&gt; np.ndarray:
+    model1, model2 = model
+    # Predict with model1 on original features
+    prob1 = model1.predict_proba(X)[:, 1]
+    
+    # Predict with model2 on engineered features
+    X_eng = X.copy()
+    X_eng[&#x27;balance_per_tenure&#x27;] = X_eng[&#x27;balance&#x27;] / (X_eng[&#x27;tenure&#x27;] + 1)
+    X_eng[&#x27;salary_per_tenure&#x27;] = X_eng[&#x27;estimatedsalary&#x27;] / (X_eng[&#x27;tenure&#x27;] + 1)
+    X_eng[&#x27;balance_per_product&#x27;] = X_eng[&#x27;balance&#x27;] / (X_eng[&#x27;numofproducts&#x27;] + 1)
+    X_eng[&#x27;salary_per_product&#x27;] = X_eng[&#x27;estimatedsalary&#x27;] / (X_eng[&#x27;numofproducts&#x27;] + 1)
+    X_eng[&#x27;credit_score_times_balance&#x27;] = X_eng[&#x27;creditscore&#x27;] * X_eng[&#x27;balance&#x27;]
+    X_eng[&#x27;age_times_credit&#x27;] = X_eng[&#x27;age&#x27;] * X_eng[&#x27;creditscore&#x27;]
+    X_eng[&#x27;tenure_squared&#x27;] = X_eng[&#x27;tenure&#x27;] ** 2
+    X_eng[&#x27;age_squared&#x27;] = X_eng[&#x27;age&#x27;] ** 2
+    X_eng[&#x27;balance_squared&#x27;] = X_eng[&#x27;balance&#x27;] ** 2
+    X_eng[&#x27;estimatedsalary_squared&#x27;] = X_eng[&#x27;estimatedsalary&#x27;] ** 2
+    X_eng[&#x27;balance_times_numproducts&#x27;] = X_eng[&#x27;balance&#x27;] * X_eng[&#x27;numofproducts&#x27;]
+    X_eng[&#x27;salary_times_numproducts&#x27;] = X_eng[&#x27;estimatedsalary&#x27;] * X_eng[&#x27;numofproducts&#x27;]
+    X_eng[&#x27;credit_score_times_age&#x27;] = X_eng[&#x27;creditscore&#x27;] * X_eng[&#x27;age&#x27;]
+    X_eng[&#x27;credit_score_times_tenure&#x27;] = X_eng[&#x27;creditscore&#x27;] * X_eng[&#x27;tenure&#x27;]
+    X_eng[&#x27;age_times_tenure&#x27;] = X_eng[&#x27;age&#x27;] * X_eng[&#x27;tenure&#x27;]
+    X_eng[&#x27;balance_plus_salary&#x27;] = X_eng[&#x27;balance&#x27;] + X_eng[&#x27;estimatedsalary&#x27;]
+    X_eng[&#x27;balance_per_salary&#x27;] = X_eng[&#x27;balance&#x27;] / (X_eng[&#x27;estimatedsalary&#x27;] + 1)
+    X_eng[&#x27;salary_per_balance&#x27;] = X_eng[&#x27;estimatedsalary&#x27;] / (X_eng[&#x27;balance&#x27;] + 1)
+    X_eng[&#x27;tenure_times_numproducts&#x27;] = X_eng[&#x27;tenure&#x27;] * X_eng[&#x27;numofproducts&#x27;]
+    X_eng[&#x27;age_times_numproducts&#x27;] = X_eng[&#x27;age&#x27;] * X_eng[&#x27;numofproducts&#x27;]
+    prob2 = model2.predict_proba(X_eng)[:, 1]
+    
+    # Average probabilities
+    avg_prob = (prob1 + prob2) / 2.0
+    return avg_prob
+```
+
+---
+
+Generation 2, researcher-2 (features):
+
+
+Tried: Baseline CatBoost (200,0.05,6); Feature engineering with many interactions/squares + same CatBoost; Feature engineering + tuned CatBoost (500 iter, lr 0.02, depth 8, l2 5); Feature engineering with log, ratios, interactions, encoded combos + baseline CatBoost; Small set of interaction features + baseline CatBoost; LightGBM with feature engineering; Feature engineering + CatBoost (1000 iter, lr 0.01, depth 7, l2 5).
+Best run: e50
+Learned: The baseline CatBoost model without any additional feature engineering achieved the lowest validation log loss (0.311757). All attempts at feature engineering (including interactions, squares, logs, ratios, and encoded combinations) resulted in equal or worse performance, likely due to overfitting or introducing noise given the dataset already contains many engineered features (surname TF-IDF, one-hot encoded geography and gender, etc.). The model appears to benefit from its ability to handle raw features effectively, and extra features did not improve generalization.
+Next: With more runs, I would try feature selection to remove redundant or noisy features, explore stacking or blending of multiple models (e.g., CatBoost, LightGBM, XGBoost), and test different random seeds to ensure stability of the best model. I would also consider using early stopping with a validation split (if allowed) to tune iterations more precisely.
+
+---
+
+Generation 2, researcher-3 (model type):
+
+
+Tried: Neural network MLP with standardization and early stopping; CatBoost with feature engineering and tuned hyperparameters; LightGBM with feature engineering and balanced class weight; CatBoost tuned with more iterations and lower learning rate; CatBoost with auto_class_weights; CatBoost without feature engineering; CatBoost with increased depth and regularization.
+Best run: e36
+Learned: Simple CatBoost models without feature engineering performed best; feature engineering did not improve and sometimes worsened performance. Neural networks were competitive but required careful tuning and more time. LightGBM with class weighting underperformed relative to CatBoost on this dataset.
+Next: With more runs, would try stacking or blending of models, further feature engineering like binning or target encoding, and a more thorough hyperparameter search for CatBoost (learning rate, depth, regularization). Also would experiment with different seeds to validate stability.
+
+---
+
+Generation 2, researcher-4 (tuning):
+
+
+Tried: 
+- Run e37: 500 iterations, lr=0.02, depth=8, l2_leaf_reg=5
+- Run e40: 300 iterations, lr=0.03, depth=7, l2_leaf_reg=3
+- Run e41: 800 iterations, lr=0.015, depth=7, l2_leaf_reg=4
+- Run e42: 1000 iterations, lr=0.01, depth=6, l2_leaf_reg=3
+- Run e44: 150 iterations, lr=0.06, depth=5, l2_leaf_reg=3
+- Run e46: baseline (200 iterations, lr=0.05, depth=6)
+
+Best run: e46
+Learned: The baseline CatBoost configuration (200 iterations, learning rate 0.05, depth 6) achieved the lowest validation log loss (0.31176) among all tested hyperparameter settings. Changes to iteration count, learning rate, depth, or adding L2 regularization did not improve performance, indicating the baseline is already well-tuned for this dataset.
+Next: With additional runs, consider feature engineering (interactions, ratios, polynomials) to boost performance, or explore other gradient boosting libraries (LightGBM, XGBoost) with similar tuning. Stacking or blending models could also be investigated.
+
+---
+
+Generation 3, researcher-1 (regularization):
+
+
+Tried: Baseline CatBoost (iterations=200, learning_rate=0.05, depth=6); increased l2_leaf_reg to 10; decreased l2_leaf_reg to 1.0; reduced depth to 5 with l2_leaf_reg=3; early stopping with holdout validation (20% holdout, 50 early stopping rounds); CatBoost&#x27;s built-in overfitting detection (ODType=Iter, ODWait=50).
+Best run: e52
+Learned: The baseline CatBoost model with default regularization (l2_leaf_reg=3) achieved the lowest validation log loss. Increasing or decreasing l2_leaf_reg worsened performance, indicating the default is well-tuned. Early stopping approaches that reduced the effective training data (by holding out a validation set) led to higher loss, likely due to underfitting. CatBoost&#x27;s overfitting detection also performed worse, possibly because it stopped too early or too late without improving generalization.
+Next: With more runs, would try early stopping with holdout but refitting on the full dataset using the best iteration found; try different random seeds to ensure stability; explore feature selection to remove redundant features; attempt stacking or blending of multiple models to reduce variance.
+
+---
+
+Generation 3, researcher-2 (ensembling):
+
+
+Tried: Simple average of two CatBoost models (original + engineered features), weighted ensemble of two models with internal validation, simple average of 5 CatBoost models with different seeds, stacking with logistic regression meta-learner, simple average of three CatBoost models (original, engineered, original with different hyperparams), weighted ensemble of three models with internal validation.
+Best run: e55
+Learned: The best performance came from a simple average of two CatBoost models: one trained on the original features (iterations=200, learning_rate=0.05, depth=6) and another on a set of engineered features (iterations=500, learning_rate=0.02, depth=8, l2_leaf_reg=5). This ensemble improved validation log loss from 0.31176 to 0.31141. Weighted ensembles and stacking did not improve further, likely due to overfitting on the internal validation split used to tune weights or meta-learners. More diverse models (e.g., including LightGBM or XGBoost) might help, but time was limited.
+Next: With more runs, try blending different algorithm families (CatBoost, LightGBM, XGBoost) and use a hold-out set (if allowed) to tune ensemble weights without overfitting. Also consider feature selection to reduce redundancy in engineered features.
+
+---
+
+Generation 3, researcher-3 (features):
+
+
+Tried: Feature engineering with interactions and squares (CatBoost baseline), LightGBM with same feature engineering, target encoding for surname with dropping TF-IDF and adding interactions, dropping surname and TF-IDF with selected interactions, extensive feature engineering with tuned CatBoost, and a few interaction features with baseline CatBoost.
+Best run: The baseline CatBoost from the team log (val_loss 0.31176) remains the best. Among our runs, e75 (tuned CatBoost with extensive feature engineering) achieved 0.312085, which is close but slightly worse.
+Learned: The dataset already contains many engineered features (surname TF-IDF, one-hot encoded geography and gender, etc.). Additional feature engineering did not improve performance and may have introduced noise or overfitting. The baseline CatBoost with default hyperparameters (200 iterations, learning rate 0.05, depth 6) is already well-tuned for this dataset.
+Next: If more runs were available, we would try feature selection to remove redundant features, stacking or blending of multiple models (e.g., CatBoost, LightGBM, XGBoost), and further hyperparameter tuning (e.g., learning rate, depth, regularization) to potentially squeeze out small improvements. We would also experiment with different random seeds to ensure stability.
+
+---
+
+Generation 3, researcher-4 (model type):
+
+
+Tried: LightGBM, Logistic Regression, XGBoost, PyTorch MLP, tuned CatBoost (with auto class weights), and another Catboost configuration.
+Best run: e56
+Learned: The baseline CatBoost model (200 iterations, learning rate 0.05, depth 6) achieved the lowest validation log loss among all models tried. Other models such as LightGBM, XGBoost, logistic regression, and neural networks performed worse. Tuning CatBoost with different hyperparameters did not improve over the baseline, suggesting the baseline is well-suited for this dataset.
+Next: If more runs were available, would try stacking or blending of models, feature selection to remove redundant features, and further hyperparameter tuning with a focus on learning rate and depth combinations. Also would try different random seeds to ensure stability.
+
+---
+
+Generation 4, researcher-1 (tuning):
+
+
+Tried: Various CatBoost hyperparameter adjustments: increased iterations with lower learning rate (500 iter, lr 0.02, depth 8, l2 5); 300 iter, lr 0.03, depth 7, l2 3; 1000 iter, lr 0.01, depth 6, l2 3; increased l2_leaf_reg to 10; decreased depth to 4 and 5; enabled auto_class_weights Balanced.
+Best run: Baseline from team log (val_loss 0.31176) remains best; all tuned runs had higher validation loss.
+Learned: The baseline CatBoost model (iterations=200, learning_rate=0.05, depth=6, l2_leaf_reg=3) is already well-tuned for this dataset. Changes to iteration count, learning rate, depth, regularization, or class weighting did not improve validation log loss and often worsened it, suggesting the default hyperparameters are near optimal.
+Next: With more runs, consider feature selection to remove redundant features, stacking or blending with other model families (LightGBM, XGBoost), or trying different random seeds to verify stability. However, based on tuning experiments, the baseline model is recommended.
+
+---
+
+Generation 4, researcher-2 (regularization):
+
+
+Tried: Baseline CatBoost (iterations=200, learning_rate=0.05, depth=6) -&gt; val_loss 0.311757; increased l2_leaf_reg to 10 -&gt; 0.312607; decreased l2_leaf_reg to 1.0 -&gt; 0.313747; reduced depth to 5 -&gt; 0.313173; increased min_child_samples to 10 -&gt; 0.311757; overfitting detection with ODType=Iter and od_wait -&gt; API errors.
+Best run: e79
+Learned: The baseline CatBoost model with default regularization (l2_leaf_reg=3) is already well-tuned for this dataset. Adjusting regularization parameters (l2_leaf_reg, depth) or adding constraints like min_child_samples did not improve validation log loss. Overfitting detection could not be used properly due to API constraints requiring an evaluation set, which is not available in the training-only setting. Feature engineering and ensembling attempts from previous generations also did not consistently improve over the baseline.
+Next: If more runs were available, could try stacking with a hold-out set for tuning weights, or experiment with different random seeds to verify stability. However, given the consistent performance of the baseline, it is likely a strong model for this dataset.
+
+---
+
+Generation 4, researcher-3 (ensembling):
+
+
+Tried: Simple average of CatBoost and LightGBM; weighted average based on CV log loss; stacking with logistic regression meta-learner; average of three models (CatBoost, LightGBM, XGBoost).  
+Best run: e105  
+Learned: Ensembling CatBoost and LightGBM (either simple or weighted average) improved validation log loss over the baseline CatBoost model. Weighted averaging using inverse CV log loss gave a slight edge. Stacking and adding a third model did not help, likely due to overfitting or similarity of models.  
+Next: With more runs, would try different seeds for stability, more diverse feature sets for each model, and blending with optimal weights from a hold-out set.
+
+```python
+import numpy as np
+import pandas as pd
+from catboost import CatBoostClassifier
+from lightgbm import LGBMClassifier
+from sklearn.model_selection import KFold
+from sklearn.metrics import log_loss
+
+def fit(train: pd.DataFrame, target: str, seed: int) -&gt; object:
+    X = train.drop(columns=[target])
+    y = train[target]
+    
+    # Define base models
+    def get_catboost():
+        return CatBoostClassifier(
+            iterations=200,
+            learning_rate=0.05,
+            depth=6,
+            loss_function=&#x27;Logloss&#x27;,
+            random_seed=seed,
+            verbose=False,
+            thread_count=2
+        )
+    def get_lightgbm():
+        return LGBMClassifier(
+            n_estimators=300,
+            learning_rate=0.03,
+            num_leaves=31,
+            subsample=0.8,
+            colsample_bytree=0.8,
+            random_state=seed,
+            n_jobs=2
+        )
+    
+    # Generate out-of-fold predictions
+    n_splits = 5
+    kf = KFold(n_splits=n_splits, shuffle=True, random_state=seed)
+    oof_cb = np.zeros(len(X))
+    oof_lgb = np.zeros(len(X))
+    
+    for fold, (train_idx, val_idx) in enumerate(kf.split(X)):
+        X_tr, X_val = X.iloc[train_idx], X.iloc[val_idx]
+        y_tr, y_val = y.iloc[train_idx], y.iloc[val_idx]
+        
+        # CatBoost
+        cb = get_catboost()
+        cb.fit(X_tr, y_tr)
+        oof_cb[val_idx] = cb.predict_proba(X_val)[:, 1]
+        
+        # LightGBM
+        lgb = get_lightgbm()
+        lgb.fit(X_tr, y_tr)
+        oof_lgb[val_idx] = lgb.predict_proba(X_val)[:, 1]
+    
+    # Compute CV log loss for each model
+    loss_cb = log_loss(y, oof_cb)
+    loss_lgb = log_loss(y, oof_lgb)
+    
+    # Compute weights: inverse loss, normalized
+    w_cb = 1.0 / loss_cb
+    w_lgb = 1.0 / loss_lgb
+    total = w_cb + w_lgb
+    w_cb /= total
+    w_lgb /= total
+    
+    # Retrain base models on full data
+    model_cb_full = get_catboost()
+    model_cb_full.fit(X, y)
+    model_lgb_full = get_lightgbm()
+    model_lgb_full.fit(X, y)
+    
+    return (model_cb_full, model_lgb_full, w_cb, w_lgb)
+
+def predict(model: object, X: pd.DataFrame) -&gt; np.ndarray:
+    model_cb_full, model_lgb_full, w_cb, w_lgb = model
+    prob_cb = model_cb_full.predict_proba(X)[:, 1]
+    prob_lgb = model_lgb_full.predict_proba(X)[:, 1]
+    return w_cb * prob_cb + w_lgb * prob_lgb
+```
+
+---
+
+Generation 4, researcher-4 (features):
+
+
+Tried: Various feature engineering approaches (interactions, squares, log transforms, ratios) with single CatBoost models; dropping surname TF-IDF features; ensemble of two CatBoost models (original features and engineered features).
+Best run: e103
+Learned: Single-model feature engineering did not improve over the baseline CatBoost (iterations=200, learning_rate=0.05, depth=6) and sometimes worsened performance slightly. However, an ensemble of two CatBoost models&#8212;one trained on original features and another on a set of engineered features (including ratios, products, and squares)&#8212;reduced validation log loss from 0.31176 to 0.31141. This suggests that feature engineering complements the original features and reduces variance when combined in an ensemble.
+Next: With more runs, would try stacking with a meta-learner, blending more diverse models (e.g., LightGBM, XGBoost), and further refining the engineered feature set to reduce redundancy. Also would test different random seeds for stability.
+
+---
+
+Generation 5, researcher-1 (model type):
+
+
+Tried: LightGBM (n_estimators=300, lr=0.03, num_leaves=31), XGBoost (n_estimators=300, lr=0.03, max_depth=6, subsample=0.8, colsample=0.8), Logistic Regression with StandardScaler, CatBoost tuned (iterations=300, learning_rate=0.03, depth=6), PyTorch MLP with one hidden layer, dropout, early stopping, CatBoost baseline with seed=1.
+Best run: e130
+Learned: CatBoost with default hyperparameters (200 iterations, learning_rate=0.05, depth=6) consistently achieves the lowest validation log loss (~0.31176) across different seeds and tuning attempts. LightGBM and tuned CatBoost variants perform similarly but slightly worse. XGBoost, logistic regression, and neural networks are outperformed by CatBoost on this dataset, likely due to CatBoost&#x27;s handling of categorical features and ordered boosting, which aligns well with the dataset&#x27;s structure (including one-hot encoded geography/gender and TF-IDF surname features).
+Next: If more runs were available, would try stacking or blending of CatBoost with LightGBM or XGBoost to leverage complementary strengths, experiment with different random seeds for stability, and explore feature selection to reduce redundancy among the many engineered features already present. Additionally, could try CatBoost with optimized hyperparameters found via a more extensive search (e.g., learning rate 0.03-0.05, depth 4-8, l2_leaf_reg 1-10) using internal cross-validation.
+
+---
+
+Generation 5, researcher-2 (tuning):
+
+
+Tried: Various CatBoost hyperparameter adjustments including iterations (150, 200, 300, 500, 1000), learning rate (0.01, 0.02, 0.03, 0.05, 0.06), depth (4,5,6,7,8), l2_leaf_reg (1,3,5), and auto_class_weights.
+Best run: e109
+Learned: The baseline CatBoost hyperparameters (iterations=200, learning_rate=0.05, depth=6, l2_leaf_reg=3) from the team log are already well-tuned for this dataset. All hyperparameter changes increased validation log loss, indicating the baseline is near optimal. Using auto_class_weights significantly worsened performance, likely due to class imbalance handling interfering with the existing effective balance.
+Next: Try feature engineering or ensembling with the baseline model, or experiment with other gradient boosting libraries (LightGBM, XGBoost) using similar hyperparameter principles. Also consider stacking or blending models to potentially reduce variance further.
+
+---
+
+Generation 5, researcher-3 (regularization):
+
+
+Tried: Baseline CatBoost (iterations=200, learning_rate=0.05, depth=6) -&gt; 0.311757; lower l2_leaf_reg=1 -&gt; 0.313747; higher l2_leaf_reg=10 -&gt; 0.312607; early stopping with holdout (20%) and refit on full data -&gt; 0.311500; early stopping with depth=5 -&gt; 0.312823; early stopping with lr=0.03, l2_leaf_reg=5 -&gt; 0.312745; overfitting detection (ODType=Iter, od_wait=50) with holdout and refit -&gt; 0.311500.
+Best run: e120 (and e129 tied) with val_loss 0.311500.
+Learned: The baseline CatBoost model is already well-tuned, but using early stopping with a holdout set (20%) and refitting on the full data with the best iteration found can slightly improve validation log loss. Adjusting l2_leaf_reg away from the default (3) worsens performance. Reducing depth or changing learning rate with early stopping did not beat the baseline. Overfitting detection with similar settings gave the same improvement as early stopping.
+Next: With more runs, would try different holdout proportions for early stopping, varying the number of early stopping rounds, and combining feature engineering with early stopping. Also would test different random seeds to ensure stability of the improvement.
+
+---
+
+Generation 5, researcher-4 (ensembling):
+
+
+Tried: Blend of CatBoost and LightGBM with weights from inverse CV log loss; Simple average of CatBoost and LightGBM; Weighted ensemble of CatBoost, LightGBM, XGBoost with inverse CV log loss weights; Stacking (CatBoost + LightGBM base models, logistic regression meta-learner); Ensemble of 5 CatBoost models with different seeds.
+Best run: e111
+Learned: Blending CatBoost and LightGBM (either weighted by inverse CV log loss or simple average) improved validation log loss over the baseline CatBoost model (~0.31088 vs 0.31176). The improvement is consistent and suggests that combining these two models reduces variance without increasing bias significantly. Stacking with a logistic regression meta-learner did not help, likely due to overfitting on the out-of-fold predictions. Adding XGBoost to the ensemble did not improve further, possibly due to high correlation between the models. Ensembling multiple CatBoost models with different seeds also did not improve as much as blending with LightGBM, indicating that algorithmic diversity is beneficial.
+Next: Try blending with different ratios (e.g., more weight on the better performing model), try feature engineering for one model but not the other to increase diversity, or try using a hold-out set to tune ensemble weights without overfitting. Also, consider using more sophisticated blending techniques like entropy weighting or rank averaging.</pre></details></article></div><div class='evo' id='evo-shared_brain' ><article class='gen'><header><h4>Generation 1</h4><div><span class='pill good'>new best v1</span> CatBoost with 1000 iterations, learning_rate 0.01, depth 8, l2_leaf_reg 3, subsample 0.9, rsm 0.9</div><div class='nums'>val 0.31256 &middot; test gain +20.14% &middot; 27 runs, 2 failed &middot; read 0 tokens &middot; 10.0 min</div></header><div class='tablewrap'><table class='small'><thead><tr><th>Focus</th><th>Rank</th><th>Best val</th><th>Change</th></tr></thead><tbody><tr><td>model type</td><td>1</td><td>0.31238 <span class='dim'>e20</span></td><td>CatBoost with 1000 iterations, learning_rate 0.01, depth 8, l2_leaf_reg 3, subsample 0.9, rsm 0.9</td></tr><tr><td>regularization</td><td>1</td><td>0.31385 <span class='dim'>e15</span></td><td>LightGBM with early stopping using inner validation, then refit on full data</td></tr><tr><td>features</td><td>3</td><td>0.31599 <span class='dim'>e6</span></td><td>LightGBM with log transforms and interactions</td></tr><tr><td>tuning</td><td>4</td><td>0.32633 <span class='dim'>e19</span></td><td>Run 4: RF, n_estimators=300, max_depth=20, min_samples_leaf=5</td></tr></tbody></table></div><h5>Memory changes</h5><ul class='events'><li><b>upsert</b> <code>m1</code> works: CatBoost (1000 iters, lr 0.01, depth 8, l2 3, subsample/rsm 0.9) gets val log_loss ~0.3126, beating LR 0.3947 and RF/XGBoost. Re-checked: beats best. <span class='dim'>(add)</span></li><li><b>upsert</b> <code>m2</code> works: Boosted trees (GBM) outperform LR (0.394) and simple NN (0.319) on churn; LightGBM ~0.314-0.316, RF ~0.326. CatBoost edges them slightly. <span class='dim'>(add)</span></li><li><b>upsert</b> <code>m3</code> failed: class_weight/balanced (LR and RF) does not help churn log_loss; worsens when combined with deep trees + many estimators. <span class='dim'>(add)</span></li><li><b>upsert</b> <code>m4</code> failed: LogisticRegression with any C / no class_weight stays ~0.394-0.395, not competitive. <span class='dim'>(add)</span></li><li><b>upsert</b> <code>m5</code> try_next: In LightGBM early_stopping seemed unsupported in this env (researcher-1 e13/e24 errors); use hold-out set if needed. Unverified. <span class='dim'>(add)</span></li><li><b>upsert</b> <code>m6</code> try_next: CatBoost Bayesian hyperparameter tuning + ensembling (average tree models) may gain further; not yet tried. <span class='dim'>(add)</span></li><li><b>set best</b> <code>best</code> best: v1: val log_loss 0.31256 (mean of seeds 1, 2, 3), from run e20: CatBoost with 1000 iterations, learning_rate 0.01, depth 8, l2_leaf_reg 3, subsample 0.9, rsm 0.9 <span class='dim'>(new best v1, val 0.3126)</span></li></ul><p class='curator'><b>Curator:</b> Re-checked the top researcher&#x27;s best run (e20, CatBoost): it beats the best across seeds 1/2/3 (mean 0.31256, spread ~0.0001), confirming it as a new best.
 
 Memory changes:
 - **works**: CatBoost (1000 iters, lr 0.01, depth 8, l2 3, subsample/rsm 0.9) &#8594; val ~0.3126, confirmed beating best.
@@ -533,10 +1701,84 @@ v1: val log_loss 0.31256 (mean of seeds 1, 2, 3), from run e20: CatBoost with 10
 - [m5] (tested on v1; val +0.0007; runs e31,e38,e42) Early stopping: LGBM/XGB API unsupported (e13/e24/e38/e42); CatBoost internal-holdout early stop hurt (e31, 0.3133). Not useful here.
 - [m9] (tested on v1; val +0.0020; runs e32,e50) depth=10 overfits (0.3146/e32); MLP w/ early stop 0.381 (e50). Not competitive vs CatBoost baseline.
 ## Try next
-- [m6] (tested on v1) CatBoost Bayesian hp tuning still untried. Weighted avg or per-model diverse hparams may add ensemble diversity beyond plain averaging.</pre></details></article></div>
+- [m6] (tested on v1) CatBoost Bayesian hp tuning still untried. Weighted avg or per-model diverse hparams may add ensemble diversity beyond plain averaging.</pre></details></article><article class='gen'><header><h4>Generation 3</h4><div><span class='pill'>no new best</span></div><div class='nums'>val 0.31256 &middot; test gain +20.14% &middot; 27 runs, 1 failed &middot; read 457 tokens &middot; 8.6 min</div></header><div class='tablewrap'><table class='small'><thead><tr><th>Focus</th><th>Rank</th><th>Best val</th><th>Change</th></tr></thead><tbody><tr><td>model type</td><td>1</td><td>0.31181 <span class='dim'>e74</span></td><td>Ensemble: 3 CatBoost (different seeds), 1 LGBM, 1 XGB (different seeds)</td></tr><tr><td>ensembling</td><td>1</td><td>0.31183 <span class='dim'>e76</span></td><td>Diverse ensemble: 2 CatBoost (diff depth/lr), 2 LGBM (diff depth/lr), 1 XGB</td></tr><tr><td>regularization</td><td>1</td><td>0.31195 <span class='dim'>e68</span></td><td>Run 4: depth=7, l2_leaf_reg=5, subsample=0.8, rsm=0.8</td></tr><tr><td>features</td><td>1</td><td>0.31238 <span class='dim'>e59</span></td><td>Baseline v1 CatBoost</td></tr></tbody></table></div><h5>Memory changes</h5><ul class='events'><li><b>upsert</b> <code>m7</code> works: Averaging 3 CatBoost + 1 LGBM + 1 XGB (diff seeds) -&gt; val ~0.31197, ties v1 (0.31256, within noise). Re-checked e79-81; diverse-hparam ensemble (2 Cat/2 LGBM/1 XGB) 0.31183 also ties. <span class='dim'>(edit)</span></li><li><b>upsert</b> <code>m8</code> works: Feature set A (log/ratio, drop surname, TF-IDF mean, country-gender interact) -&gt; 0.31210 (e34). More features, log transforms, interactions (e67/70/75/77) do not beat baseline. <span class='dim'>(edit)</span></li><li><b>upsert</b> <code>m10</code> works: CatBoost single-model tweak depth=7, l2_leaf_reg=5, subsample=0.8, rsm=0.8 -&gt; 0.31195 (e68), ties v1. lr=0.005/2000 iters (e72) and depth=6 (e62) do not help. <span class='dim'>(add)</span></li><li><b>upsert</b> <code>m6</code> try_next: CatBoost Bayesian hp tuning untried. Diverse-hparam ensembles (2 Cat/2 LGBM/1 XGB, e76) and weighted/varied CatBoost (e64/e78) all tie v1; stacking w/ holdout worse (e37). <span class='dim'>(edit)</span></li></ul><p class='curator'><b>Curator:</b> ## Summary of changes
+
+**Re-checked top researcher&#x27;s run (e74 ensemble):** re-ran as e79-81. Mean val 0.31197 (spread ~0.0001), vs best 0.31256 &#8212; a gain of only 0.00059, well within the noise threshold (0.00197). **Not a new best** (tie). The ensemble of 3 CatBoost + 1 LGBM + 1 XGB does not reliably beat the v1 single CatBoost.
+
+**Memory updates:**
+- **m7** (works): updated to confirm the multi-model average re-checks as a tie, and noted the diverse-hparam ensemble (2 Cat/2 LGBM/1 XGB, e76) also ties. Ensembling gives no reliable gain over v1.
+- **m8** (works): added researcher-3&#x27;s feature runs (e67/70/75/77) showing log transforms, ratio, and interaction features all fail to beat baseline &#8212; consistent with prior feature-set finding.
+- **m10** (works, new): CatBoost single-model tweak (depth=7, l2=5, subsample/rsm=0.8, e68 -&gt; 0.31195) ties v1; lr=0.005/2000 iters and depth=6 don&#x27;t help.
+- **m6** (try_next): refreshed &#8212; Bayesian hp tuning still untried; all ensemble diversity variants (e76/e64/e78) tie v1, so weighting/diversity hasn&#x27;t broken the plateau.
+
+**Notable conclusion:** every report this generation lands within the noise band (all four &quot;rank 1&quot; gains are &#8804;0.24%, below thre</p><details><summary>Memory after generation 3 (551 tokens)</summary><pre>## Best
+v1: val log_loss 0.31256 (mean of seeds 1, 2, 3), from run e20: CatBoost with 1000 iterations, learning_rate 0.01, depth 8, l2_leaf_reg 3, subsample 0.9, rsm 0.9
+## Works
+- [m1] (tested on v0; val -0.0822; runs e20,e25,e26,e27) CatBoost (1000 iters, lr 0.01, depth 8, l2 3, subsample/rsm 0.9) gets val log_loss ~0.3126, beating LR 0.3947 and RF/XGBoost. Re-checked: beats best.
+- [m2] (tested on v0; val -0.0822; runs e8,e15,e19,e20) Boosted trees (GBM) outperform LR (0.394) and simple NN (0.319) on churn; LightGBM ~0.314-0.316, RF ~0.326. CatBoost edges them slightly.
+- [m7] (tested on v1; val -0.0006; runs e40,e48,e52,e53,e54,e79,e80,e81) Averaging 3 CatBoost + 1 LGBM + 1 XGB (diff seeds) -&gt; val ~0.31197, ties v1 (0.31256, within noise). Re-checked e79-81; diverse-hparam ensemble (2 Cat/2 LGBM/1 XGB) 0.31183 also ties.
+- [m8] (tested on v1; val -0.0005; runs e34,e36,e39,e44,e67,e70,e75,e77) Feature set A (log/ratio, drop surname, TF-IDF mean, country-gender interact) -&gt; 0.31210 (e34). More features, log transforms, interactions (e67/70/75/77) do not beat baseline.
+- [m10] (tested on v1; val -0.0006; runs e60,e62,e65,e68,e72,e73) CatBoost single-model tweak depth=7, l2_leaf_reg=5, subsample=0.8, rsm=0.8 -&gt; 0.31195 (e68), ties v1. lr=0.005/2000 iters (e72) and depth=6 (e62) do not help.
+## Failed
+- [m3] (tested on v0; val -0.0521; runs e12,e23) class_weight/balanced (LR and RF) does not help churn log_loss; worsens when combined with deep trees + many estimators.
+- [m4] (tested on v0; val -0.0001; runs e1,e5,e9) LogisticRegression with any C / no class_weight stays ~0.394-0.395, not competitive.
+- [m5] (tested on v1; val +0.0007; runs e31,e38,e42) Early stopping: LGBM/XGB API unsupported (e13/e24/e38/e42); CatBoost internal-holdout early stop hurt (e31, 0.3133). Not useful here.
+- [m9] (tested on v1; val +0.0020; runs e32,e50) depth=10 overfits (0.3146/e32); MLP w/ early stop 0.381 (e50). Not competitive vs CatBoost baseline.
+## Try next
+- [m6] (tested on v1; val -0.0007; runs e76,e64,e78,e37) CatBoost Bayesian hp tuning untried. Diverse-hparam ensembles (2 Cat/2 LGBM/1 XGB, e76) and weighted/varied CatBoost (e64/e78) all tie v1; stacking w/ holdout worse (e37).</pre></details></article><article class='gen'><header><h4>Generation 4</h4><div><span class='pill good'>new best v2</span> Run 7: surname, country, gender as categorical; drop TFIDF; no log transforms</div><div class='nums'>val 0.30752 &middot; test gain +20.95% &middot; 27 runs, 0 failed &middot; read 551 tokens &middot; 9.7 min</div></header><div class='tablewrap'><table class='small'><thead><tr><th>Focus</th><th>Rank</th><th>Best val</th><th>Change</th></tr></thead><tbody><tr><td>features</td><td>1</td><td>0.30817 <span class='dim'>e105</span></td><td>Run 7: surname, country, gender as categorical; drop TFIDF; no log transforms</td></tr><tr><td>ensembling</td><td>2</td><td>0.31181 <span class='dim'>e104</span></td><td>weighted ensemble of 3 CatBoost + 1 LGBM + 1 XGB, weights based on hold-out log loss</td></tr><tr><td>tuning</td><td>2</td><td>0.31195 <span class='dim'>e88</span></td><td>Run 2: depth=7, l2_leaf_reg=5, subsample=0.8, rsm=0.8, lr=0.01, iterations=1000</td></tr><tr><td>regularization</td><td>2</td><td>0.31195 <span class='dim'>e94</span></td><td>Run 3: depth=7, l2_leaf_reg=5, subsample=0.8, rsm=0.8</td></tr></tbody></table></div><h5>Memory changes</h5><ul class='events'><li><b>upsert</b> <code>m11</code> works: Treat surname/country/gender as categorical (drop TFIDF cols) -&gt; CatBoost val ~0.3075, bests v1 by 1.6%. Log transforms add nothing on top. <span class='dim'>(add)</span></li><li><b>upsert</b> <code>m12</code> works: Surname is high-cardinality and informative: keep as categorical via CatBoost cat_features, do not drop or TFIDF-encode it. <span class='dim'>(add)</span></li><li><b>upsert</b> <code>m8</code> works: Feature set A (log/ratio, drop surname, TF-IDF mean, interactions) only ~0.3121. Dropping surname is worse than treating it as categorical (see m11/m12). <span class='dim'>(edit)</span></li><li><b>upsert</b> <code>m13</code> try_next: Try target encoding for surname, or categorical encoding + interactions (age_tenure_product) on top of the new categorical best (v2). <span class='dim'>(add)</span></li><li><b>set best</b> <code>best</code> best: v2: val log_loss 0.30752 (mean of seeds 1, 2, 3), from run e105: Run 7: surname, country, gender as categorical; drop TFIDF; no log transforms <span class='dim'>(new best v2, val 0.3075)</span></li></ul><p class='curator'><b>Curator:</b> Re-check of the top researcher&#x27;s best run (e105) confirmed it beats the current best: mean val log_loss 0.30752 across seeds 1-3 (spread 0.0003), well past the noise threshold (0.00197) versus v1&#x27;s 0.31256. This becomes the new best (v2).
+
+Summary of changes:
+- Added **works m11**: treating surname/country/gender as categorical (dropping TFIDF columns) gives CatBoost val ~0.3075, beating v1 by ~1.6%; log transforms add nothing on top.
+- Added **works m12**: surname is high-cardinality and informative &#8212; keep it as a CatBoost categorical feature rather than dropping or TFIDF-encoding it.
+- Updated **m8** (works) to note dropping surname is worse than treating it as categorical.
+- Added **try_next m13**: target encoding for surname, or categorical encoding + age_tenure_product interactions on top of v2.
+
+I did not settle the middle-ranked reports (ensembling/tuning/regularization) since they all tie v1, which is now superseded &#8212; their claims are already captured in m6/m7/m10 and are not yet two versions stale. Remaining run budget left unused (1 run) as no conflict or stale entry warranted it.</p><details><summary>Memory after generation 4 (685 tokens)</summary><pre>## Best
+v2: val log_loss 0.30752 (mean of seeds 1, 2, 3), from run e105: Run 7: surname, country, gender as categorical; drop TFIDF; no log transforms
+## Works
+- [m1] (tested on v0; val -0.0822; runs e20,e25,e26,e27; STALE) CatBoost (1000 iters, lr 0.01, depth 8, l2 3, subsample/rsm 0.9) gets val log_loss ~0.3126, beating LR 0.3947 and RF/XGBoost. Re-checked: beats best.
+- [m2] (tested on v0; val -0.0822; runs e8,e15,e19,e20; STALE) Boosted trees (GBM) outperform LR (0.394) and simple NN (0.319) on churn; LightGBM ~0.314-0.316, RF ~0.326. CatBoost edges them slightly.
+- [m7] (tested on v1; val -0.0006; runs e40,e48,e52,e53,e54,e79,e80,e81) Averaging 3 CatBoost + 1 LGBM + 1 XGB (diff seeds) -&gt; val ~0.31197, ties v1 (0.31256, within noise). Re-checked e79-81; diverse-hparam ensemble (2 Cat/2 LGBM/1 XGB) 0.31183 also ties.
+- [m8] (tested on v1; val -0.0005; runs e34,e67,e70,e75,e77) Feature set A (log/ratio, drop surname, TF-IDF mean, interactions) only ~0.3121. Dropping surname is worse than treating it as categorical (see m11/m12).
+- [m10] (tested on v1; val -0.0006; runs e60,e62,e65,e68,e72,e73) CatBoost single-model tweak depth=7, l2_leaf_reg=5, subsample=0.8, rsm=0.8 -&gt; 0.31195 (e68), ties v1. lr=0.005/2000 iters (e72) and depth=6 (e62) do not help.
+- [m11] (tested on v1; val -0.0050; runs e105,e106,e107,e108) Treat surname/country/gender as categorical (drop TFIDF cols) -&gt; CatBoost val ~0.3075, bests v1 by 1.6%. Log transforms add nothing on top.
+- [m12] (tested on v1; val -0.0050; runs e96,e101,e105) Surname is high-cardinality and informative: keep as categorical via CatBoost cat_features, do not drop or TFIDF-encode it.
+## Failed
+- [m3] (tested on v0; val -0.0521; runs e12,e23; STALE) class_weight/balanced (LR and RF) does not help churn log_loss; worsens when combined with deep trees + many estimators.
+- [m4] (tested on v0; val -0.0001; runs e1,e5,e9; STALE) LogisticRegression with any C / no class_weight stays ~0.394-0.395, not competitive.
+- [m5] (tested on v1; val +0.0007; runs e31,e38,e42) Early stopping: LGBM/XGB API unsupported (e13/e24/e38/e42); CatBoost internal-holdout early stop hurt (e31, 0.3133). Not useful here.
+- [m9] (tested on v1; val +0.0020; runs e32,e50) depth=10 overfits (0.3146/e32); MLP w/ early stop 0.381 (e50). Not competitive vs CatBoost baseline.
+## Try next
+- [m6] (tested on v1; val -0.0007; runs e76,e64,e78,e37) CatBoost Bayesian hp tuning untried. Diverse-hparam ensembles (2 Cat/2 LGBM/1 XGB, e76) and weighted/varied CatBoost (e64/e78) all tie v1; stacking w/ holdout worse (e37).
+- [m13] (tested on v1; val -0.0050; runs e105) Try target encoding for surname, or categorical encoding + interactions (age_tenure_product) on top of the new categorical best (v2).</pre></details></article><article class='gen'><header><h4>Generation 5</h4><div><span class='pill'>no new best</span></div><div class='nums'>val 0.30752 &middot; test gain +20.95% &middot; 26 runs, 1 failed &middot; read 685 tokens &middot; 10.2 min</div></header><div class='tablewrap'><table class='small'><thead><tr><th>Focus</th><th>Rank</th><th>Best val</th><th>Change</th></tr></thead><tbody><tr><td>ensembling</td><td>1</td><td>0.30744 <span class='dim'>e110</span></td><td>Average of 3 CatBoost models with seeds seed, seed+1, seed+2</td></tr><tr><td>tuning</td><td>1</td><td>0.30763 <span class='dim'>e112</span></td><td>iterations=2000, lr=0.005</td></tr><tr><td>regularization</td><td>1</td><td>0.30778 <span class='dim'>e126</span></td><td>Run 5: subsample=0.8, rsm=0.8</td></tr><tr><td>model type</td><td>1</td><td>0.30792 <span class='dim'>e124</span></td><td>Ensemble of two CatBoost models with different hyperparameters and seeds</td></tr></tbody></table></div><h5>Memory changes</h5><ul class='events'><li><b>upsert</b> <code>m14</code> failed: Seed-averaging 3 CatBoost (seeds s,s+1,s+2) ties v2 (mean 0.30753, within noise); 4+ models no better, blending LGBM/XGB worsens (0.309-0.313). <span class='dim'>(add)</span></li><li><b>remove</b> <code>m1</code> works: CatBoost (1000 iters, lr 0.01, depth 8, l2 3, subsample/rsm 0.9) gets val log_loss ~0.3126, beating LR 0.3947 and RF/XGBoost. Re-checked: beats best. <span class='dim'>(Superseded by m2 (model-family ranking) and m11/m12 (CatBoost categorical = current best).)</span></li><li><b>remove</b> <code>m3</code> failed: class_weight/balanced (LR and RF) does not help churn log_loss; worsens when combined with deep trees + many estimators. <span class='dim'>(Stale dead end (class_weight), superseded by v2 CatBoost baseline.)</span></li><li><b>remove</b> <code>m4</code> failed: LogisticRegression with any C / no class_weight stays ~0.394-0.395, not competitive. <span class='dim'>(Stale dead end (LR), superseded by v2 CatBoost baseline.)</span></li><li><b>upsert</b> <code>m2</code> works: CatBoost &gt;&gt; LightGBM/XGB/RF/NN on churn with v2 preproc: LGBM 0.322, XGB 0.319 vs CatBoost 0.3075. <span class='dim'>(edit)</span></li></ul><p class='curator'><b>Curator:</b> I&#x27;ve completed my review. Summary of changes:
+
+**Re-check of top run (researcher-4, e110):** Seed-averaging 3 CatBoost models re-checked to mean 0.30753 (spread 0.00019) vs best 0.30752 &#8212; `beats_best` is **false**. This is a tie within noise, so no new best. Recorded as a failed/tie entry (m14): seed-averaging CatBoost (and blending LGBM/XGB) does not beat v2.
+
+**Settling conflicts/ties from middle reports:**
+- researcher-1&#x27;s model-type results (e113/e114/e130: LGBM 0.322, XGB 0.319) confirm CatBoost dominance &#8594; re-documented m2 as a `works` entry (no longer STALE) with fresh evidence.
+- researcher-2/3&#x27;s tuning and regularization runs (lr=0.005/2000 iters, l2/depth/subsample tweaks) all tie or slightly worsen v2 &#8212; consistent with existing m10, so no new findings needed.
+
+**Cleanup of stale entries:** Removed m1 (superseded), m3 (class_weight dead end), m4 (LR dead end) &#8212; all stale and covered by the stronger v2 CatBoost baseline.
+
+I left one run unused, as there was no remaining conflict to settle and no meaningful stale entry to re-test after cleanup. The try_next ideas (m6 Bayesian tuning, m13 target encoding) remain open for future generations.</p><details><summary>Memory after generation 5 (592 tokens)</summary><pre>## Best
+v2: val log_loss 0.30752 (mean of seeds 1, 2, 3), from run e105: Run 7: surname, country, gender as categorical; drop TFIDF; no log transforms
+## Works
+- [m2] (tested on v2; val +0.0019; runs e113,e114,e130) CatBoost &gt;&gt; LightGBM/XGB/RF/NN on churn with v2 preproc: LGBM 0.322, XGB 0.319 vs CatBoost 0.3075.
+- [m7] (tested on v1; val -0.0006; runs e40,e48,e52,e53,e54,e79,e80,e81) Averaging 3 CatBoost + 1 LGBM + 1 XGB (diff seeds) -&gt; val ~0.31197, ties v1 (0.31256, within noise). Re-checked e79-81; diverse-hparam ensemble (2 Cat/2 LGBM/1 XGB) 0.31183 also ties.
+- [m8] (tested on v1; val -0.0005; runs e34,e67,e70,e75,e77) Feature set A (log/ratio, drop surname, TF-IDF mean, interactions) only ~0.3121. Dropping surname is worse than treating it as categorical (see m11/m12).
+- [m10] (tested on v1; val -0.0006; runs e60,e62,e65,e68,e72,e73) CatBoost single-model tweak depth=7, l2_leaf_reg=5, subsample=0.8, rsm=0.8 -&gt; 0.31195 (e68), ties v1. lr=0.005/2000 iters (e72) and depth=6 (e62) do not help.
+- [m11] (tested on v1; val -0.0050; runs e105,e106,e107,e108) Treat surname/country/gender as categorical (drop TFIDF cols) -&gt; CatBoost val ~0.3075, bests v1 by 1.6%. Log transforms add nothing on top.
+- [m12] (tested on v1; val -0.0050; runs e96,e101,e105) Surname is high-cardinality and informative: keep as categorical via CatBoost cat_features, do not drop or TFIDF-encode it.
+## Failed
+- [m5] (tested on v1; val +0.0007; runs e31,e38,e42) Early stopping: LGBM/XGB API unsupported (e13/e24/e38/e42); CatBoost internal-holdout early stop hurt (e31, 0.3133). Not useful here.
+- [m9] (tested on v1; val +0.0020; runs e32,e50) depth=10 overfits (0.3146/e32); MLP w/ early stop 0.381 (e50). Not competitive vs CatBoost baseline.
+- [m14] (tested on v2; val +0.0000; runs e110,e123,e128,e131) Seed-averaging 3 CatBoost (seeds s,s+1,s+2) ties v2 (mean 0.30753, within noise); 4+ models no better, blending LGBM/XGB worsens (0.309-0.313).
+## Try next
+- [m6] (tested on v1; val -0.0007; runs e76,e64,e78,e37) CatBoost Bayesian hp tuning untried. Diverse-hparam ensembles (2 Cat/2 LGBM/1 XGB, e76) and weighted/varied CatBoost (e64/e78) all tie v1; stacking w/ holdout worse (e37).
+- [m13] (tested on v1; val -0.0050; runs e105) Try target encoding for surname, or categorical encoding + interactions (age_tenure_product) on top of the new categorical best (v2).</pre></details></article></div>
 </section>
 </main>
-<script id="data" type="application/json">{"gens": [0, 1, 2, 3, 4, 5], "l0": 0.3947244433333342, "threshold": 0.001973622216666671, "series": [{"key": "one_shot", "label": "One-shot", "test": [0.0, 0.0410095059967295, 0.0410095059967295, 0.0410095059967295, 0.0410095059967295, 0.0410095059967295], "val": [0.3947244433333342, 0.3753206366964178, 0.3753206366964178, 0.3753206366964178, 0.3753206366964178, 0.3753206366964178], "memory": [0]}, {"key": "no_memory", "label": "No memory", "test": [0.0, 0.19961028439679282, 0.19961028439679282, 0.19961028439679282], "val": [0.3947244433333342, 0.3117572169877278, 0.3117572169877278, 0.3117572169877278], "memory": [0, 0, 0]}, {"key": "raw_log", "label": "Raw log", "test": [0.0, 0.19961028439679282, 0.19961028439679282], "val": [0.3947244433333342, 0.3117572169877278, 0.3117572169877278], "memory": [0, 1929]}, {"key": "shared_brain", "label": "Shared Brain", "test": [0.0, 0.20141016914398346, 0.20141016914398346], "val": [0.3947244433333342, 0.3125618767978211, 0.3125618767978211], "memory": [0, 306]}]}</script>
+<script id="data" type="application/json">{"gens": [0, 1, 2, 3, 4, 5], "l0": 0.3947244433333342, "threshold": 0.001973622216666671, "series": [{"key": "one_shot", "label": "One-shot", "test": [0.0, 0.0410095059967295, 0.0410095059967295, 0.0410095059967295, 0.0410095059967295, 0.0410095059967295], "val": [0.3947244433333342, 0.3753206366964178, 0.3753206366964178, 0.3753206366964178, 0.3753206366964178, 0.3753206366964178], "memory": [0]}, {"key": "no_memory", "label": "No memory", "test": [0.0, 0.19961028439679282, 0.19961028439679282, 0.19961028439679282, 0.19961028439679282, 0.19961028439679282], "val": [0.3947244433333342, 0.3117572169877278, 0.3117572169877278, 0.3117572169877278, 0.3117572169877278, 0.3117572169877278], "memory": [0, 0, 0, 0, 0]}, {"key": "raw_log", "label": "Raw log", "test": [0.0, 0.19961028439679282, 0.19961028439679282, 0.19961028439679282, 0.19961028439679282, 0.19961028439679282], "val": [0.3947244433333342, 0.3117572169877278, 0.3117572169877278, 0.3117572169877278, 0.3117572169877278, 0.3117572169877278], "memory": [0, 1929, 4112, 5288, 6879]}, {"key": "shared_brain", "label": "Shared Brain", "test": [0.0, 0.20141016914398346, 0.20141016914398346, 0.20141016914398346, 0.20951509096217955, 0.20951509096217955], "val": [0.3947244433333342, 0.3125618767978211, 0.3125618767978211, 0.3125618767978211, 0.3075212836948517, 0.3075212836948517], "memory": [0, 306, 457, 551, 685]}]}</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script>
 const css = getComputedStyle(document.documentElement);
