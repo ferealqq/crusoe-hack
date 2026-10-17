@@ -1,9 +1,10 @@
 """The curator: verifies the top claim, then keeps memory current, lean and conflict-free."""
 
+import logging
 from dataclasses import dataclass
 
 from app.agents import prompts
-from app.agents.base import run_agent
+from app.agents.base import AgentResult, run_agent
 from app.agents.researcher import ResearcherOutcome
 from app.agents.tools import (
     Budget,
@@ -18,7 +19,14 @@ from app.lab import Lab
 from app.schemas import Usage
 from app.scoring import Ranked
 
-PARAMS = {"max_tokens": 8192, "extra_body": {"chat_template_kwargs": {"thinking": True}}}
+PARAMS = {
+    "max_tokens": 8192,
+    "extra_body": {
+        "chat_template_kwargs": {"enable_thinking": True, "force_nonempty_content": True}
+    },
+}
+
+log = logging.getLogger(__name__)
 
 
 @dataclass
@@ -46,16 +54,22 @@ async def run_curator(
         for r in ranked
     ]
     model = get_settings().curator_model
-    result = await run_agent(
-        model=model,
-        messages=[
-            {"role": "system", "content": prompts.curator_system(lab)},
-            {"role": "user", "content": prompts.curator_brief(lab, generation, reports, ranked)},
-        ],
-        tools=tools,
-        max_turns=lab.config.curator_turns,
-        params=PARAMS,
-    )
+    messages = [
+        {"role": "system", "content": prompts.curator_system(lab)},
+        {"role": "user", "content": prompts.curator_brief(lab, generation, reports, ranked)},
+    ]
+    try:
+        result = await run_agent(
+            model=model,
+            messages=messages,
+            tools=tools,
+            max_turns=lab.config.curator_turns,
+            params=PARAMS,
+        )
+    except Exception as e:  # keep the run going; memory keeps whatever was written so far
+        log.exception("g%d curator crashed", generation)
+        report = f"(curator crashed: {type(e).__name__}: {e})"[:1000]
+        result = AgentResult(report, messages, Usage(), 0)
     runs_used = lab.config.curator_runs - budget.left
     lab.log_agent(
         {

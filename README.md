@@ -123,11 +123,11 @@ The memory tools are our own, backed by `memory.jsonl` (see [Storage](#storage))
 | Agent | Model | Tools |
 |---|---|---|
 | **Researcher** (×4) | `nvidia/NVIDIA-Nemotron-3-Super-120B-A12B` | `get_memory`, `run_code` |
-| **Curator** (×1) | `deepseek-ai/DeepSeek-V4-Pro` | `get_memory`, `run_code` (to re-check), `upsert_memory`, `remove_memory` |
+| **Curator** (×1) | `nvidia/NVIDIA-Nemotron-3.5-Super-VL` | `get_memory`, `run_code` (to re-check), `upsert_memory`, `remove_memory` |
 
 - Researcher focus areas: features, model type, tuning, regularization and ensembling.
 - Researcher settings: temperature 1.0, top_p 0.95, `chat_template_kwargs: {"enable_thinking": true, "force_nonempty_content": true}`, max_tokens 8192.
-- Curator settings: `chat_template_kwargs: {"thinking": true}`, max_tokens 8192.
+- Curator settings: `chat_template_kwargs: {"enable_thinking": true, "force_nonempty_content": true}`, max_tokens 8192. Nemotron 3.5 Super is the newest Nemotron on Crusoe, the same size as the researcher (120B, 12B active).
 - At start, the orchestrator checks all model IDs against `/v1/models` and stops if one is missing. Nemotron 3 Ultra isn't on Crusoe's serverless list today; if it appears, it can replace the curator model.
 - The orchestrator is a plain Python script, not an agent.
 
@@ -272,7 +272,7 @@ New settings go in `app/config.py` and `.env.example`:
 | Setting | Default |
 |---|---|
 | `RESEARCHER_MODEL` | `nvidia/NVIDIA-Nemotron-3-Super-120B-A12B` |
-| `CURATOR_MODEL` | `deepseek-ai/DeepSeek-V4-Pro` |
+| `CURATOR_MODEL` | `nvidia/NVIDIA-Nemotron-3.5-Super-VL` |
 | `SANDBOX_TIMEOUT_SECONDS` (exists) | `120` |
 | `SANDBOX_CPU` | `2` |
 | `SANDBOX_MEMORY_MB` | `4096` |
@@ -303,9 +303,9 @@ GPUs, fine-tuning, other datasets (superconductivity, Walmart M5), more setups (
 | Role | Model |
 |---|---|
 | Researcher | `nvidia/NVIDIA-Nemotron-3-Super-120B-A12B` |
-| Curator | `deepseek-ai/DeepSeek-V4-Pro` |
+| Curator | `nvidia/NVIDIA-Nemotron-3.5-Super-VL` |
 
-Add a payment method to the Crusoe project: it raises the limit from 30 to 600 requests per minute per model.
+Add a payment method to the Crusoe project: it raises the limit from 30 to 600 requests per minute per model. Without it, runs still finish: rate-limited calls wait and retry for up to 15 minutes.
 
 ## Tech stack
 

@@ -9,7 +9,7 @@ class Settings(BaseSettings):
 
     crusoe_api_key: str = ""
     researcher_model: str = "nvidia/NVIDIA-Nemotron-3-Super-120B-A12B"
-    curator_model: str = "deepseek-ai/DeepSeek-V4-Pro"
+    curator_model: str = "nvidia/NVIDIA-Nemotron-3.5-Super-VL"
     # Modal workspace for sandboxes. Empty: use the active ~/.modal.toml profile.
     modal_token_id: str = ""
     modal_token_secret: str = ""

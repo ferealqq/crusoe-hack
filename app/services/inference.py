@@ -1,21 +1,37 @@
 """Crusoe Intelligence Foundry inference. The API is OpenAI-compatible."""
 
+import asyncio
+import logging
+import random
 import time
 from functools import lru_cache
 from typing import Any
 
-from openai import AsyncOpenAI
+from openai import (
+    APIConnectionError,
+    APITimeoutError,
+    AsyncOpenAI,
+    InternalServerError,
+    RateLimitError,
+)
 
 from app.config import get_settings
 from app.schemas import Reply, ToolCall, Usage
 
 BASE_URL = "https://api.inference.crusoecloud.com/v1"
+# Rate limits (30 requests/min per model without a payment method) and busy endpoints are
+# transient: keep retrying for up to 15 minutes instead of failing a 2-hour research run.
+RETRY_ON = (RateLimitError, InternalServerError, APIConnectionError, APITimeoutError)
+MAX_RETRY_WAIT_S = 900
+
+log = logging.getLogger(__name__)
 
 
 @lru_cache
 def get_client() -> AsyncOpenAI:
-    # The SDK retries 429/5xx with exponential backoff (honours Retry-After)
-    return AsyncOpenAI(api_key=get_settings().crusoe_api_key, base_url=BASE_URL, max_retries=6)
+    # The SDK retries 429/5xx a few times quickly (honours Retry-After); complete() then waits
+    # longer.
+    return AsyncOpenAI(api_key=get_settings().crusoe_api_key, base_url=BASE_URL, max_retries=3)
 
 
 async def chat(
@@ -51,7 +67,20 @@ async def complete(
     """One chat completion with optional tools. Non-OpenAI params go in `extra_body`."""
     if tools:
         params["tools"] = tools
-    resp = await get_client().chat.completions.create(model=model, messages=messages, **params)
+    waited, delay = 0.0, 10.0
+    while True:
+        try:
+            resp = await get_client().chat.completions.create(
+                model=model, messages=messages, **params
+            )
+            break
+        except RETRY_ON as e:
+            if waited >= MAX_RETRY_WAIT_S:
+                raise
+            pause = min(delay, 60.0) * random.uniform(0.5, 1.0)
+            log.warning("%s from %s; retrying in %.0f s", type(e).__name__, model, pause)
+            await asyncio.sleep(pause)
+            waited, delay = waited + pause, delay * 2
     choice = resp.choices[0]
     u = resp.usage
     details = getattr(u, "prompt_tokens_details", None) if u else None

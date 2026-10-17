@@ -87,9 +87,9 @@ def cli() -> None:
     if args.report:
         print(results_table())
         return
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s", datefmt="%H:%M:%S")
-    for noisy in ("httpx", "openai", "hpack", "grpc", "modal"):
-        logging.getLogger(noisy).setLevel(logging.WARNING)
+    # Our progress at INFO; libraries (httpx, openai, modal) only at WARNING.
+    logging.basicConfig(level=logging.WARNING, format="%(asctime)s %(message)s", datefmt="%H:%M:%S")
+    logging.getLogger("app").setLevel(logging.INFO)
     asyncio.run(main(args))
 
 
