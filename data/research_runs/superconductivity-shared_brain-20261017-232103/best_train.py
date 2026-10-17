@@ -1,16 +1,20 @@
-"""Starting point: ridge regression on all columns, standardized."""
-
 import numpy as np
 import pandas as pd
-from sklearn.linear_model import Ridge
-from sklearn.pipeline import make_pipeline
-from sklearn.preprocessing import StandardScaler
+import xgboost as xgb
 
 
 def fit(train: pd.DataFrame, target: str, seed: int) -> object:
     X = train.drop(columns=[target])
     y = train[target]
-    model = make_pipeline(StandardScaler(), Ridge(alpha=1.0, random_state=seed))
+    model = xgb.XGBRegressor(
+        n_estimators=1000,
+        learning_rate=0.01,
+        max_depth=8,
+        subsample=0.9,
+        colsample_bytree=0.9,
+        random_state=seed,
+        n_jobs=-1,
+    )
     model.fit(X, y)
     return model
 
