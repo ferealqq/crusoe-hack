@@ -13,6 +13,10 @@ dependencies = [
     "boto3>=1.35",
     "openai>=1.50",
     "modal>=1.0",
+    "numpy>=2.5.4",
+    "pandas>=3.0.6",
+    "pyarrow>=26.0.0",
+    "scikit-learn>=1.9.1",
 ]
 
 [dependency-groups]
@@ -33,3 +37,7 @@ asyncio_mode = "auto"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
+
+[tool.ruff.lint.per-file-ignores]
+# HTML template lines
+"app/report.py" = ["E501"]
