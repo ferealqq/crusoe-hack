@@ -1,0 +1,869 @@
+results in data/runs/20261017-223035-churn
+baseline: L0 0.39472, noise threshold 0.00197, test [0.40328536159905987, 0.40328536159905987, 0.40328536159905987]
+[one_shot] gen 1: 1 researchers, best v0 val 0.39472
+[no_memory] gen 1: 4 researchers, best v0 val 0.39472
+[raw_log] gen 1: 4 researchers, best v0 val 0.39472
+[shared_brain] gen 1: 4 researchers, best v0 val 0.39472
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 3s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 5s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 3s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 6s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 7s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 9s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 9s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 7s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 8s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 10s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 17s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 9s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+[one_shot] gen 1 done in 0.9 min: best v1 val 0.37532, test gain 0.0410095059967295
+[one_shot] done: fitness 0.0410095059967295
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 3s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 20s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 19s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 14s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 16s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 5s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 9s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 7s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 25s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 9s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 27s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 3s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 32s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 19s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 25s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 18s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 8s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 18s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 42s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 5s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 15s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 8s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 43s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 34s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 32s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 54s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 34s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 59s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 8s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 56s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 5s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 40s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 10s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 5s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 7s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 3s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 7s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 18s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 7s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 13s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 16s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 30s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 5s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 3s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 27s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 3s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 7s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 9s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 3s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 8s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 7s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 8s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 42s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 18s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 15s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 3s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 3s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 5s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 7s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 8s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 10s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 40s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 13s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 17s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 5s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 3s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 16s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 37s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 5s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 10s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 30s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 3s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 15s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 5s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 6s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 9s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 16s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 9s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 32s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 9s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 12s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 46s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 6s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 14s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 25s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 20s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 8s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 37s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 3s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 37s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 45s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 17s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 6s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 34s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 40s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 3s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 57s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 48s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 3s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 9s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 55s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 43s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 53s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 41s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 5s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 7s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 55s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+[no_memory] gen 1 done in 9.8 min: best v1 val 0.31176, test gain 0.19961028439679282
+[no_memory] gen 2: 4 researchers, best v1 val 0.31176
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 3s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 5s
+[shared_brain] gen 1 done in 10.0 min: best v1 val 0.31256, test gain 0.20141016914398346
+[shared_brain] gen 2: 4 researchers, best v1 val 0.31256
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 9s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 3s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 7s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 12s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 7s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 3s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 9s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 5s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 19s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 7s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 13s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 9s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 7s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 14s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 39s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 5s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 9s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 3s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 10s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 12s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 51s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 3s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 9s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 7s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 5s
+[raw_log] gen 1 done in 12.5 min: best v1 val 0.31176, test gain 0.19961028439679282
+[raw_log] gen 2: 4 researchers, best v1 val 0.31176
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 3s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 7s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 3s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 9s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 3s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 7s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 8s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 15s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 7s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 60s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 3s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 17s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 13s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 12s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 29s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 3s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 30s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 7s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 7s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 29s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 40s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 14s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 3s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 52s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 39s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 3s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 58s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 55s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 5s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 3s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 6s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 7s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 14s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 10s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 7s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 44s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 10s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 19s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 59s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 48s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 31s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 3s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 48s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 9s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 42s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 7s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 53s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 41s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 10s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 7s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 9s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 18s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 53s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+[no_memory] gen 2 done in 7.4 min: best v1 val 0.31176, test gain 0.19961028439679282
+[no_memory] gen 3: 4 researchers, best v1 val 0.31176
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 3s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 3s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 8s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 3s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 9s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 5s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 3s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 3s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 8s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 5s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 8s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 19s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 9s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 3s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+[raw_log] gen 2 done in 9.6 min: best v1 val 0.31176, test gain 0.19961028439679282
+[raw_log] gen 3: 4 researchers, best v1 val 0.31176
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 3s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 6s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 9s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 16s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+[no_memory] gen 3 done in 5.2 min: best v1 val 0.31176, test gain 0.19961028439679282
+[no_memory] gen 4: 4 researchers, best v1 val 0.31176
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 5s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 5s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 5s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 7s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 8s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 24s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 7s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 15s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 16s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 8s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 9s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 20s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 30s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 5s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 19s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+[shared_brain] gen 2 done in 13.4 min: best v1 val 0.31256, test gain 0.20141016914398346
+[shared_brain] gen 3: 4 researchers, best v1 val 0.31256
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 3s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 8s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 37s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 9s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 49s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 19s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 4s
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 200 OK"
+HTTP Request: POST https://api.inference.crusoecloud.com/v1/chat/completions "HTTP/1.1 429 Too Many Requests"
+RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B, retrying in 5s
