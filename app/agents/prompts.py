@@ -22,7 +22,7 @@ timeout), the last 2,000 characters of output, and runs_left.
 - Each run: {timeout} s, {cpu:g} CPUs, {memory_gb:g} GB RAM, no GPU, no network. Allowed \
 libraries: numpy, pandas, pyarrow, scikit-learn, lightgbm, xgboost, catboost, torch (CPU). No \
 installs. Crashes and timeouts use up a run.
-- You have {runs} runs. Test one clear idea per run, and always submit the complete file.
+- You have {runs} run(s). Test one clear idea per run, and always submit the complete file.
 - Val loss gaps under {threshold:.4f} are noise.
 {memory_rule}
 ## Report

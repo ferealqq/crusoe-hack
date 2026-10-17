@@ -68,6 +68,8 @@ async def run_baseline(lab: Lab) -> None:
 
 
 def _focuses(lab: Lab, generation: int) -> list[str]:
+    if lab.setup == "one_shot":
+        return ["anything: you get one run, so make your single best change"]
     f = lab.config.focuses
     return [f[(generation - 1 + i) % len(f)] for i in range(lab.config.researchers)]
 
@@ -204,6 +206,8 @@ async def research_run(
     root: Path = DATA_DIR,
     commit: bool = False,
 ) -> dict[str, Any]:
+    if setup == "one_shot":  # the floor: one researcher, one generation, one run
+        config = config.model_copy(update={"generations": 1, "researchers": 1})
     lab = Lab(dataset, setup, config, root=root, commit=commit)
     started = datetime.now(UTC)
     log.info(

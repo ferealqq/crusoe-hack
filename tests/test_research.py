@@ -285,7 +285,7 @@ def _fake_models(monkeypatch) -> list[str]:
     return roles
 
 
-@pytest.mark.parametrize("setup", ["shared_brain", "no_memory"])
+@pytest.mark.parametrize("setup", ["shared_brain", "no_memory", "one_shot"])
 async def test_research_run_end_to_end(setup, dataset: Dataset, tmp_path: Path, monkeypatch):
     _fake_sandbox(monkeypatch)
     roles = _fake_models(monkeypatch)
@@ -306,8 +306,11 @@ async def test_research_run_end_to_end(setup, dataset: Dataset, tmp_path: Path, 
         assert "curator" in roles and len(agents) == 3
         assert {e.kind for e in memory.entries} == {"best", "works"}
         assert next(e for e in memory.entries if e.kind == "best").tested_on == 1
-    else:
+    elif setup == "no_memory":
         assert "curator" not in roles and len(agents) == 2 and memory.entries == []
+    else:  # one_shot: one researcher, one run, whatever the config says
+        assert "curator" not in roles and len(agents) == 1 and memory.entries == []
+        assert row["config"]["researchers"] == 1 and row["runs"] == 5 + 1
     tests = [
         json.loads(line)
         for line in (run_dir / "experiments.jsonl").read_text().splitlines()

@@ -28,10 +28,11 @@ flowchart TD
 
 ## Setups
 
-Both setups use the same dataset, splits, models, sandbox and total number of runs. Every generation starts from the best `train.py` so far, so **memory is the only difference**.
+No memory and Shared Brain use the same dataset, splits, models, sandbox and total number of runs; One-shot uses the same everything but gets a single run. Every generation starts from the best `train.py` so far, so **memory is the only difference**.
 
 | Setup | What it shows | What researchers read | Who picks the best `train.py` |
 |---|---|---|---|
+| One-shot | The floor: one researcher, one edit, one run | Nothing | Orchestrator: kept only if it beats the start by more than the noise threshold |
 | No memory | Every agent starts from zero | Nothing | Orchestrator: lowest val loss |
 | **Shared Brain** | Curated memory: lean and current | Curated memory, 2,000-token cap | Curator check on 3 seeds |
 
@@ -312,7 +313,7 @@ Budget numbers live in a `ResearchConfig` model with the defaults above, and can
 
 ## Out of scope
 
-GPUs, fine-tuning, other datasets (superconductivity, Walmart M5), more setups (One-shot, Raw log), web search for researchers, a dashboard, the waste metric, cost in dollars and time-to-first-token, agents editing anything but `train.py`, repeating whole research runs (add only if time allows).
+GPUs, fine-tuning, other datasets (superconductivity, Walmart M5), the Raw log setup, web search for researchers, a dashboard, the waste metric, cost in dollars and time-to-first-token, agents editing anything but `train.py`, repeating whole research runs (add only if time allows).
 
 ## Models (Crusoe Managed Inference)
 
@@ -342,6 +343,7 @@ cp .env.example .env          # then paste the keys below into .env
 uv run python scripts/prepare_data.py churn                          # already committed in data/churn
 uv run python -m app.orchestrator --dataset churn --setup shared_brain
 uv run python -m app.orchestrator --dataset churn --setup no_memory  # in a second terminal
+uv run python -m app.orchestrator --dataset churn --setup one_shot   # the floor, about 2 minutes
 uv run python -m app.orchestrator --report                           # results table
 ```
 

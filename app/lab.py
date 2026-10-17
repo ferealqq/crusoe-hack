@@ -19,14 +19,17 @@ from app.schemas import Experiment
 from app.services import sandbox
 from app.store import DATA_DIR, append_jsonl
 
-Setup = Literal["shared_brain", "no_memory"]
-SETUPS: tuple[Setup, ...] = ("shared_brain", "no_memory")
+Setup = Literal["shared_brain", "no_memory", "one_shot"]
+SETUPS: tuple[Setup, ...] = ("shared_brain", "no_memory", "one_shot")
 
 log = logging.getLogger(__name__)
 
 
 def researcher_runs(config: ResearchConfig, setup: Setup) -> int:
-    """Shared Brain researchers give up runs for the curator, so both setups use the same total."""
+    """Shared Brain researchers give up runs for the curator, so it and No memory use the same
+    total. One-shot is the floor: a single edit."""
+    if setup == "one_shot":
+        return 1
     if setup == "no_memory":
         return config.researcher_runs
     return config.researcher_runs - math.ceil(config.curator_runs / config.researchers)
