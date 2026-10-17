@@ -14,7 +14,7 @@ uv run fastapi dev app/main.py                  # /docs: setup checks (/playgrou
 uv run ruff check --fix . && uv run ruff format . && uv run pytest     # required before finishing
 ```
 
-Setup is the "Setup" section in `README.md`: copy `.env.example` to `.env`, paste `CRUSOE_API_KEY`, run `uv run modal token new` (opens a browser, so ask the user). Agents should assume `.env` exists.
+Setup is the "Setup" section in `README.md`: copy `.env.example` to `.env`, paste `CRUSOE_API_KEY`, `MODAL_TOKEN_ID` and `MODAL_TOKEN_SECRET`. Agents should assume `.env` exists.
 
 ## Layout
 - `app/config.py`: `Settings` (pydantic-settings, reads `.env`). Only real knobs become settings; fixed values are module constants (`inference.BASE_URL`, `sandbox.APP_NAME`). Every new setting also goes in `.env.example`.
@@ -35,5 +35,6 @@ Setup is the "Setup" section in `README.md`: copy `.env.example` to `.env`, past
 | Symptom | Fix |
 | --- | --- |
 | Crusoe 401/404/429, empty output | See `crusoe-inference` (key quoting, ID casing, limits, `max_tokens`) |
-| Modal `AuthError` | `uv run modal token new` (Modal doesn't read `.env`) |
+| Modal `AuthError` | Set `MODAL_TOKEN_ID`/`MODAL_TOKEN_SECRET` in `.env` (read via the bridge in `sandbox._get_app()`) |
+| Modal `Environment '…' not found` | A `~/.modal.toml` profile's environment leaked in; the bridge sets `MODAL_ENVIRONMENT=""` |
 | pytest warns about unknown config options | It found the parent checkout's `pyproject.toml`; keep `[tool.pytest.ini_options]` in this one |

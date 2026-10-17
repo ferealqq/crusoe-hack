@@ -122,7 +122,7 @@ The memory tools are our own, backed by `memory.jsonl` (see [Storage](#storage))
 
 | Agent | Model | Tools |
 |---|---|---|
-| **Researcher** (×4) | `nvidia/Nemotron-3-Super-120B-A12B` | `get_memory`, `run_code` |
+| **Researcher** (×4) | `nvidia/NVIDIA-Nemotron-3-Super-120B-A12B` | `get_memory`, `run_code` |
 | **Curator** (×1) | `deepseek-ai/DeepSeek-V4-Pro` | `get_memory`, `run_code` (to re-check), `upsert_memory`, `remove_memory` |
 
 - Researcher focus areas: features, model type, tuning, regularization and ensembling.
@@ -271,7 +271,7 @@ New settings go in `app/config.py` and `.env.example`:
 
 | Setting | Default |
 |---|---|
-| `RESEARCHER_MODEL` | `nvidia/Nemotron-3-Super-120B-A12B` |
+| `RESEARCHER_MODEL` | `nvidia/NVIDIA-Nemotron-3-Super-120B-A12B` |
 | `CURATOR_MODEL` | `deepseek-ai/DeepSeek-V4-Pro` |
 | `SANDBOX_TIMEOUT_SECONDS` (exists) | `120` |
 | `SANDBOX_CPU` | `2` |
@@ -302,7 +302,7 @@ GPUs, fine-tuning, other datasets (superconductivity, Walmart M5), more setups (
 
 | Role | Model |
 |---|---|
-| Researcher | `nvidia/Nemotron-3-Super-120B-A12B` |
+| Researcher | `nvidia/NVIDIA-Nemotron-3-Super-120B-A12B` |
 | Curator | `deepseek-ai/DeepSeek-V4-Pro` |
 
 Add a payment method to the Crusoe project: it raises the limit from 30 to 600 requests per minute per model.
@@ -318,16 +318,16 @@ Add a payment method to the Crusoe project: it raises the limit from 30 to 600 r
 
 ## Setup
 
-You need [uv](https://docs.astral.sh/uv/), a Crusoe API key and a Modal account.
+You need [uv](https://docs.astral.sh/uv/), a Crusoe API key and a Modal token.
 
 ```bash
 uv sync
-cp .env.example .env          # then paste CRUSOE_API_KEY into .env
-uv run modal token new        # opens a browser, saves ~/.modal.toml
+cp .env.example .env          # then paste the keys below into .env
 uv run fastapi dev app/main.py
 ```
 
-Get the Crusoe key from Console → Intelligence Foundry → API Keys. Keys can contain `$`, so don't wrap them in double quotes.
+- `CRUSOE_API_KEY`: Crusoe Console → Intelligence Foundry → API Keys. Keys can contain `$`, so wrap them in single quotes, never double.
+- `MODAL_TOKEN_ID` / `MODAL_TOKEN_SECRET`: Modal dashboard → Settings → API Tokens. They take priority over any `~/.modal.toml` profile, so sandboxes always run in this project's workspace. Leave them empty to use your active profile instead (`uv run modal token new`).
 
 To check that everything works, open http://localhost:8000/docs:
 

@@ -12,15 +12,15 @@ Condensed from Crusoe's official hackathon skill (MIT; source in `.agents/skills
 - Key: Console → Intelligence Foundry → API keys (shown once, project-scoped). Keys can contain `$`: shell-export with **single quotes**.
 - Model IDs are case-sensitive and docs pages misspell them. Copy `id` from `GET /v1/models` (in this repo: `GET /playground/models`). That endpoint also lists `supported_parameters`, `features`, `context_length`, `pricing`.
 
-## Models (Oct 2026; verify with /v1/models)
+## Models (IDs verified against /v1/models on 2026-10-17)
 | Use | ID | $/1M in / out / cached |
 | --- | --- | --- |
 | Cheap default, high volume | `deepseek-ai/Deepseek-V4-Flash` (lowercase "s") | 0.14 / 0.28 / 0.03 |
-| Sub-agents, long-running loops | `nvidia/nemotron-3.5-lightning-30b-a3b` | 0.05 / 0.20 / 0.03 |
+| Sub-agents, long-running loops | `nvidia/Nemotron-3.5-Lightning-30B-A3B` | 0.05 / 0.20 / 0.03 |
 | Reliable tool calls / JSON | `openai/gpt-oss-120b` | 0.05 / 0.20 / 0.05 |
-| Hard reasoning/coding (our curator) | `deepseek-ai/DeepSeek-V4-Pro`, GLM-5.3 (confirm prefix) | 1.74 / 3.48 / 0.15 |
-| Input-heavy loops (cheapest cache) | `deepseek-ai/DeepSeek-V4.1-Flash` (confirm casing) | 0.29 / 0.20 / 0.007 |
-| Agentic, tools, RAG (our researchers) | `nvidia/Nemotron-3-Super-120B-A12B` | 0.30 / 2.40 / 0.15 |
+| Hard reasoning/coding (our curator) | `deepseek-ai/DeepSeek-V4-Pro`, `zai-org/GLM-5.3` | 1.74 / 3.48 / 0.15 |
+| Input-heavy loops (cheapest cache) | `deepseek-ai/DeepSeek-V4.1-Flash` | 0.29 / 0.20 / 0.007 |
+| Agentic, tools, RAG (our researchers) | `nvidia/NVIDIA-Nemotron-3-Super-120B-A12B` (note the repeated `NVIDIA-`) | 0.30 / 2.40 / 0.15 |
 | Images | `google/gemma-4-31b-it`, `Qwen/Qwen3.8-27B`, `zai-org/GLM-5.3-Flash` | - |
 
 **Deprecated, replace on sight:** Llama 3.3 70B, DeepSeek V3, Qwen3 235B, GLM-5.1/5.2, Kimi K2.6.

@@ -7,6 +7,9 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     crusoe_api_key: str = ""
+    # Modal workspace for sandboxes. Empty: use the active ~/.modal.toml profile.
+    modal_token_id: str = ""
+    modal_token_secret: str = ""
     sandbox_timeout_seconds: int = 120
 
 

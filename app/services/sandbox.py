@@ -1,5 +1,7 @@
 """Run untrusted (model-generated) code in Modal Sandboxes."""
 
+import os
+
 import modal
 
 from app.config import get_settings
@@ -15,7 +17,14 @@ _app: modal.App | None = None
 async def _get_app() -> modal.App:
     global _app
     if _app is None:
-        # Auth comes from ~/.modal.toml (`uv run modal token new`).
+        s = get_settings()
+        # Modal reads os.environ / ~/.modal.toml, not our .env. Tokens in .env win over the
+        # active ~/.modal.toml profile, so sandboxes bill to this project's workspace.
+        if s.modal_token_id and s.modal_token_secret:
+            os.environ.setdefault("MODAL_TOKEN_ID", s.modal_token_id)
+            os.environ.setdefault("MODAL_TOKEN_SECRET", s.modal_token_secret)
+            # The active profile's `environment` belongs to another workspace; "" = default.
+            os.environ.setdefault("MODAL_ENVIRONMENT", "")
         _app = await modal.App.lookup.aio(APP_NAME, create_if_missing=True)
     return _app
 

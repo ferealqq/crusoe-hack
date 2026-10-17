@@ -12,7 +12,7 @@ Open the matching skill before working in that area. If your harness doesn't aut
 | `modal-sandboxes` | Sandbox code, isolation, exit codes, Modal auth |
 
 ## Rules
-- Setup is the short "Setup" section in `README.md`. `uv run modal token new` opens a browser: ask the user to run it.
+- Setup is the short "Setup" section in `README.md`: three keys in `.env`.
 - Before finishing: `uv run ruff check . && uv run ruff format . && uv run pytest`.
 - Tests never call Crusoe or Modal. Monkeypatch the `app.services.*` functions.
 - No database. Results are JSONL files under `data/` (layout: "Storage" in `README.md`); use `app/store.py`.

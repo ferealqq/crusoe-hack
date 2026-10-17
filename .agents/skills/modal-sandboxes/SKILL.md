@@ -29,7 +29,7 @@ finally:
 - Images: define them at module level, because they build lazily on the first `create`, and changing them causes a rebuild. The network is blocked at run time, so pre-install every package the generated code may import. To avoid rebuilds during requests, `build` + `publish` a named image at deploy time and use `Image.from_name`.
 
 ## Auth
-`uv run modal token new` writes `~/.modal.toml`, which Modal reads directly. Real `MODAL_TOKEN_ID`/`MODAL_TOKEN_SECRET` environment variables also work; values in `.env` do **not** (Modal doesn't read it).
+Modal doesn't read `.env`. `sandbox._get_app()` copies `MODAL_TOKEN_ID`/`MODAL_TOKEN_SECRET` from `Settings` into `os.environ` before the first `App.lookup`, and sets `MODAL_ENVIRONMENT=""` so the active `~/.modal.toml` profile's `environment` (from another workspace) doesn't leak in (`NotFoundError: Environment '…' not found`). Keep that bridge, and don't create Modal objects before `_get_app()` runs. With no tokens in `.env`, the active `~/.modal.toml` profile is used.
 
 ## Scaling
 One sandbox per run (current design) gives the cleanest isolation. Reusing one sandbox for several execs is cheaper but leaks state between them. Cap fan-out with an `asyncio.Semaphore`; the ceiling is your plan's container limit. Billing is per second on max(request, usage).
