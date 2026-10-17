@@ -16,5 +16,6 @@ Open the matching skill before working in that area. If your harness doesn't aut
 - Before finishing: `uv run ruff check . && uv run ruff format . && uv run pytest`.
 - Tests never call Crusoe or Modal. Monkeypatch the `app.services.*` functions.
 - No database. Results are JSONL files under `data/` (layout: "Storage" in `README.md`); use `app/store.py`.
-- New settings go in `app/config.py` **and** `.env.example`. Never commit `.env` or `data/`.
+- New settings go in `app/config.py` **and** `.env.example`. Never commit `.env`. Everything in `data/` is committed (see "Git trail" in `README.md`).
+- While research runs are going, don't `git add -A` or `git add data/`: the orchestrator commits run files itself. Commit code paths by name.
 - Platform facts (model IDs, APIs) change often. Trust the skills and live APIs (`GET /playground/models`) over memory.

@@ -60,7 +60,7 @@ We use one dataset, churn, split three ways.
 |---|---|---|
 | Train | Researchers, curator | Training |
 | Val | Researchers, curator (inputs only, never labels) | Scoring during research |
-| Test | No agent | Final before-and-after comparison only, run by `test.py` |
+| Test | No agent | Final before-and-after comparison only, run by the orchestrator |
 
 - Researchers never see the test split: not its data, its loss, or any score built from it.
 - The curator doesn't see it either. It verifies claims on val, because what it learns goes into memory, and researchers read memory.
@@ -69,7 +69,7 @@ We use one dataset, churn, split three ways.
 | Step | The sandbox gets | The sandbox never gets |
 |---|---|---|
 | Research (`run_code`) | Train, val inputs | Val labels, any test data |
-| Final scoring (`test.py`) | Train + val (with labels), test inputs | Test labels |
+| Final scoring | Train + val (with labels), test inputs | Test labels |
 
 ### Data source
 
@@ -79,15 +79,14 @@ We use one dataset, churn, split three ways.
 
 Why churn: clear room to improve (~20%) and stable between runs.
 
-`scripts/prepare_data.py churn` downloads the dataset, splits it and saves it to `data/churn/` (git-ignored): `train.parquet`, `val_X.parquet`, `val_y.parquet`, `test_X.parquet`, `test_y.parquet` and `meta.json` (target column, loss, split rule).
+`scripts/prepare_data.py churn` downloads the dataset, splits it and saves it to `data/churn/`: `train.parquet`, `val_X.parquet`, `val_y.parquet`, `test_X.parquet`, `test_y.parquet` and `meta.json` (target column, loss, split rule).
 
 ## Files
 
 | File | Access |
 |---|---|
 | `train.py` | The only file agents can edit |
-| `sandbox/harness.py` | Locked. Runs `train.py` on train, predicts val inputs, returns predictions |
-| `sandbox/test.py` | Locked; agents can't see, edit or run it. Only the orchestrator runs it |
+| `sandbox/harness.py` | Locked. Fits `train.py` on `train.parquet`, predicts `X.parquet`, writes `preds.json`. The orchestrator decides which files go in: train + val inputs for research, train + val (with labels) + test inputs for final scoring, which only it runs (`loop.final_test`) |
 
 ### The `train.py` contract
 
@@ -101,7 +100,7 @@ def predict(model: object, X: pd.DataFrame) -> np.ndarray: ...
 ```
 
 - `predict` returns the chance of leaving (0 to 1) for each row.
-- `test.py` fits on train + val, then predicts the test inputs, for seeds 1, 2 and 3.
+- Final scoring fits on train + val, then predicts the test inputs, for seeds 1, 2 and 3.
 - Allowed libraries: numpy, pandas, pyarrow, scikit-learn, lightgbm, xgboost, catboost, torch (CPU). No installs at runtime.
 
 The starting `train.py` is logistic regression, in `baselines/churn/train.py`.
@@ -171,7 +170,7 @@ The orchestrator attaches the researcher's run log (note, status and val loss pe
    3. Update memory: the curator (Shared Brain), or nothing (No memory).
    4. Update the best `train.py` if a run beats it by more than the noise threshold.
    5. Append this generation's metrics to `generations.jsonl`.
-3. **At the end:** `test.py` scores the starting and the best `train.py`.
+3. **At the end:** the orchestrator scores the starting and the best `train.py` on the test split.
 
 ## Curation
 
@@ -219,7 +218,7 @@ fitness = average gain across seeds 1, 2, 3
 
 - **`L0`:** loss of the starting `train.py`.
 - **`Lbest`:** loss of the best `train.py` reached within the budget.
-- During research, both are val loss. For the final score, `test.py` measures both on the test split, with the best `train.py` picked by val loss.
+- During research, both are val loss. For the final score, both are measured on the test split, with the best `train.py` picked by val loss.
 
 ## Evaluation
 
@@ -235,7 +234,7 @@ Expected size: about 150 sandbox runs and under 2 hours per research run, so abo
 
 ## Storage
 
-No database. Everything is a file under `data/` (git-ignored), read and written with `app/store.py`. JSONL files are append-only, except `memory.jsonl`.
+No database. Everything is a file under `data/`, read and written with `app/store.py`, and **committed to git**. JSONL files are append-only, except `memory.jsonl`.
 
 ```
 data/
@@ -246,7 +245,21 @@ data/
     experiments.jsonl          one line per sandbox run: agent, seed, status, val loss, runtime, note, output tail, train.py code
     agents.jsonl               one line per agent session: role, focus, model, report, transcript, tokens
     memory.jsonl               current memory, one entry per line; rewritten on every change
+    best_train.py              the current best train.py
+  logs/<setup>.log             console output of the latest run of each setup
 ```
+
+### Git trail
+
+The orchestrator commits the run's files after every memory change (each curator add, edit or remove, each new best, each entry dropped for the cap) and at the start and end of every generation. Messages start with `chore(brain):` and end with the run ID. To read the trail:
+
+```bash
+git log --oneline --grep 'chore(brain)'                           # every step of every run
+git log -p -- data/research_runs/<run_id>/memory.jsonl            # how the memory changed
+git log -p -- data/research_runs/<run_id>/best_train.py           # how the best train.py changed
+```
+
+Pass `--no-commit` to the orchestrator to turn this off.
 
 ## Code layout
 
@@ -254,13 +267,16 @@ data/
 app/
   orchestrator.py        # CLI: uv run python -m app.orchestrator --dataset churn --setup shared_brain
   loop.py                # generation loop, ranking, best tracking
-  agents/                # researcher.py, curator.py, prompts.py, tools.py
+  agents/                # base.py (tool loop), researcher.py, curator.py, prompts.py, tools.py
   memory.py              # entries, rendering, cap, staleness
   scoring.py             # losses, noise threshold, gain, fitness
+  lab.py                 # one research run's state: run log, best, memory, git checkpoints
+  data.py                # loads a prepared dataset, builds the files each sandbox gets
+  gitlog.py              # commits run files (the git trail)
   store.py               # JSONL helpers: append, read, rewrite
   services/              # inference.py, sandbox.py
   api/routes/            # health.py, playground.py (setup checks only)
-sandbox/                 # harness.py, test.py (locked, copied into the sandbox)
+sandbox/                 # harness.py (locked, copied into the sandbox)
 baselines/churn/train.py
 scripts/prepare_data.py
 ```
@@ -285,7 +301,7 @@ Budget numbers live in a `ResearchConfig` model with the defaults above, and can
 2. One researcher, one generation.
 3. 4 researchers, ranking, best tracking: the No memory setup works.
 4. Curator and memory: the Shared Brain setup works.
-5. `test.py` and the final results table.
+5. Final test scoring and the results table.
 
 ## Done when
 
@@ -296,7 +312,7 @@ Budget numbers live in a `ResearchConfig` model with the defaults above, and can
 
 ## Out of scope
 
-GPUs, fine-tuning, other datasets (superconductivity, Walmart M5), more setups (One-shot, Raw log), web search for researchers, a dashboard, the waste metric, cost in dollars and time-to-first-token, memory history, agents editing anything but `train.py`, repeating whole research runs (add only if time allows).
+GPUs, fine-tuning, other datasets (superconductivity, Walmart M5), more setups (One-shot, Raw log), web search for researchers, a dashboard, the waste metric, cost in dollars and time-to-first-token, agents editing anything but `train.py`, repeating whole research runs (add only if time allows).
 
 ## Models (Crusoe Managed Inference)
 
@@ -323,13 +339,18 @@ You need [uv](https://docs.astral.sh/uv/), a Crusoe API key and a Modal token.
 ```bash
 uv sync
 cp .env.example .env          # then paste the keys below into .env
-uv run fastapi dev app/main.py
+uv run python scripts/prepare_data.py churn                          # already committed in data/churn
+uv run python -m app.orchestrator --dataset churn --setup shared_brain
+uv run python -m app.orchestrator --dataset churn --setup no_memory  # in a second terminal
+uv run python -m app.orchestrator --report                           # results table
 ```
+
+`--generations`, `--researchers`, `--runs` and `--turns` override the budget, e.g. for a quick check.
 
 - `CRUSOE_API_KEY`: Crusoe Console → Intelligence Foundry → API Keys. Keys can contain `$`, so wrap them in single quotes, never double.
 - `MODAL_TOKEN_ID` / `MODAL_TOKEN_SECRET`: Modal dashboard → Settings → API Tokens. They take priority over any `~/.modal.toml` profile, so sandboxes always run in this project's workspace. Leave them empty to use your active profile instead (`uv run modal token new`).
 
-To check that everything works, open http://localhost:8000/docs:
+To check the keys, run `uv run fastapi dev app/main.py` and open http://localhost:8000/docs:
 
 - `GET /playground/models` lists models: the Crusoe key works.
 - `POST /playground/sandbox` with `{"code": "print('ok')"}` prints `ok`: Modal works. The first run builds the image (1–2 min).
