@@ -11,6 +11,7 @@ import openai
 from openai import AsyncOpenAI
 from openai.types.chat import ChatCompletionMessage
 
+from app import events
 from app.config import get_settings
 
 log = logging.getLogger(__name__)
@@ -75,6 +76,9 @@ class RateLimiter:
         async with self.lock:
             now = time.monotonic()
             if self.next_at > now:
+                events.emit(
+                    "agent.waiting", reason="rate_limit_spacing", seconds=self.next_at - now
+                )
                 await asyncio.sleep(self.next_at - now)
             self.next_at = max(now, self.next_at) + self.interval
 
@@ -114,6 +118,9 @@ async def chat_turn(
             if attempt == attempts - 1:
                 raise
             delay = min(60.0, 5.0 * 2**attempt) * random.uniform(0.6, 1.0)
+            events.emit(
+                "agent.retry", error_type=type(e).__name__, attempt=attempt + 1, seconds=delay
+            )
             log.info("%s from %s, retrying in %.0fs", type(e).__name__, model, delay)
             await asyncio.sleep(delay)
     choice = resp.choices[0]
