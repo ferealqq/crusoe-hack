@@ -7,18 +7,18 @@ from openai import AsyncOpenAI
 
 from app.config import get_settings
 
+BASE_URL = "https://api.inference.crusoecloud.com/v1"
+
 
 @lru_cache
 def get_client() -> AsyncOpenAI:
-    s = get_settings()
-    return AsyncOpenAI(
-        api_key=s.crusoe_api_key, base_url=s.crusoe_base_url, max_retries=s.crusoe_max_retries
-    )
+    # The SDK retries 429/5xx with exponential backoff (honours Retry-After)
+    return AsyncOpenAI(api_key=get_settings().crusoe_api_key, base_url=BASE_URL, max_retries=6)
 
 
 async def chat(
     messages: list[dict[str, str]],
-    model: str | None = None,
+    model: str,
     temperature: float = 0.2,
     max_tokens: int = 4096,
     **kwargs,
@@ -30,7 +30,7 @@ async def chat(
     """
     started = time.perf_counter()
     resp = await get_client().chat.completions.create(
-        model=model or get_settings().crusoe_default_model,
+        model=model,
         messages=messages,
         temperature=temperature,
         max_tokens=max_tokens,

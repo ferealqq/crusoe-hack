@@ -12,15 +12,14 @@ This is the single source of truth for every coding harness. `SKILL.md` files fo
 Windows: clone with `git config --global core.symlinks true` (and Developer Mode on), or Claude Code won't see the skills.
 
 ## Writing skills
-- Keep each `SKILL.md` around 3–4 KB of rules, defaults and gotchas an agent can't infer from the code. Put long reference material in `references/`.
+- Keep each `SKILL.md` around 3–4 KB of rules, defaults and gotchas an agent can't infer from the code. 
 - Keep descriptions ≤ ~250 chars: what it covers + trigger words.
 - Don't restate the code. Point to the file.
 
 ## Sources
 | Skill | Derived from | License |
 | --- | --- | --- |
-| `crusoe-inference` | [crusoe-developer-hub hackathon skill](https://github.com/crusoecloud/crusoe-developer-hub/blob/main/examples/hackathons/crusoe-cv-recursive-agents-hackathon/crusoe-cv-recursive-agents-hackathon-skill.md); verbatim copy in `references/` (fetched 2026-10-17) | MIT |
-| `neon` | [neondatabase/agent-skills](https://github.com/neondatabase/agent-skills) `neon`, `neon-postgres`, `neon-object-storage`, `neon-postgres-branches`; verbatim copies in `references/upstream/` (commit 51c7d59) | Apache-2.0 |
-| `modal-sandboxes` | Modal docs + SDK 1.6.2 source, see `references/full-guide.md` | - |
+| `crusoe-inference` | [crusoe-developer-hub hackathon skill](https://github.com/crusoecloud/crusoe-developer-hub/blob/main/examples/hackathons/crusoe-cv-recursive-agents-hackathon/crusoe-cv-recursive-agents-hackathon-skill.md) (fetched 2026-10-17) | MIT |
+| `modal-sandboxes` | Modal docs + SDK 1.6.2 source | - |
 
-The condensed `SKILL.md` files are modified summaries of these sources. When upstream changes, re-fetch the verbatim copies and update the summaries.
+The `SKILL.md` files are condensed summaries of these sources. When upstream changes, update the summaries.

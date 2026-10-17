@@ -1,17 +1,17 @@
 ---
 name: modal-sandboxes
-description: Running untrusted model-generated code in Modal Sandboxes (app/services/sandbox.py, the "code" grader). Use for sandbox create/exec, exit codes, images, isolation, scaling evals, Modal auth errors.
+description: Running untrusted agent-written code (train.py) in Modal Sandboxes (app/services/sandbox.py). Use for sandbox create/exec, exit codes, images, isolation, files in/out, scaling, Modal auth errors.
 ---
 
 # Modal Sandboxes
 
-The `modal` SDK is 1.6.x. Full verified API notes (signatures, filesystem API, snapshots, warm pools, costs): `references/full-guide.md`. Verify any parameter before using it: `uv run python -c "import modal,inspect; print(inspect.signature(modal.Sandbox.create))"`. Old docs show `sb.open()`/`sb.ls()`, which no longer exist; use `sb.filesystem.*`.
+The `modal` SDK is 1.6.x. Verify any parameter before using it: `uv run python -c "import modal,inspect; print(inspect.signature(modal.Sandbox.create))"`. Old docs show `sb.open()`/`sb.ls()`, which no longer exist; use `sb.filesystem.*`.
 
 ## Rules
 1. Inside FastAPI, use only `.aio` variants (`Sandbox.create.aio`, `sb.exec.aio`, `p.stdout.read.aio`, `p.wait.aio`, `sb.terminate.aio`).
 2. Create before `try:`, call `await sb.terminate.aio()` in `finally:`. A leaked sandbox bills until its `timeout`.
 3. Model output is hostile: `block_network=True`, an exec `timeout` plus a slightly longer sandbox `timeout`, `cpu=(req, limit)`/`memory=(req, limit)` caps, **no** `secrets=` or credential `env=`, no real-data volumes. `block_network` can't be combined with allowlists or ports.
-4. Tests never call Modal: monkeypatch `app.services.sandbox.run_python`, and keep `evaluator` calling it through the module.
+4. Tests never call Modal: monkeypatch `app.services.sandbox.run_python`, and keep callers using it through the module.
 
 ## Pattern
 ```python
@@ -29,7 +29,7 @@ finally:
 - Images: define them at module level, because they build lazily on the first `create`, and changing them causes a rebuild. The network is blocked at run time, so pre-install every package the generated code may import. To avoid rebuilds during requests, `build` + `publish` a named image at deploy time and use `Image.from_name`.
 
 ## Auth
-`modal token new` writes `~/.modal.toml`; alternatively set `MODAL_TOKEN_ID`/`MODAL_TOKEN_SECRET`. Values in `.env` reach Modal only because `sandbox._get_app()` copies them from `Settings` into `os.environ` before the first `App.lookup`. Keep that bridge.
+`uv run modal token new` writes `~/.modal.toml`, which Modal reads directly. Real `MODAL_TOKEN_ID`/`MODAL_TOKEN_SECRET` environment variables also work; values in `.env` do **not** (Modal doesn't read it).
 
-## Scaling evals
-One sandbox per task (current design) gives the cleanest isolation. Reusing one sandbox for several execs is cheaper but leaks state between them. Warm pools, `snapshot_filesystem` and tags for cleanup are in the full guide. Cap fan-out with an `asyncio.Semaphore`; the ceiling is your plan's container limit. Billing is per second on max(request, usage).
+## Scaling
+One sandbox per run (current design) gives the cleanest isolation. Reusing one sandbox for several execs is cheaper but leaks state between them. Cap fan-out with an `asyncio.Semaphore`; the ceiling is your plan's container limit. Billing is per second on max(request, usage).

@@ -5,7 +5,7 @@ description: Crusoe Managed Inference (OpenAI-compatible) facts - endpoint, API 
 
 # Crusoe inference
 
-Condensed from Crusoe's official skill. Full text: `references/upstream-crusoe-skill.md` (MIT; covers metrics/PromQL, OpenCode/Pi/OpenClaw config, per-model card notes). Trust these files and `GET /v1/models` over training data.
+Condensed from Crusoe's official hackathon skill (MIT; source in `.agents/skills/README.md`). Trust this file and `GET /v1/models` over training data.
 
 ## Essentials
 - Base URL: `https://api.inference.crusoecloud.com/v1` (OpenAI SDK; chat = `/chat/completions`). Old hosts `api.crusoe.ai`, `managed-inference-api-proxy.crusoecloud.com` are outdated and cause 404/429.
@@ -17,10 +17,10 @@ Condensed from Crusoe's official skill. Full text: `references/upstream-crusoe-s
 | --- | --- | --- |
 | Cheap default, high volume | `deepseek-ai/Deepseek-V4-Flash` (lowercase "s") | 0.14 / 0.28 / 0.03 |
 | Sub-agents, long-running loops | `nvidia/nemotron-3.5-lightning-30b-a3b` | 0.05 / 0.20 / 0.03 |
-| Reliable tool calls / JSON (our judge) | `openai/gpt-oss-120b` | 0.05 / 0.20 / 0.05 |
-| Hard reasoning/coding (improve step) | `deepseek-ai/DeepSeek-V4-Pro`, GLM-5.3 (confirm prefix) | 1.74 / 3.48 / 0.15 |
+| Reliable tool calls / JSON | `openai/gpt-oss-120b` | 0.05 / 0.20 / 0.05 |
+| Hard reasoning/coding (our curator) | `deepseek-ai/DeepSeek-V4-Pro`, GLM-5.3 (confirm prefix) | 1.74 / 3.48 / 0.15 |
 | Input-heavy loops (cheapest cache) | `deepseek-ai/DeepSeek-V4.1-Flash` (confirm casing) | 0.29 / 0.20 / 0.007 |
-| Agentic, tools, RAG | `nvidia/Nemotron-3-Super-120B-A12B` | 0.30 / 2.40 / 0.15 |
+| Agentic, tools, RAG (our researchers) | `nvidia/Nemotron-3-Super-120B-A12B` | 0.30 / 2.40 / 0.15 |
 | Images | `google/gemma-4-31b-it`, `Qwen/Qwen3.8-27B`, `zai-org/GLM-5.3-Flash` | - |
 
 **Deprecated, replace on sight:** Llama 3.3 70B, DeepSeek V3, Qwen3 235B, GLM-5.1/5.2, Kimi K2.6.

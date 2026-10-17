@@ -1,14 +1,13 @@
 """Run untrusted (model-generated) code in Modal Sandboxes."""
 
-import os
-
 import modal
 
 from app.config import get_settings
 from app.schemas import SandboxResult
 
 # Extend with whatever the generated code is allowed to import.
-SANDBOX_IMAGE = modal.Image.debian_slim(python_version="3.12").pip_install("numpy", "pytest")
+SANDBOX_IMAGE = modal.Image.debian_slim(python_version="3.12").pip_install("numpy")
+APP_NAME = "crusoe-hack-sandboxes"
 
 _app: modal.App | None = None
 
@@ -16,12 +15,8 @@ _app: modal.App | None = None
 async def _get_app() -> modal.App:
     global _app
     if _app is None:
-        s = get_settings()
-        # Modal reads os.environ / ~/.modal.toml, not our .env; bridge tokens loaded by Settings.
-        if s.modal_token_id and s.modal_token_secret:
-            os.environ.setdefault("MODAL_TOKEN_ID", s.modal_token_id)
-            os.environ.setdefault("MODAL_TOKEN_SECRET", s.modal_token_secret)
-        _app = await modal.App.lookup.aio(s.modal_app_name, create_if_missing=True)
+        # Auth comes from ~/.modal.toml (`uv run modal token new`).
+        _app = await modal.App.lookup.aio(APP_NAME, create_if_missing=True)
     return _app
 
 
