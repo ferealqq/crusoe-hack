@@ -24,7 +24,7 @@ dev = [
 [tool.ruff]
 line-length = 100
 target-version = "py312"
-extend-exclude = [".agents"]
+extend-exclude = [".agents", "data"]  # data/ holds agents' code exactly as they wrote it
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
