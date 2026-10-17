@@ -1,0 +1,23 @@
+{
+  "setup": "one_shot",
+  "dataset": "churn",
+  "l0": 0.3947244433333342,
+  "noise_threshold": 0.001973622216666671,
+  "best_version": 1,
+  "best_val": 0.3753206366964178,
+  "val_gain": 0.04915785420597929,
+  "baseline_test_losses": [
+    0.40328536159905987,
+    0.40328536159905987,
+    0.40328536159905987
+  ],
+  "best_test_losses": [
+    0.384883443798255,
+    0.3874477591723194,
+    0.3879092814619356
+  ],
+  "fitness": 0.0410095059967295,
+  "runs": 1,
+  "minutes": 0.9,
+  "best_code": "import numpy as np\nimport pandas as pd\nimport lightgbm as lgb\n\ndef fit(train: pd.DataFrame, target: str, seed: int) -> object:\n    X = train.drop(columns=[target])\n    y = train[target]\n    model = lgb.LGBMClassifier(\n        objective='binary',\n        random_state=seed,\n        n_estimators=500,\n        learning_rate=0.05,\n        subsample=0.8,\n        colsample_bytree=0.8,\n        reg_alpha=0.1,\n        reg_lambda=0.1,\n        class_weight='balanced',\n        n_jobs=2\n    )\n    model.fit(X, y)\n    return model\n\ndef predict(model: object, X: pd.DataFrame) -> np.ndarray:\n    return model.predict_proba(X)[:, 1]"
+}
