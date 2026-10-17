@@ -233,6 +233,7 @@ async def research_run(
         "run_id": lab.run_id,
         "dataset": dataset.name,
         "setup": setup,
+        "loss": lab.loss,
         "config": config.model_dump(),
         "l0": lab.l0,
         "noise_threshold": lab.threshold,

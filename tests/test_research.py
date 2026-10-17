@@ -54,7 +54,7 @@ def test_test_files_give_train_plus_val_labels_and_test_inputs(dataset: Dataset)
 async def test_research_runs_send_only_research_files(lab: Lab, monkeypatch):
     seen: list[dict[str, bytes]] = []
 
-    async def run_train(code, files, target, seed):
+    async def run_train(code, files, target, seed, loss="log_loss"):
         seen.append(files)
         return TrainResult(status="ok", preds=[0.2] * 30)
 
@@ -81,7 +81,11 @@ def test_harness_rejects_bad_predictions(tmp_path: Path, dataset: Dataset):
     assert run(good).returncode == 0
     assert json.loads((tmp_path / "preds.json").read_text()) == [0.2] * 30
     assert run(good.replace("[0.2] * len(X)", "[0.2]")).returncode != 0
-    assert run(good.replace("0.2", "1.5")).returncode != 0
+    assert run(good.replace("0.2", "1.5")).returncode != 0  # log loss needs probabilities
+    regression = good.replace("0.2", "41.5")
+    (tmp_path / "train.py").write_text(regression)
+    cmd = [sys.executable, "harness.py", "--target", "y", "--seed", "0", "--loss", "rmse"]
+    assert subprocess.run(cmd, cwd=tmp_path, capture_output=True).returncode == 0
 
 
 # --- run limits ----------------------------------------------------------------------------
@@ -90,7 +94,7 @@ def test_harness_rejects_bad_predictions(tmp_path: Path, dataset: Dataset):
 async def test_researcher_run_limit(lab: Lab, monkeypatch):
     calls = 0
 
-    async def run_train(code, files, target, seed):
+    async def run_train(code, files, target, seed, loss="log_loss"):
         nonlocal calls
         calls += 1
         return TrainResult(status="error", output_tail="boom")
@@ -106,7 +110,7 @@ async def test_researcher_run_limit(lab: Lab, monkeypatch):
 
 
 async def test_curator_check_needs_enough_runs(lab: Lab, monkeypatch):
-    async def run_train(code, files, target, seed):
+    async def run_train(code, files, target, seed, loss="log_loss"):
         return TrainResult(status="ok", preds=[0.2] * 30)
 
     monkeypatch.setattr(sandbox, "run_train", run_train)
@@ -237,6 +241,7 @@ def test_scoring_math():
     assert scoring.noise_threshold([0.4, 0.4]) == pytest.approx(0.002)  # 0.5% of L0
     assert scoring.noise_threshold([0.38, 0.42]) == pytest.approx(0.04)  # 2 x spread
     assert scoring.gain(0.4, 0.3) == pytest.approx(0.25)
+    assert scoring.score("rmse", np.array([1.0, 3.0]), np.array([2.0, 2.0])) == pytest.approx(1.0)
     assert scoring.fitness([0.4, 0.5], [0.3, 0.5]) == pytest.approx(0.125)
     assert scoring.beats(0.39, 0.40, 0.005) and not scoring.beats(0.398, 0.40, 0.005)
 
@@ -247,7 +252,7 @@ def test_scoring_math():
 def _fake_sandbox(monkeypatch) -> None:
     """Predicts the constant P=<x> found in the code; the starting train.py predicts 0.5."""
 
-    async def run_train(code, files, target, seed):
+    async def run_train(code, files, target, seed, loss="log_loss"):
         m = re.search(r"P=([0-9.]+)", code)
         n = len(_frame(files["X.parquet"]))
         return TrainResult(status="ok", preds=[float(m.group(1)) if m else 0.5] * n)

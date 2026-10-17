@@ -16,6 +16,19 @@ def log_loss(y: np.ndarray, p: np.ndarray) -> float:
     return float(-np.mean(y * np.log(p) + (1 - y) * np.log(1 - p)))
 
 
+def rmse(y: np.ndarray, p: np.ndarray) -> float:
+    diff = np.asarray(y, dtype=float) - np.asarray(p, dtype=float)
+    return float(np.sqrt(np.mean(diff**2)))
+
+
+LOSSES = {"log_loss": log_loss, "rmse": rmse}
+
+
+def score(loss: str, y: np.ndarray, p: np.ndarray) -> float:
+    """The dataset's loss (meta.json "loss"); lower is better for all of them."""
+    return LOSSES[loss](y, p)
+
+
 def spread(losses: list[float]) -> float:
     """Population standard deviation; 0 for a single value."""
     return statistics.pstdev(losses) if len(losses) > 1 else 0.0

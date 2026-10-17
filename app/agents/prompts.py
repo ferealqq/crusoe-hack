@@ -9,14 +9,14 @@ from app.schemas import Experiment
 from app.scoring import Ranked
 
 RESEARCHER_RULES = """You are an ML researcher on a small team. Your goal: lower the validation \
-log loss of the model in train.py.
+{loss_name} of the model in train.py. Task: {task}
 
 ## How it works
 - train.py must define:
     fit(train: pd.DataFrame, target: str, seed: int) -> object
-    predict(model: object, X: pd.DataFrame) -> np.ndarray  # chance of the positive class, 0 to 1
+    predict(model: object, X: pd.DataFrame) -> np.ndarray  # {prediction}, one per row
 - run_code(code, note) runs your complete train.py: fit on the training split, then predict the \
-validation inputs. It returns val_loss (log loss, lower is better), status (ok / error / \
+validation inputs. It returns val_loss ({loss_name}, lower is better), status (ok / error / \
 timeout), the last 2,000 characters of output, and runs_left.
 - You never see validation labels or the test split.
 - Each run: {timeout} s, {cpu:g} CPUs, {memory_gb:g} GB RAM, no GPU, no network. Allowed \
@@ -37,7 +37,7 @@ open ideas (try_next). Build on it and don't retry failed ideas. get_memory retu
 """
 
 CURATOR_RULES = """You curate the shared memory of a team of ML researchers who are lowering \
-the validation log loss of a churn model (train.py). Keep the memory current, lean and \
+the validation {loss_name} of a model (train.py). Task: {task} Keep the memory current, lean and \
 conflict-free. Only you write to it, and only results from run_code become memories.
 
 Each generation you get every researcher's report and run log, ranked by gain over the \
@@ -65,6 +65,12 @@ remove entries first.
 When done, reply with a short summary of what you changed, and no tool call."""
 
 
+LOSS_TEXT = {
+    "log_loss": ("log loss", "chance of the positive class, 0 to 1"),
+    "rmse": ("RMSE", "the predicted value of the target"),
+}
+
+
 def dataset_card(lab: Lab) -> str:
     card = dict(lab.dataset.meta)
     card["rows"] = {k: v for k, v in card.get("rows", {}).items() if k != "test"}
@@ -76,6 +82,9 @@ def researcher_system(lab: Lab) -> str:
     shared = lab.setup == "shared_brain"
     parts = [
         RESEARCHER_RULES.format(
+            loss_name=LOSS_TEXT[lab.loss][0],
+            prediction=LOSS_TEXT[lab.loss][1],
+            task=lab.dataset.meta.get("task", ""),
             timeout=settings.sandbox_timeout_seconds,
             cpu=settings.sandbox_cpu,
             memory_gb=settings.sandbox_memory_mb / 1024,
@@ -106,7 +115,11 @@ def researcher_task(focus: str) -> str:
 
 def curator_system(lab: Lab) -> str:
     return CURATOR_RULES.format(
-        threshold=lab.threshold, runs=lab.config.curator_runs, cap=lab.memory.cap
+        loss_name=LOSS_TEXT[lab.loss][0],
+        task=lab.dataset.meta.get("task", ""),
+        threshold=lab.threshold,
+        runs=lab.config.curator_runs,
+        cap=lab.memory.cap,
     )
 
 

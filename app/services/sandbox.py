@@ -66,7 +66,9 @@ async def run_python(code: str, timeout: int | None = None) -> SandboxResult:
         await sb.terminate.aio()
 
 
-async def run_train(code: str, files: dict[str, bytes], target: str, seed: int) -> TrainResult:
+async def run_train(
+    code: str, files: dict[str, bytes], target: str, seed: int, loss: str = "log_loss"
+) -> TrainResult:
     """Run train.py through the locked harness: fit on train.parquet, predict X.parquet.
 
     Exec timeout -> exit code -1 ("timeout"); anything else non-zero is "error".
@@ -84,7 +86,15 @@ async def run_train(code: str, files: dict[str, bytes], target: str, seed: int) 
         for name, data in files.items():
             await fs.write_bytes.aio(data, f"{WORKDIR}/{name}")
         p = await sb.exec.aio(
-            "python", "harness.py", "--target", target, "--seed", str(seed), timeout=timeout
+            "python",
+            "harness.py",
+            "--target",
+            target,
+            "--seed",
+            str(seed),
+            "--loss",
+            loss,
+            timeout=timeout,
         )
         stdout = await p.stdout.read.aio()
         stderr = await p.stderr.read.aio()

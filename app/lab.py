@@ -89,6 +89,10 @@ class Lab:
         (self.dir / "best_train.py").write_text(best.code)
 
     @property
+    def loss(self) -> str:
+        return self.dataset.meta.get("loss", "log_loss")
+
+    @property
     def researcher_runs(self) -> int:
         return researcher_runs(self.config, self.setup)
 
@@ -110,11 +114,11 @@ class Lab:
         """Run train.py in a sandbox and score it here, outside the sandbox."""
         run_id = self.new_run_id(prefix)
         files = self.dataset.research_files if split == "val" else self.dataset.test_files
-        result = await sandbox.run_train(code, files, self.dataset.target, seed)
+        result = await sandbox.run_train(code, files, self.dataset.target, seed, self.loss)
         loss = None
         if result.status == "ok" and result.preds is not None:
             labels = self.dataset.val_y if split == "val" else self.dataset.test_y
-            loss = scoring.log_loss(labels, np.asarray(result.preds))
+            loss = scoring.score(self.loss, labels, np.asarray(result.preds))
         exp = Experiment(
             run_id=run_id,
             generation=generation,

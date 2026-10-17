@@ -1,6 +1,6 @@
 """Locked. Runs inside the sandbox: fit train.py on train.parquet, predict X.parquet.
 
-    python harness.py --target exited --seed 0
+    python harness.py --target exited --seed 0 [--loss log_loss|rmse]
 
 Writes predictions to preds.json. Never sees labels for X.parquet: the orchestrator scores
 the predictions outside the sandbox.
@@ -16,6 +16,7 @@ import train  # the agent's train.py, next to this file
 parser = argparse.ArgumentParser()
 parser.add_argument("--target", required=True)
 parser.add_argument("--seed", type=int, required=True)
+parser.add_argument("--loss", default="log_loss")
 args = parser.parse_args()
 
 train_df = pd.read_parquet("train.parquet")
@@ -26,7 +27,9 @@ preds = [float(p) for p in train.predict(model, X)]
 
 if len(preds) != len(X):
     raise SystemExit(f"predict returned {len(preds)} values for {len(X)} rows")
-if not all(math.isfinite(p) and 0.0 <= p <= 1.0 for p in preds):
+if not all(math.isfinite(p) for p in preds):
+    raise SystemExit("predict returned NaN or infinite values")
+if args.loss == "log_loss" and not all(0.0 <= p <= 1.0 for p in preds):
     raise SystemExit("predict must return probabilities between 0 and 1")
 
 with open("preds.json", "w") as f:
