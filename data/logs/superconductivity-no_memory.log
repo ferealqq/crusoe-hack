@@ -1,0 +1,19 @@
+16:21:06 research run superconductivity-no_memory-20261017-232106: 5 generations, 28 runs per generation
+16:21:14 g0-base-5 val seed 4: ok loss 17.84142  starting train.py
+16:21:15 g0-base-3 val seed 2: ok loss 17.84142  starting train.py
+16:21:18 g0-base-2 val seed 1: ok loss 17.84142  starting train.py
+16:21:18 g0-base-4 val seed 3: ok loss 17.84142  starting train.py
+16:21:19 g0-base-1 val seed 0: ok loss 17.84142  starting train.py
+16:21:19 baseline: L0 17.84142, noise threshold 0.08921
+16:21:19 committed a03195c: start: L0 17.84142, noise threshold 0.08921
+16:21:19 g1: 4 researchers from v0
+16:21:33 g1-r3-1 val seed 0: ok loss 10.36622  LightGBM default
+16:21:34 g1-r1-1 val seed 0: ok loss 9.85180  LightGBM default-ish
+16:21:34 g1-r2-1 val seed 0: ok loss 9.79168  LightGBM defaultish
+16:21:37 RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B; retrying in 9 s
+16:21:49 RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B; retrying in 16 s
+16:21:55 g1-r2-2 val seed 0: ok loss 9.55949  XGBoost defaultish
+16:21:56 g1-r4-1 val seed 0: ok loss 17.82405  Ridge alpha=0.01
+16:21:58 g1-r1-2 val seed 0: error  LightGBM with early stopping and refit
+16:21:59 RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B; retrying in 7 s
+16:22:00 RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B; retrying in 10 s

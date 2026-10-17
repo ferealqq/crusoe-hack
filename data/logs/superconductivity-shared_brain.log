@@ -1,0 +1,15 @@
+16:21:03 research run superconductivity-shared_brain-20261017-232103: 5 generations, 28 runs per generation
+16:21:12 g0-base-5 val seed 4: ok loss 17.84142  starting train.py
+16:21:12 g0-base-2 val seed 1: ok loss 17.84142  starting train.py
+16:21:12 g0-base-4 val seed 3: ok loss 17.84142  starting train.py
+16:21:13 g0-base-3 val seed 2: ok loss 17.84142  starting train.py
+16:21:13 g0-base-1 val seed 0: ok loss 17.84142  starting train.py
+16:21:13 baseline: L0 17.84142, noise threshold 0.08921
+16:21:13 committed b8d82dc: start: L0 17.84142, noise threshold 0.08921
+16:21:13 g1: 4 researchers from v0
+16:21:17 RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B; retrying in 8 s
+16:21:38 g1-r3-1 val seed 0: ok loss 9.61045  LightGBM with default-ish parameters, n_estimators=1000, learning_rate=0.05, num
+16:21:41 g1-r4-1 val seed 0: ok loss 17.82433  RidgeCV with alphas logspace -3 to 3, 10 values, cv=5
+16:21:42 RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B; retrying in 6 s
+16:21:51 g1-r1-1 val seed 0: ok loss 10.12122  XGBoost with moderate hyperparameters
+16:22:00 g1-r4-2 val seed 0: ok loss 17.83890  ElasticNetCV with l1_ratio grid and alphas logspace -4 to 1, cv=5

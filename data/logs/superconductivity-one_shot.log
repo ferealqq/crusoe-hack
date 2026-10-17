@@ -1,0 +1,10 @@
+16:21:09 research run superconductivity-one_shot-20261017-232109: 1 generations, 1 runs per generation
+16:21:20 g0-base-5 val seed 4: ok loss 17.84142  starting train.py
+16:21:20 g0-base-1 val seed 0: ok loss 17.84142  starting train.py
+16:21:20 g0-base-3 val seed 2: ok loss 17.84142  starting train.py
+16:21:21 g0-base-2 val seed 1: ok loss 17.84142  starting train.py
+16:21:27 g0-base-4 val seed 3: ok loss 17.84142  starting train.py
+16:21:27 baseline: L0 17.84142, noise threshold 0.08921
+16:21:27 committed 8f5c12b: start: L0 17.84142, noise threshold 0.08921
+16:21:27 g1: 1 researchers from v0
+16:21:56 g1-r1-1 val seed 0: ok loss 9.45583  LightGBM with moderate hyperparameters
