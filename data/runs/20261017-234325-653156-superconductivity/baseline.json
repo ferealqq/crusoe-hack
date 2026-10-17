@@ -1,0 +1,17 @@
+{
+  "code": "import numpy as np\nimport pandas as pd\nfrom sklearn.linear_model import Ridge\nfrom sklearn.pipeline import make_pipeline\nfrom sklearn.preprocessing import StandardScaler\n\n\ndef fit(train: pd.DataFrame, target: str, seed: int) -> object:\n    X = train.drop(columns=[target])\n    y = train[target]\n    model = make_pipeline(StandardScaler(), Ridge(alpha=1.0, random_state=seed))\n    model.fit(X, y)\n    return model\n\n\ndef predict(model: object, X: pd.DataFrame) -> np.ndarray:\n    return model.predict(X)\n",
+  "val_losses": [
+    17.766909257988146,
+    17.766909257988107,
+    17.766909257988146,
+    17.766909257988107,
+    17.766909257988146
+  ],
+  "l0": 17.76690925798813,
+  "threshold": 0.08883454628994064,
+  "test_losses": [
+    17.81568651648431,
+    17.81568651648448,
+    17.81568651648448
+  ]
+}
