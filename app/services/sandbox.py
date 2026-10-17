@@ -11,6 +11,7 @@ from typing import Literal
 
 import modal
 import numpy as np
+from modal.types import FileType
 
 from app import events
 from app.config import get_settings
@@ -28,6 +29,7 @@ TRAIN_IMAGE = (
     .pip_install("numpy", "pandas", "pyarrow", "scikit-learn", "lightgbm", "xgboost", "catboost")
     .pip_install("torch", index_url="https://download.pytorch.org/whl/cpu")
 )
+EXPORT_IMAGE = TRAIN_IMAGE.pip_install("cloudpickle>=3.1")
 
 SANDBOX_DIR = Path(__file__).resolve().parents[2] / "sandbox"
 
@@ -44,6 +46,24 @@ MODE_SCRIPT: dict[Mode, str] = {"research": "harness.py", "test": "test.py"}
 _app: modal.App | None = None
 _images: dict[tuple[str, Mode], modal.Image] = {}
 _semaphore: asyncio.Semaphore | None = None
+
+# Fixed output names: never copy arbitrary sandbox paths or deserialize a model on the host.
+EXPORT_FILES = {
+    "model.pkl": 256 * 1024 * 1024,
+    "runtime.json": 1024 * 1024,
+    "requirements.txt": 128 * 1024,
+}
+
+
+class ModelExportError(Exception):
+    """An actionable export failure, safe to include in API status."""
+
+
+def _capacity() -> asyncio.Semaphore:
+    global _semaphore
+    if _semaphore is None:
+        _semaphore = asyncio.Semaphore(get_settings().sandbox_max_concurrency)
+    return _semaphore
 
 
 async def _get_app() -> modal.App:
@@ -109,11 +129,7 @@ async def run_train(code: str, data_dir: Path, seed: int, mode: Mode = "research
     Sandbox infrastructure errors are retried; errors in `code` are returned as status
     "error" (they use up the run).
     """
-    global _semaphore
-    s = get_settings()
-    if _semaphore is None:
-        _semaphore = asyncio.Semaphore(s.sandbox_max_concurrency)
-    async with _semaphore:
+    async with _capacity():
         for attempt in range(3):
             try:
                 return await _run_train_once(code, data_dir, seed, mode)
@@ -161,3 +177,54 @@ async def _run_train_once(code: str, data_dir: Path, seed: int, mode: Mode) -> T
         return TrainResult("ok", preds, output, runtime)
     finally:
         await sb.terminate.aio()
+
+
+def export_files(data_dir: Path) -> dict[Path, str]:
+    """Final fitting has train + val labels, and no test inputs or labels."""
+    return {
+        data_dir / "trainval.parquet": "/data/trainval.parquet",
+        data_dir / "meta.json": "/data/meta.json",
+        SANDBOX_DIR / "export.py": "/harness/export.py",
+        SANDBOX_DIR / "predict.py": "/harness/predict.py",
+    }
+
+
+async def export_model(code: str, data_dir: Path, seed: int, output_dir: Path) -> None:
+    """Refit and copy opaque artifacts to output_dir. The caller publishes them atomically."""
+    async with _capacity():
+        s = get_settings()
+        t = s.sandbox_timeout_seconds
+        sb = await modal.Sandbox.create.aio(
+            app=await _get_app(),
+            image=EXPORT_IMAGE,
+            timeout=t + 120,
+            block_network=True,
+            cpu=(s.sandbox_cpu, s.sandbox_cpu),
+            memory=(s.sandbox_memory_mb, s.sandbox_memory_mb),
+            workdir="/work",
+        )
+        try:
+            # Copy current files rather than caching a dataset image across export requests.
+            for local, remote in export_files(data_dir).items():
+                await sb.filesystem.copy_from_local.aio(local, remote)
+            await sb.filesystem.write_text.aio(code, "/work/train.py")
+            p = await sb.exec.aio("python", "/harness/export.py", "--seed", str(seed), timeout=t)
+            out, err = await asyncio.gather(p.stdout.read.aio(), p.stderr.read.aio())
+            exit_code = await p.wait.aio()
+            if exit_code != 0:
+                log.warning("model export failed (exit %s): %s", exit_code, (out + err)[-2000:])
+                if exit_code == -1:
+                    raise ModelExportError(f"Model fitting or serialization timed out after {t}s")
+                raise ModelExportError(
+                    f"Model fitting or serialization failed in sandbox (exit code {exit_code})"
+                )
+            for name, limit in EXPORT_FILES.items():
+                remote = f"/out/{name}"
+                info = await sb.filesystem.stat.aio(remote)
+                if info.type != FileType.FILE or not 0 < info.size <= limit:
+                    raise ModelExportError(f"Invalid or oversized export file: {name}")
+                await sb.filesystem.copy_to_local.aio(remote, output_dir / name)
+                if not 0 < (output_dir / name).stat().st_size <= limit:
+                    raise ModelExportError(f"Invalid or oversized export file: {name}")
+        finally:
+            await sb.terminate.aio()

@@ -4,6 +4,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from app.config import Setup
 from app.models import RunStatus
 
 
@@ -102,3 +103,19 @@ class SandboxResult(BaseModel):
     stdout: str
     stderr: str
     exit_code: int
+
+
+class ModelExportOut(BaseModel):
+    run_id: str
+    setup: Setup
+    status: Literal["not_created", "building", "ready", "failed"]
+    best_version: int
+    seed: int = 1
+    code_sha256: str
+    created_at: datetime | None = None
+    finished_at: datetime | None = None
+    error: str | None = None
+    filename: str | None = None
+    size_bytes: int | None = None
+    sha256: str | None = None
+    download_url: str | None = None

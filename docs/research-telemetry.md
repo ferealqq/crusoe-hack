@@ -5,6 +5,10 @@ The CLI is the single writer; FastAPI serves it read-only. No database, bucket,
 inference, or sandbox calls are made by the telemetry endpoints or during replay.
 No frontend is included in this change.
 
+Completed setups also support the separate [trained model export API](model-exports.md),
+which builds a downloadable model bundle on demand. Telemetry reads and replay
+remain provider-free.
+
 ## Start recording
 
 Start the API and research CLI in separate terminals, in the same checkout with

@@ -296,7 +296,10 @@ See [Research telemetry API](docs/research-telemetry.md) for endpoints, event ty
 reconnect/seek semantics, and frontend integration. The dashboard UI is separate.
 
 Research telemetry reads the CLI's files under `DATA_DIR/runs/`; the API is read-only
-for research runs. The older prompt-grading endpoints still use Postgres.
+for research telemetry. The [trained model export API](docs/model-exports.md) can
+refit a completed setup's winning code and download a fitted-model ZIP, including
+a prediction helper, dependency versions and metrics. The older prompt-grading
+endpoints still use Postgres.
 
 | Endpoint | Returns |
 |---|---|
@@ -304,6 +307,9 @@ for research runs. The older prompt-grading endpoints still use Postgres.
 | `GET /research-runs` | All research runs |
 | `GET /research-runs/{id}` | Generations and metrics |
 | `GET /research-runs/{id}/memory?generation=n` | Memory snapshot |
+| `POST /research-runs/{id}/setups/{setup}/export` | Build or reuse a trained model export |
+| `GET /research-runs/{id}/setups/{setup}/export` | Export status and download URL |
+| `GET /research-runs/{id}/setups/{setup}/export/download` | Download the trained model ZIP |
 | `GET /health`, `GET /playground/models` | Unchanged |
 
 ## Settings

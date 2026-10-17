@@ -3,7 +3,7 @@
     uv run python scripts/prepare_data.py churn
 
 Writes train.parquet (with the target), val_X/val_y, test_X/test_y, trainval.parquet
-(train + val with labels, used only by test.py) and meta.json (the dataset card).
+(train + val with labels, used by final scoring and model export) and meta.json (the dataset card).
 """
 
 import argparse
