@@ -1,0 +1,499 @@
+<style>
+.sb { display: grid; gap: var(--cds-gap-xl); font-family: var(--font-anthropic-sans); }
+.sb-head h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; text-wrap: balance; }
+.sb-take { margin: var(--cds-gap-sm) 0 0; color: var(--color-fg-muted); font-size: var(--cds-font-size-body); max-width: 72ch; line-height: 1.5; }
+.sb-titlerow { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--cds-gap-md); }
+.sb-switch { display: inline-flex; border: 1px solid var(--color-border-line); border-radius: 999px; padding: 2px; gap: 2px; }
+.sb-switch button { font: inherit; font-size: var(--cds-font-size-caption); border: 0; background: transparent; color: var(--color-fg-muted); padding: var(--cds-pad-xs) var(--cds-pad-md); border-radius: 999px; cursor: pointer; }
+.sb-switch button[aria-selected="true"] { background: var(--color-panel); color: var(--color-fg); box-shadow: inset 0 0 0 1px var(--color-border-line); }
+.sb-switch button:focus-visible { outline: 2px solid var(--color-fg); outline-offset: 1px; }
+.sb-floor { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.sb-take b, .sb b { font-weight: 600; color: var(--color-fg); }
+.sb-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: var(--cds-gap-md); }
+.sb-tile, .sb-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: grid; gap: var(--cds-gap-sm); align-content: start; min-width: 0; }
+.sb-tile h3 { margin: 0; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); font-weight: var(--cds-font-weight-medium); letter-spacing: .02em; }
+.sb-pair { display: grid; grid-template-columns: auto 1fr; gap: var(--cds-gap-xs) var(--cds-gap-md); align-items: baseline; }
+.sb-who { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); display: flex; align-items: center; gap: var(--cds-gap-xs); white-space: nowrap; }
+.sb-big { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-heading); font-variant-numeric: tabular-nums; }
+.sb-sw { width: .55rem; height: .55rem; border-radius: 50%; display: inline-block; flex: none; }
+.sb-note { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); margin: 0; line-height: 1.45; }
+.sb-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 26rem), 1fr)); gap: var(--cds-gap-md); }
+.sb-card h2, .sb-section > h2 { margin: 0; font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); }
+.sb-section { display: grid; gap: var(--cds-gap-md); }
+.sb-chart { position: relative; min-height: 260px; }
+.sb-chart svg { display: block; overflow: visible; }
+.sb-chart text { font-size: var(--cds-font-size-caption); fill: var(--color-fg-muted); font-family: var(--font-anthropic-sans); }
+.sb-legend { display: flex; flex-wrap: wrap; gap: var(--cds-gap-md); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.sb-legend span { display: inline-flex; align-items: center; gap: var(--cds-gap-xs); }
+.sb-tip { position: absolute; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); max-width: 18rem; line-height: 1.4; z-index: 2; }
+.sb-tip .t { color: var(--cds-text-secondary); }
+.sb-tablebox { overflow: auto; max-height: 30rem; }
+.sb table { width: 100%; border-collapse: collapse; font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; }
+.sb th { text-align: left; font-weight: var(--cds-font-weight-medium); color: var(--color-fg-muted); padding: var(--cds-pad-xs) var(--cds-pad-sm); border-bottom: 1px solid var(--color-border-line); position: sticky; top: 0; background: var(--color-panel); white-space: nowrap; }
+.sb td { padding: var(--cds-pad-xs) var(--cds-pad-sm); border-bottom: 1px solid var(--color-border-line); vertical-align: top; }
+.sb td.num, .sb th.num { text-align: right; }
+.sb td.claim { min-width: 16rem; line-height: 1.4; }
+.sb-kind { display: inline-block; padding: 0 .45rem; border-radius: 999px; border: 1px solid currentColor; font-size: var(--cds-font-size-caption); white-space: nowrap; }
+.sb-kind.works { color: var(--color-ok); }
+.sb-kind.failed { color: var(--color-bad); }
+.sb-kind.try_next { color: var(--color-warn); }
+.sb-kind.best { color: var(--color-fg); }
+[data-dash-source-state=empty] { color: transparent; }
+[data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+.sb-fail { display: flex; align-items: center; justify-content: center; gap: var(--cds-gap-xs); min-height: 240px; color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+.sb-fail i { width: .375rem; height: .375rem; border-radius: 50%; background: var(--color-bad); display: inline-block; }
+</style>
+
+<div class="sb">
+  <header class="sb-head">
+    <div class="sb-titlerow">
+      <h1 id="title">Shared Brain results</h1>
+      <div class="sb-switch" id="dataset-switch" role="tablist" aria-label="Dataset"></div>
+    </div>
+    <p class="sb-take dash-skeleton" id="takeaway">—</p>
+  </header>
+
+  <section class="sb-tiles" id="headline"></section>
+
+<section class="sb-grid">
+    <div class="sb-card">
+      <h2 id="progress">Best validation loss by generation</h2>
+      <p class="sb-note">Generation 0 is the starting train.py. One-shot stops after its single edit.</p>
+      <div class="sb-legend" data-legend></div>
+      <div class="sb-chart dash-skeleton" id="chart-progress" data-source="generations"></div>
+    </div>
+    <div class="sb-card">
+      <h2 id="waste">Wasted runs per generation</h2>
+      <p class="sb-note">Runs that crashed or timed out. Shared Brain's memory records dead ends, so later researchers repeat fewer of them.</p>
+      <div class="sb-legend" data-legend></div>
+      <div class="sb-chart dash-skeleton" id="chart-waste" data-source="generations"></div>
+    </div>
+  </section>
+
+  <section class="sb-card">
+    <h2 id="experiments">Every experiment</h2>
+    <p class="sb-note">Each dot is one sandbox run's validation loss, researchers and curator checks alike. Runs above the top of the chart are drawn on its edge. The dashed line is the starting loss.</p>
+    <div class="sb-legend" data-legend></div>
+    <div class="sb-chart dash-skeleton" id="chart-runs" data-source="experiments runs"></div>
+  </section>
+
+  <section class="sb-section">
+    <h2 id="memory-trail">How the shared brain changed</h2>
+    <p class="sb-note">Every change the curator made to Shared Brain's memory, in order. Each one is its own git commit on the branch (<code>git show &lt;commit&gt;</code>).</p>
+    <div class="sb-card">
+      <div class="sb-tablebox">
+        <table data-source="memory_trail" data-row-key="step" id="trail-table">
+          <thead><tr>
+            <th data-field="time">Time</th>
+            <th data-field="generation" class="num">Gen</th>
+            <th data-field="change">Change</th>
+            <th data-field="entry">Entry</th>
+            <th data-field="kind">Kind</th>
+            <th data-field="claim">What it says</th>
+            <th data-field="commit">Commit</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="sb-grid">
+    <div class="sb-card">
+      <h2 id="memory-final">Final memory</h2>
+      <p class="sb-note">What a new Shared Brain researcher would read now. Failed entries are kept on purpose so dead ends aren't retried.</p>
+      <div class="sb-tablebox">
+        <table data-source="memory_final" data-row-key="entry" id="memory-table">
+          <thead><tr>
+            <th data-field="id">Entry</th>
+            <th data-field="kind">Kind</th>
+            <th data-field="claim">Claim</th>
+            <th data-field="tested_on">Tested on</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="sb-card">
+      <h2 id="test-scores">Hidden test split, per seed</h2>
+      <p class="sb-note">Only the orchestrator runs these; no agent ever saw the test data or these scores.</p>
+      <div class="sb-tablebox">
+        <table data-source="test_scores" data-row-key="key" id="test-table">
+          <thead><tr>
+            <th data-field="setup">Setup</th>
+            <th data-field="seed" class="num">Seed</th>
+            <th data-field="start_loss" class="num">Start loss</th>
+            <th data-field="best_loss" class="num">Best loss</th>
+            <th data-field="gain" class="num">Gain</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="sb-note">Each setup ran once, so treat small gaps as ties.</p>
+    </div>
+  </section>
+</div>
+
+<script>
+(() => {
+  const ALL = ["Shared Brain", "No memory", "One-shot"];
+  const color = (s) => dash.colors[Math.max(0, ALL.indexOf(s))];
+  const fmt = {
+    pct: d3.format("+.1%"),
+    int: d3.format(","),
+    compact: (v) => new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 }).format(v),
+  };
+  const lossFmt = (v) => (Math.abs(v) >= 1 ? d3.format(".3f")(v) : d3.format(".4f")(v));
+  fmt.loss = lossFmt;
+  const root = document.querySelector(".sb");
+  let current = null; // the dataset on show
+  let SETUPS = ALL;
+  const forData = (rows) => rows.filter((r) => r.dataset === current);
+  const where = (setup) => `dataset=${encodeURIComponent(current)}&setup=${encodeURIComponent(setup)}`;
+  const lossName = (runsRows) => {
+    const l = runsRows[0]?.loss;
+    return l === "rmse" ? "RMSE" : "log loss";
+  };
+
+  function mark(tag, source, field, wh, f, cls) {
+    const el = document.createElement(tag);
+    el.dataset.source = source;
+    el.dataset.field = field;
+    if (wh) el.dataset.where = wh;
+    if (f) el.dataset.fmt = f;
+    if (cls) el.className = cls;
+    el.textContent = "—";
+    return el;
+  }
+
+  function legend() {
+    root.querySelectorAll("[data-legend]").forEach((el) => {
+      el.replaceChildren(...SETUPS.map((s) => {
+        const span = document.createElement("span");
+        const sw = document.createElement("i");
+        sw.className = "sb-sw";
+        sw.style.background = color(s);
+        span.append(sw, document.createTextNode(s === "One-shot" ? "One-shot (floor)" : s));
+        return span;
+      }));
+    });
+  }
+
+  function buildSwitch(datasets) {
+    const box = document.getElementById("dataset-switch");
+    box.hidden = datasets.length < 2;
+    box.replaceChildren(...datasets.map((ds) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.setAttribute("role", "tab");
+      b.setAttribute("aria-selected", String(ds === current));
+      b.textContent = ds;
+      b.addEventListener("click", () => { current = ds; render(); });
+      return b;
+    }));
+  }
+
+  function buildHeader(runsRows) {
+    const take = document.getElementById("takeaway");
+    const tiles = document.getElementById("headline");
+    take.classList.remove("dash-skeleton");
+    const ln = lossName(runsRows);
+    const has = (s) => runsRows.some((r) => r.setup === s);
+    const m = (setup, field, f) => mark("b", "runs", field, where(setup), f);
+    const parts = [];
+    if (has("One-shot")) parts.push("The One-shot floor (a single edit) gained ", m("One-shot", "fitness", "pct"), " on the hidden test split. ");
+    if (has("Shared Brain") && has("No memory")) {
+      parts.push("Running five generations took Shared Brain to ", m("Shared Brain", "fitness", "pct"), " and No memory to ", m("No memory", "fitness", "pct"),
+        ". Shared Brain researchers crashed or timed out on ", m("Shared Brain", "wasted_runs"), " runs, No memory on ", m("No memory", "wasted_runs"), ".");
+    }
+    take.replaceChildren(...parts.map((p) => (typeof p === "string" ? document.createTextNode(p) : p)));
+
+    const tile = (title, field, f, note) => {
+      const t = document.createElement("div"); t.className = "sb-tile";
+      const h = document.createElement("h3"); h.textContent = title;
+      const pair = document.createElement("div"); pair.className = "sb-pair";
+      SETUPS.filter(has).forEach((s) => {
+        const who = document.createElement("span"); who.className = "sb-who";
+        const sw = document.createElement("i"); sw.className = "sb-sw"; sw.style.background = color(s);
+        who.append(sw, document.createTextNode(s));
+        pair.append(who, mark("span", "runs", field, where(s), f, "sb-big"));
+      });
+      const p = document.createElement("p"); p.className = "sb-note";
+      note.forEach((n) => p.append(typeof n === "string" ? document.createTextNode(n) : n));
+      t.append(h, pair, p);
+      return t;
+    };
+    const first = SETUPS.find(has);
+    tiles.replaceChildren(
+      tile("Test-split gain (fitness)", "fitness", "pct", ["Drop in ", ln, " from the starting to the best train.py on hidden test data, averaged over seeds 1–3."]),
+      tile("Wasted runs", "wasted_runs", null, ["Sandbox runs that crashed or timed out."]),
+      tile("Best validation loss", "best_val_loss", "loss", [`${ln[0].toUpperCase()}${ln.slice(1)}, lower is better. All started at `, mark("span", "runs", "start_val_loss", where(first), "loss"), "."]),
+      tile("Input tokens", "tokens_prompt", "compact", ["Prompt tokens sent to Crusoe, including cached ones."]),
+    );
+  }
+
+  function fillMarks() {
+    root.querySelectorAll("[data-source][data-field]:not(th)").forEach((el) => {
+      const d = dash.data(el.dataset.source);
+      if (d.status !== "ok") {
+        el.textContent = "—";
+        el.classList.toggle("dash-skeleton", d.status === "loading");
+        return;
+      }
+      el.classList.remove("dash-skeleton");
+      const conds = (el.dataset.where || "").split("&").filter(Boolean).map((p) => p.split("=").map(decodeURIComponent));
+      const row = d.data.find((r) => conds.every(([k, v]) => String(r[k]) === v));
+      const v = row ? row[el.dataset.field] : undefined;
+      const f = fmt[el.dataset.fmt];
+      el.textContent = v == null ? "—" : f ? f(+v) : String(v);
+    });
+  }
+
+  function tooltip(box) {
+    let tip = box.querySelector(".sb-tip");
+    if (!tip) { tip = document.createElement("div"); tip.className = "sb-tip"; tip.hidden = true; box.append(tip); }
+    return {
+      show(x, y, head, lines) {
+        tip.replaceChildren();
+        const t = document.createElement("div"); t.className = "t"; t.textContent = head; tip.append(t);
+        lines.forEach(([c, text]) => {
+          const line = document.createElement("div");
+          if (c) { const sw = document.createElement("i"); sw.className = "sb-sw"; sw.style.background = c; sw.style.marginRight = ".35rem"; line.append(sw); }
+          line.append(document.createTextNode(text));
+          tip.append(line);
+        });
+        tip.hidden = false;
+        const w = tip.offsetWidth, bw = box.clientWidth;
+        tip.style.left = Math.max(0, Math.min(bw - w, x + 12)) + "px";
+        tip.style.top = Math.max(0, y - tip.offsetHeight - 8) + "px";
+      },
+      hide() { tip.hidden = true; },
+    };
+  }
+
+  function chartState(box, id) {
+    const d = dash.data(id);
+    if (d.status === "ok") { box.classList.remove("dash-skeleton"); return d; }
+    box.replaceChildren();
+    if (d.status === "error" || d.status === "connect" || d.status === "declined" || d.status === "missing") {
+      box.classList.remove("dash-skeleton");
+      const f = document.createElement("div"); f.className = "sb-fail";
+      const dot = document.createElement("i"); f.append(dot, document.createTextNode("Failed to load"));
+      box.append(f);
+    } else {
+      box.classList.add("dash-skeleton");
+    }
+    return null;
+  }
+
+  function cleanAxis(g) {
+    g.attr("font-size", null).attr("font-family", null);
+    g.select(".domain").style("stroke", "var(--cds-chart-axis)");
+    g.selectAll(".tick line").style("stroke", "var(--cds-chart-grid)");
+  }
+
+  function drawProgress() {
+    const box = document.getElementById("chart-progress");
+    const d = chartState(box, "generations");
+    if (!d) return;
+    box.replaceChildren();
+    const rows = forData(d.data).map((r) => ({ ...r, generation: +r.generation, best_val_loss: +r.best_val_loss }));
+    const W = box.clientWidth || 400, H = 260;
+    const svg = d3.select(box).append("svg").attr("width", "100%").attr("viewBox", `0 0 ${W} ${H}`);
+    const yExt = d3.extent(rows, (r) => r.best_val_loss);
+    const pad = (yExt[1] - yExt[0]) * 0.08;
+    const y = d3.scaleLinear([yExt[0] - pad, yExt[1] + pad], [H - 28, 10]).nice();
+    const ticks = y.ticks(5);
+    const probe = svg.append("text").text(lossFmt(ticks[ticks.length - 1]));
+    const ml = probe.node().getComputedTextLength() + 10; probe.remove();
+    const present = SETUPS.filter((s) => rows.some((r) => r.setup === s));
+    const last = present.map((s) => rows.filter((r) => r.setup === s).sort((a, b) => a.generation - b.generation).at(-1));
+    const labels = last.map((r) => `${r.setup} ${fmt.loss(r.best_val_loss)}`);
+    const probe2 = svg.append("text").text(labels.reduce((a, b) => (a.length > b.length ? a : b)));
+    const mr = Math.min(W * 0.45, probe2.node().getComputedTextLength() + 14); probe2.remove();
+    const gens = [...new Set(rows.map((r) => r.generation))].sort((a, b) => a - b);
+    const x = d3.scaleLinear(d3.extent(gens), [ml, W - mr]);
+    svg.append("g").attr("transform", `translate(${ml},0)`)
+      .call(d3.axisLeft(y).tickValues(ticks).tickFormat(lossFmt).tickSize(-(W - ml - mr)))
+      .call(cleanAxis).call((g) => g.select(".domain").remove());
+    svg.append("g").attr("transform", `translate(0,${H - 28})`)
+      .call(d3.axisBottom(x).tickValues(gens).tickFormat((g) => `Gen ${g}`).tickSizeOuter(0))
+      .call(cleanAxis);
+    const line = d3.line().x((r) => x(r.generation)).y((r) => y(r.best_val_loss));
+    const endYs = [];
+    present.forEach((s, i) => {
+      const series = rows.filter((r) => r.setup === s).sort((a, b) => a.generation - b.generation);
+      svg.append("path").datum(series).attr("d", line).style("fill", "none").style("stroke", color(s))
+        .attr("stroke-width", 2).attr("stroke-linecap", "round").attr("stroke-linejoin", "round");
+      svg.append("g").selectAll("circle").data(series).join("circle")
+        .attr("cx", (r) => x(r.generation)).attr("cy", (r) => y(r.best_val_loss)).attr("r", 3).style("fill", color(s));
+      let ly = y(series.at(-1).best_val_loss);
+      while (endYs.some((v) => Math.abs(v - ly) < 14)) ly += 14;
+      endYs.push(ly);
+      svg.append("text").attr("x", W - mr + 6).attr("y", ly).attr("dy", "0.35em")
+        .style("fill", "var(--color-fg)").text(labels[i]);
+    });
+    const tip = tooltip(box);
+    svg.append("rect").attr("x", ml).attr("y", 0).attr("width", W - ml - mr).attr("height", H - 28)
+      .style("fill", "transparent")
+      .on("mousemove", (ev) => {
+        const [mx] = d3.pointer(ev);
+        const g = gens.reduce((a, b) => (Math.abs(x(b) - mx) < Math.abs(x(a) - mx) ? b : a));
+        const scale = box.clientWidth / W;
+        tip.show(x(g) * scale, 20, g === 0 ? "Gen 0 (start)" : `Gen ${g}`,
+          present.map((s) => { const r = rows.find((q) => q.setup === s && q.generation === g); return [color(s), `${s}: ${r ? fmt.loss(r.best_val_loss) : "—"}`]; }));
+      })
+      .on("mouseleave", () => tip.hide());
+  }
+
+  function drawWaste() {
+    const box = document.getElementById("chart-waste");
+    const d = chartState(box, "generations");
+    if (!d) return;
+    box.replaceChildren();
+    const rows = forData(d.data).map((r) => ({ ...r, generation: +r.generation, wasted_runs: +r.wasted_runs })).filter((r) => r.generation > 0);
+    const W = box.clientWidth || 400, H = 260;
+    const svg = d3.select(box).append("svg").attr("width", "100%").attr("viewBox", `0 0 ${W} ${H}`);
+    const gens = [...new Set(rows.map((r) => r.generation))].sort((a, b) => a - b);
+    const y = d3.scaleLinear([0, d3.max(rows, (r) => r.wasted_runs) || 1], [H - 28, 14]).nice();
+    const probe = svg.append("text").text(String(y.domain()[1]));
+    const ml = probe.node().getComputedTextLength() + 10; probe.remove();
+    const x = d3.scaleBand(gens, [ml, W - 4]).padding(0.28);
+    const inner = d3.scaleBand(SETUPS.filter((s) => rows.some((r) => r.setup === s)), [0, x.bandwidth()]).padding(0.12);
+    svg.append("g").attr("transform", `translate(${ml},0)`)
+      .call(d3.axisLeft(y).ticks(5).tickFormat(d3.format("d")).tickSize(-(W - ml - 4)))
+      .call(cleanAxis).call((g) => g.select(".domain").remove());
+    svg.append("g").attr("transform", `translate(0,${H - 28})`)
+      .call(d3.axisBottom(x).tickFormat((g) => `Gen ${g}`).tickSizeOuter(0)).call(cleanAxis);
+    const tip = tooltip(box);
+    svg.append("g").selectAll("rect").data(rows).join("rect")
+      .attr("x", (r) => x(r.generation) + inner(r.setup)).attr("width", Math.min(32, inner.bandwidth()))
+      .attr("y", (r) => y(r.wasted_runs)).attr("height", (r) => Math.max(0, y(0) - y(r.wasted_runs)))
+      .attr("rx", 4).style("fill", (r) => color(r.setup))
+      .on("mousemove", (ev, r) => {
+        const scale = box.clientWidth / W;
+        tip.show((x(r.generation) + inner(r.setup)) * scale, y(r.wasted_runs) * scale, `Gen ${r.generation}`,
+          [[color(r.setup), `${r.setup}: ${r.wasted_runs} of ${r.sandbox_runs} runs`]]);
+      })
+      .on("mouseleave", () => tip.hide());
+    svg.append("g").selectAll("text").data(rows.filter((r) => r.wasted_runs > 0)).join("text")
+      .attr("x", (r) => x(r.generation) + inner(r.setup) + Math.min(32, inner.bandwidth()) / 2)
+      .attr("y", (r) => y(r.wasted_runs) - 4).attr("text-anchor", "middle").text((r) => r.wasted_runs);
+  }
+
+  function hash(s) { let h = 0; for (const c of s) h = (h * 31 + c.charCodeAt(0)) | 0; return ((h >>> 0) % 1000) / 1000; }
+
+  function drawRuns() {
+    const box = document.getElementById("chart-runs");
+    const d = chartState(box, "experiments");
+    const runs = dash.data("runs");
+    if (!d) return;
+    box.replaceChildren();
+    const rows = forData(d.data).filter((r) => r.status === "ok" && r.val_loss != null).map((r) => ({ ...r, generation: +r.generation, val_loss: +r.val_loss }));
+    const startRow = runs.status === "ok" ? forData(runs.data)[0] : null;
+    const start = startRow ? +startRow.start_val_loss : null;
+    const W = box.clientWidth || 600, H = 300;
+    const svg = d3.select(box).append("svg").attr("width", "100%").attr("viewBox", `0 0 ${W} ${H}`);
+    const lo = d3.min(rows, (r) => r.val_loss);
+    const cap = Math.max(start ?? lo, lo) * 1.05;
+    const y = d3.scaleLinear([lo - (cap - lo) * 0.05, cap], [H - 28, 10]).nice();
+    const probe = svg.append("text").text(lossFmt(cap));
+    const ml = probe.node().getComputedTextLength() + 10; probe.remove();
+    const gens = [...new Set(rows.map((r) => r.generation))].sort((a, b) => a - b);
+    const x = d3.scaleBand(gens, [ml, W - 4]).padding(0.14);
+    const inner = d3.scaleBand(SETUPS.filter((s) => rows.some((r) => r.setup === s)), [0, x.bandwidth()]).padding(0.1);
+    svg.append("g").attr("transform", `translate(${ml},0)`)
+      .call(d3.axisLeft(y).ticks(6).tickFormat(lossFmt).tickSize(-(W - ml - 4)))
+      .call(cleanAxis).call((g) => g.select(".domain").remove());
+    svg.append("g").attr("transform", `translate(0,${H - 28})`)
+      .call(d3.axisBottom(x).tickFormat((g) => `Gen ${g}`).tickSizeOuter(0)).call(cleanAxis);
+    if (start != null) {
+      svg.append("line").attr("x1", ml).attr("x2", W - 4).attr("y1", y(start)).attr("y2", y(start))
+        .style("stroke", "var(--cds-chart-reference)").attr("stroke-dasharray", "4 4");
+      svg.append("text").attr("x", W - 6).attr("y", y(start) - 5).attr("text-anchor", "end").text(`Start ${fmt.loss(start)}`);
+    }
+    const tip = tooltip(box);
+    svg.append("g").selectAll("circle").data(rows).join("circle")
+      .attr("cx", (r) => x(r.generation) + inner(r.setup) + (0.15 + 0.7 * hash(r.run_id)) * inner.bandwidth())
+      .attr("cy", (r) => y(Math.min(r.val_loss, cap)))
+      .attr("r", (r) => (r.role === "curator" ? 4 : 3))
+      .style("fill", (r) => (r.val_loss > cap ? "none" : color(r.setup)))
+      .style("stroke", (r) => color(r.setup)).style("stroke-width", (r) => (r.val_loss > cap ? 1.5 : 0))
+      .style("opacity", 0.85)
+      .on("mousemove", (ev, r) => {
+        const [mx, my] = d3.pointer(ev, svg.node());
+        const scale = box.clientWidth / W;
+        tip.show(mx * scale, my * scale, `${r.run_id} · ${r.role}`,
+          [[color(r.setup), `${r.setup}: ${fmt.loss(r.val_loss)}`], [null, r.note || ""]]);
+      })
+      .on("mouseleave", () => tip.hide());
+  }
+
+  function fillTable(id, render) {
+    const table = document.getElementById(id);
+    const d = dash.data(table.dataset.source);
+    const tbody = table.querySelector("tbody");
+    if (d.status !== "ok") { tbody.replaceChildren(); return; }
+    const fields = [...table.querySelectorAll("th")].map((th) => th.dataset.field);
+    tbody.replaceChildren(...forData(d.data).map((row) => {
+      const tr = document.createElement("tr");
+      tr.dataset.key = row[table.dataset.rowKey];
+      fields.forEach((f) => {
+        const td = document.createElement("td");
+        render(td, f, row);
+        tr.append(td);
+      });
+      return tr;
+    }));
+  }
+
+  function kindCell(td, value) {
+    const chip = document.createElement("span");
+    chip.className = `sb-kind ${value}`;
+    chip.textContent = value;
+    td.append(chip);
+  }
+
+  function render() {
+    const runs = dash.data("runs");
+    if (runs.status === "ok" && runs.data.length) {
+      const datasets = [...new Set(runs.data.map((r) => r.dataset))];
+      if (!datasets.includes(current)) current = datasets[0];
+      SETUPS = ALL.filter((s) => runs.data.some((r) => r.dataset === current && r.setup === s));
+      buildSwitch(datasets);
+      buildHeader(forData(runs.data));
+      legend();
+      const ds = document.getElementById("title");
+      ds.textContent = `Shared Brain results: ${current}`;
+      const sb = SETUPS.includes("Shared Brain");
+      document.getElementById("memory-trail").closest("section").hidden = !sb;
+      document.getElementById("memory-final").closest(".sb-card").hidden = !sb;
+    }
+    fillMarks();
+    drawProgress();
+    drawWaste();
+    drawRuns();
+    fillTable("trail-table", (td, f, r) => {
+      if (f === "kind") return r.kind ? kindCell(td, r.kind) : (td.textContent = "");
+      if (f === "generation") td.className = "num";
+      if (f === "claim") td.className = "claim";
+      td.textContent = r[f] ?? "";
+    });
+    fillTable("memory-table", (td, f, r) => {
+      if (f === "kind") return kindCell(td, r.kind);
+      if (f === "claim") td.className = "claim";
+      td.textContent = r[f] ?? "";
+    });
+    fillTable("test-table", (td, f, r) => {
+      if (f === "setup") { td.textContent = r.setup; return; }
+      td.className = "num";
+      td.textContent = f === "seed" ? String(r.seed) : f === "gain" ? fmt.pct(+r.gain) : fmt.loss(+r[f]);
+    });
+  }
+
+  dash.onData(render);
+
+  const named = document.getElementById(location.hash.slice(1));
+  if (named) { named.scrollIntoView(); dash.setLink(named.id); }
+})();
+</script>

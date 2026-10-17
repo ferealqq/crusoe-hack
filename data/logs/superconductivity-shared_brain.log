@@ -1,0 +1,85 @@
+16:21:03 research run superconductivity-shared_brain-20261017-232103: 5 generations, 28 runs per generation
+16:21:12 g0-base-5 val seed 4: ok loss 17.84142  starting train.py
+16:21:12 g0-base-2 val seed 1: ok loss 17.84142  starting train.py
+16:21:12 g0-base-4 val seed 3: ok loss 17.84142  starting train.py
+16:21:13 g0-base-3 val seed 2: ok loss 17.84142  starting train.py
+16:21:13 g0-base-1 val seed 0: ok loss 17.84142  starting train.py
+16:21:13 baseline: L0 17.84142, noise threshold 0.08921
+16:21:13 committed b8d82dc: start: L0 17.84142, noise threshold 0.08921
+16:21:13 g1: 4 researchers from v0
+16:21:17 RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B; retrying in 8 s
+16:21:38 g1-r3-1 val seed 0: ok loss 9.61045  LightGBM with default-ish parameters, n_estimators=1000, learning_rate=0.05, num
+16:21:41 g1-r4-1 val seed 0: ok loss 17.82433  RidgeCV with alphas logspace -3 to 3, 10 values, cv=5
+16:21:42 RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B; retrying in 6 s
+16:21:51 g1-r1-1 val seed 0: ok loss 10.12122  XGBoost with moderate hyperparameters
+16:22:00 g1-r4-2 val seed 0: ok loss 17.83890  ElasticNetCV with l1_ratio grid and alphas logspace -4 to 1, cv=5
+16:22:03 g1-r2-1 val seed 0: ok loss 9.72391  RandomForestRegressor with 200 trees
+16:22:09 g1-r1-2 val seed 0: error  LightGBM with moderate hyperparameters
+16:22:11 g1-r3-2 val seed 0: error  LightGBM with early stopping (validation split 10% of training data), n_estimato
+16:22:15 g1-r4-3 val seed 0: error  LassoCV with increased max_iter, eps=1e-3, n_alphas=100, cv=5
+16:22:19 RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B; retrying in 8 s
+16:22:20 g1-r2-2 val seed 0: ok loss 9.55949  XGBoost with 500 estimators, lr=0.05, depth=6
+16:22:24 g1-r1-3 val seed 0: ok loss 9.79168  LightGBM with moderate hyperparameters (fixed typo)
+16:22:27 RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B; retrying in 7 s
+16:22:30 g1-r3-3 val seed 0: error  LightGBM with early stopping using sklearn API; if fails, will try callbacks.
+16:22:34 g1-r2-3 val seed 0: ok loss 9.79168  LightGBM with 500 estimators, lr=0.05, default depth
+16:22:50 g1-r2-4 val seed 0: ok loss 10.83277  CatBoost with 500 iterations, lr=0.05, depth=6
+16:22:51 g1-r1-4 val seed 0: ok loss 10.83277  CatBoost with moderate hyperparameters
+16:22:54 RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B; retrying in 5 s
+16:22:59 g1-r4-4 val seed 0: ok loss 17.82978  LassoCV with alphas logspace -4 to 1, 20 values, max_iter=20000, cv=5
+16:23:02 g1-r3-4 val seed 0: ok loss 9.54585  LightGBM native API with early stopping using validation split (10% of training)
+16:23:13 g1-r1-5 val seed 0: ok loss 9.48611  LightGBM with more trees, lower learning rate
+16:23:19 g1-r3-5 val seed 0: error  XGBoost with early stopping (validation split 10%), n_estimators=5000, learning_
+16:23:20 g1-r4-5 val seed 0: ok loss 17.82651  LassoLarsCV with cv=5
+16:23:28 g1-r2-5 val seed 0: ok loss 9.32964  XGBoost with 1000 estimators, lr=0.01, depth=8, subsample/colsample 0.9
+16:23:41 g1-r4-6 val seed 0: ok loss 9.55949  XGBoost with moderate hyperparameters
+16:23:52 g1-r1-6 val seed 0: ok loss 9.33075  LightGBM with more leaves
+16:24:03 g1-r3-6 val seed 0: ok loss 9.45380  LightGBM with lower learning_rate=0.01, higher num_leaves=63, feature_fraction=0
+16:24:06 RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B; retrying in 7 s
+16:24:38 g1-r2-6 val seed 0: ok loss 9.35493  XGBoost with 2000 estimators, lr=0.005, depth=8, subsample/colsample 0.9
+16:25:37 g1-curator-2 val seed 2: ok loss 9.36251  verify g1-r2-5 (seed 2)
+16:25:38 g1-curator-3 val seed 3: ok loss 9.39250  verify g1-r2-5 (seed 3)
+16:25:39 g1-curator-1 val seed 1: ok loss 9.34850  verify g1-r2-5 (seed 1)
+16:26:00 committed adff59e: g1 curator add m2 (works): XGBoost, 1000 est, lr 0.01, depth 8, subsample/colsample 0.9: val ~9.33 vs baseline 17.84
+16:26:00 committed 5d62dc0: g1 curator add m3 (try_next): LightGBM, 1500 trees, lr 0.01, num_leaves=127: val ~9.33
+16:26:00 committed 79b8781: g1 curator add m4 (try_next): LightGBM, lr 0.01, num_leaves=63, feature/bagging 0.8, early stopping: val ~9.45
+16:26:00 committed 645ecba: g1 curator add m5 (failed): Ridge/Lasso/ElasticNet regularization: only marginal gains over ~17.84 baseline
+16:26:04 committed 80869ba: g1 best -> v1: val 9.36784 from g1-r2-5
+16:26:04 g1 done: best v1 val 9.36784 (+47.49%), 27 runs
+16:26:04 committed fdd9897: g1 done: best v1 val 9.36784 (+47.49%), 27 runs
+16:26:04 g2: 4 researchers from v1
+16:26:39 g2-r2-1 val seed 0: error  XGBoost with early stopping (internal validation) to find optimal n_estimators
+16:26:43 g2-r1-1 val seed 0: ok loss 11.26296  CatBoost with 1000 iterations, lr=0.01, depth=8
+16:27:12 g2-r1-2 val seed 0: ok loss 9.30910  LightGBM, 1500 trees, lr=0.01, num_leaves=127, subsample/colsample 0.9
+16:27:18 g2-r3-1 val seed 0: ok loss 9.26002  XGB with reg_alpha=0.1, reg_lambda=1.0, increased n_estimators to 2000
+16:27:22 g2-r2-2 val seed 0: ok loss 9.35364  LightGBM with 1500 trees, lr 0.01, num_leaves=127 (as per m3)
+16:27:49 g2-r3-2 val seed 0: ok loss 9.36021  LightGBM with reg_alpha=0.1, reg_lambda=1.0, n_estimators=2000, other params sim
+16:28:05 g2-r1-3 val seed 0: ok loss 9.46998  LightGBM, 2000 trees, lr=0.01, num_leaves=255, subsample/colsample 0.9
+16:28:28 g2-r2-3 val seed 0: ok loss 9.28456  LightGBM with lower lr, more trees, feature/bagging fractions
+16:28:29 g2-r4-1 val seed 0: ok loss 9.36043  Average of 5 XGBoost models with different seeds
+16:28:35 g2-r3-3 val seed 0: ok loss 9.26378  XGB reg_alpha=0.5, reg_lambda=0.5, n_estimators=2000
+16:28:39 g2-r1-4 val seed 0: ok loss 9.34928  LightGBM, 3000 trees, lr=0.005, num_leaves=127, subsample/colsample 0.9
+16:29:03 g2-r1-5 val seed 0: ok loss 9.55418  LightGBM, 1500 trees, lr=0.01, num_leaves=63, subsample=0.8, colsample=0.8
+16:29:03 g2-r2-4 val seed 0: ok loss 9.45838  LightGBM with num_leaves=63, lr 0.005, 3000 estimators, feature/bagging 0.8
+16:29:21 g2-r3-4 val seed 0: ok loss 9.23711  XGB reg_alpha=0.01, reg_lambda=2.0, n_estimators=2000
+16:29:29 g2-r4-2 val seed 0: ok loss 9.25937  Average of XGBoost and LightGBM
+16:29:30 g2-r2-5 val seed 0: error  XGBoost with early stopping (internal validation) to find optimal n_estimators
+16:29:32 g2-r1-6 val seed 0: ok loss 9.32801  LightGBM, 2000 trees, lr=0.008, num_leaves=127, subsample/colsample 0.9
+16:29:43 g2-r3-5 val seed 0: error  XGB with early stopping (validation split from train), reg_alpha=0.01, reg_lambd
+16:30:19 g2-r4-3 val seed 0: error  Stacking: XGBoost, LightGBM, CatBoost with Ridge meta-learner (5-fold OOF)
+16:30:20 g2-r3-6 val seed 0: error  XGB with lr=0.005, n_estimators=3000, reg_alpha=0.01, reg_lambda=2.0
+16:30:22 g2-r2-6 val seed 0: error  XGBoost with lower lr, more trees, deeper depth
+16:30:40 g2-r4-4 val seed 0: error  Stacking: XGBoost, LightGBM, CatBoost with Ridge meta-learner (5-fold OOF)
+16:31:04 g2-r4-5 val seed 0: error  Average of XGBoost, LightGBM, and CatBoost
+16:31:18 g2-r4-6 val seed 0: error  Average of 3 XGBoost and 2 LightGBM models with different seeds
+16:31:56 g2-curator-2 val seed 2: error  verify g2-r3-4 (seed 2)
+16:31:56 g2-curator-3 val seed 3: error  verify g2-r3-4 (seed 3)
+16:31:56 g2-curator-1 val seed 1: error  verify g2-r3-4 (seed 1)
+16:31:59 g2-curator-4 val seed 1: error  verify g2-r3-4 (seed 1)
+16:32:33 committed cdcd3e2: g2 curator add m6 (try_next): XGBoost reg_alpha=0.01 reg_lambda=2.0 n_estimators=2000 lr=0.01 depth=8 subsample/colsample 0.9: val ~9.24 (re-check blocked by spend limit)
+16:32:33 committed 4c62bef: g2 curator add m7 (try_next): Average of XGBoost and LightGBM predictions: val ~9.26 vs XGB-only ~9.33
+16:32:33 committed 6e82284: g2 curator add m8 (try_next): LightGBM 3000 trees lr=0.005 num_leaves=127 feature/bagging 0.8: val ~9.28
+16:32:37 g2 done: best v1 val 9.36784 (+47.49%), 28 runs
+16:32:37 committed 71bca52: g2 done: best v1 val 9.36784 (+47.49%), 28 runs
+16:32:37 g3: 4 researchers from v1
+16:32:53 g3-r1-1 val seed 0: error  XGBoost with reg_alpha=0.01, reg_lambda=2.0, n_estimators=2000, lr=0.01, depth=8

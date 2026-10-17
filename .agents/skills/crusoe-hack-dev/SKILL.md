@@ -1,55 +1,47 @@
 ---
 name: crusoe-hack-dev
-description: Conventions, layout and commands for this repo (FastAPI + Crusoe + Modal + Neon eval service). Load before changing code - endpoints, models/migrations, services, settings, tests - or debugging how integrations are wired here.
+description: Conventions, layout and commands for this repo (Shared Brain MVP - Crusoe + Modal, results as JSONL files, no database). Load before changing code - services, storage, settings, tests - or debugging how integrations are wired here.
 ---
 
 # crusoe-hack development
 
+The spec is `README.md` (Shared Brain). Build in its "Build order".
+
 ## Commands
 ```bash
-scripts/setup.sh                                # first run / new machine (idempotent; see below)
-uv run alembic upgrade head                     # uses DATABASE_URL_UNPOOLED (direct host)
-uv run fastapi dev app/main.py                  # /docs; smoke: /health/deps, /playground/*
+uv sync
+uv run python -m app.orchestrator --setup shared_brain        # a research run (also: no_memory)
+uv run python -m app.orchestrator --generations 1 --researchers 1 --runs 2 --no-commit  # quick check
+uv run python -m app.orchestrator --report                    # results table
+uv run fastapi dev app/main.py                  # /docs: setup checks (/playground/models, /playground/sandbox)
 uv run ruff check --fix . && uv run ruff format . && uv run pytest     # required before finishing
-uv run alembic revision --autogenerate -m "…"   # after editing models; review the file
-RUN_INTEGRATION=1 DATABASE_URL=… uv run pytest  # real (branch) Postgres, faked providers
 ```
 
-`scripts/setup.sh` installs uv and the Neon CLI (npm `neon` v8+), runs `uv sync` (Modal CLI included), signs in with `modal token new`, `neon login` and a Crusoe key prompt (validated against `/v1/models`). It links the team Neon project (`patient-art-99467040`, "crusoe-hack", aws-us-east-2; its default branch is `production`), checks out a per-developer branch `dev-<name>`, and creates the bucket. Then it generates `.env` from `.env.example` with `scripts/dotenv_tool.py`, which keeps existing values: Neon vars come from `neon env pull`, the Modal token is copied from `~/.modal.toml`, and the Crusoe key from the prompt. Finally it migrates, and fails unless `scripts/check_env.py` passes. That check covers all keys present, pooled and direct DB, a bucket round trip, a Crusoe chat and a Modal sandbox. When adding a setting, also add it to `REQUIRED` in `check_env.py` if the app can't run without it. Don't run it unattended: it opens browsers. Agents should assume `.env` exists, or ask the user to run it.
+Setup is the "Setup" section in `README.md`: copy `.env.example` to `.env`, paste `CRUSOE_API_KEY`, `MODAL_TOKEN_ID` and `MODAL_TOKEN_SECRET`. Agents should assume `.env` exists.
 
 ## Layout
-- `app/config.py`: `Settings` (pydantic-settings, reads `.env` then `.env.local`) and `asyncpg_engine_args()` (Neon URL → asyncpg; handles sslmode and the `-pooler` statement cache). Every new setting also goes in `.env.example`, with a comment saying where the value comes from.
-- `app/db.py`: async engine, `SessionLocal`, `Base`, `SessionDep` (use in routes; in background work, `async with SessionLocal()`).
-- `app/models.py`: `Dataset`, `Run`, `RunResult`. `app/schemas.py`: Pydantic I/O models plus `Task` (one eval item).
-- `app/api/routes/`: thin routers (`health`, `datasets`, `runs`, `playground`), registered in `main.py`.
-- `app/services/`: all logic and provider clients.
-  - `inference.py`: Crusoe via `AsyncOpenAI`, `max_retries=6`.
-  - `storage.py`: Neon bucket via boto3 in `asyncio.to_thread`, path-style + SigV4.
-  - `sandbox.py`: Modal.
-  - `evaluator.py`: generate → grade → persist, plus the graders.
-- Flow:
-  1. `POST /datasets` writes `datasets/<id>/tasks.jsonl` to the bucket and adds a row.
-  2. `POST /runs` adds a row and starts a BackgroundTask (`execute_run`).
-  3. The run writes `run_results` rows and `runs/<id>/trace.jsonl`.
-- Postgres holds what you query; the bucket holds blobs. Rows store keys; presign the URL on read.
+- `app/config.py`: `Settings` (pydantic-settings, reads `.env`). Only real knobs become settings; fixed values are module constants (`inference.BASE_URL`, `sandbox.APP_NAME`). Every new setting also goes in `.env.example`.
+- `app/store.py`: `append_jsonl`, `read_jsonl`, `write_jsonl` (atomic rewrite). File layout under `data/` is "Storage" in `README.md`.
+- `app/orchestrator.py` (CLI) → `app/loop.py` (baseline, generations, final test) → `app/agents/` (researcher, curator; `base.run_agent` is the tool loop; budgets live in `tools.py`).
+- `app/lab.py`: one research run's state (`run_experiment` runs and scores, `best`, `memory`, `checkpoint()` commits to git). `app/memory.py`: entries, render, cap, staleness. `app/scoring.py`: losses, threshold, ranking. `app/data.py`: which files each sandbox gets.
+- `app/schemas.py`: Pydantic I/O models.
+- `app/api/routes/`: `health`, `playground` (setup checks only), registered in `main.py`.
+- `app/services/`: provider clients.
+  - `inference.py`: Crusoe via `AsyncOpenAI`, `max_retries=6`. `chat(messages, model, ...)` returns `(content, latency_ms)`.
+  - `sandbox.py`: Modal. `run_train(code, files, target, seed)` runs `sandbox/harness.py`; `run_python` is for the playground. One image has every allowed library.
 
 ## Rules
-- Async everywhere; logic in services, not routes. Match the surrounding style.
-- Schema changes go through Alembic only (no `create_all`). Autogenerate misses enum changes and turns renames into drop+add, so review every generated file.
-- Tests never hit Crusoe, Modal or the bucket: `monkeypatch.setattr(<module>, "fn", fake)` on the `app.services` module. With `ASGITransport`, BackgroundTasks finish before the response returns. Call `await engine.dispose()` at the end of DB tests.
-- Default models are `deepseek-ai/Deepseek-V4-Flash` (generation) and `openai/gpt-oss-120b` (judge). Model facts come from the `crusoe-inference` skill.
-- `evaluator.MAX_CONCURRENCY=8` applies per run, and Crusoe limits apply per model (30 RPM on free accounts). Concurrent runs hit 429.
-- BackgroundTasks aren't durable: a restart leaves runs stuck in `running`. For long jobs, move to a Modal Function or a queue.
-
-## Recipes
-- **Endpoint:** add the route plus schemas (`ConfigDict(from_attributes=True)` for ORM output). Use `HTTPException(404, …)` for missing objects.
-- **Grader:** extend the `Task.grader` Literal, add a branch to `evaluator.grade()` returning `{score, feedback, sandbox_exit_code}`, and add a unit test. See `llm-eval-loop`.
-- **Bucket helper:** add it to `storage.py` only, wrapped in `to_thread`.
+- Async for provider calls. Match the surrounding style.
+- No database. JSONL files are append-only, except `memory.jsonl`, which is rewritten whole with `write_jsonl`. Each research run is one process writing its own folder.
+- Git trail: every memory change and generation calls `lab.checkpoint(message)`, which commits only that run's files (a lock in the git dir serializes parallel runs). Don't `git add -A` while runs are going.
+- Agents never see labels: `data.Dataset.research_files` has train + val inputs only; scoring happens in `lab.run_experiment`, outside the sandbox.
+- Tests never hit Crusoe or Modal: `monkeypatch.setattr(<module>, "fn", fake)` on the `app.services` module, and call it through the module (`from app.services import sandbox`; `sandbox.run_python(...)`). Tests that write files use pytest's `tmp_path`.
+- Crusoe limits apply per model (30 RPM without a payment method). `inference.complete` retries 429/5xx for up to 15 minutes, and a crashed agent ends only itself, not the run.
 
 ## Wiring gotchas
 | Symptom | Fix |
 | --- | --- |
-| `invalid connection option "sslmode"` / `prepared statement … already exists` | Engine built without `app.db.make_engine()` / `asyncpg_engine_args()` |
-| S3 signature/DNS errors, `NoSuchBucket` | Use `storage._client()`. Buckets are per Neon branch |
 | Crusoe 401/404/429, empty output | See `crusoe-inference` (key quoting, ID casing, limits, `max_tokens`) |
-| Modal `AuthError` | `modal token new`, or both `MODAL_TOKEN_*` set |
+| Modal `AuthError` | Set `MODAL_TOKEN_ID`/`MODAL_TOKEN_SECRET` in `.env` (read via the bridge in `sandbox._get_app()`) |
+| Modal `Environment '…' not found` | A `~/.modal.toml` profile's environment leaked in; the bridge sets `MODAL_ENVIRONMENT=""` |
+| pytest warns about unknown config options | It found the parent checkout's `pyproject.toml`; keep `[tool.pytest.ini_options]` in this one |

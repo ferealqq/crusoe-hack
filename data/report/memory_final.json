@@ -1,0 +1,106 @@
+[
+ {
+  "dataset": "churn",
+  "entry": "churn-m1",
+  "id": "m1",
+  "kind": "best",
+  "claim": "train.py v1: val loss 0.32444 (+18.49% vs start). CatBoost with defaultish parameters",
+  "tested_on": "v1"
+ },
+ {
+  "dataset": "churn",
+  "entry": "churn-m2",
+  "id": "m2",
+  "kind": "works",
+  "claim": "CatBoost defaultish: val 0.32444 vs v0 0.39805, gain 0.07361 > noise 0.0020",
+  "tested_on": "v0"
+ },
+ {
+  "dataset": "churn",
+  "entry": "churn-m4",
+  "id": "m4",
+  "kind": "try_next",
+  "claim": "LightGBM is_unbalance=True: val 0.38495, beats v0 but below CatBoost",
+  "tested_on": "v0"
+ },
+ {
+  "dataset": "churn",
+  "entry": "churn-m7",
+  "id": "m7",
+  "kind": "try_next",
+  "claim": "Ensemble of 5 CatBoost models with different seeds (averaging): val 0.32368 vs baseline 0.32444",
+  "tested_on": "v1"
+ },
+ {
+  "dataset": "churn",
+  "entry": "churn-m3",
+  "id": "m3",
+  "kind": "failed",
+  "claim": "CatBoost + engineered features (interactions, ratios, products, logs): r4 runs 0.32399/0.32458, no improvement over baseline 0.32444 (g3-r4-2/3)",
+  "tested_on": "v1"
+ },
+ {
+  "dataset": "churn",
+  "entry": "churn-m5",
+  "id": "m5",
+  "kind": "failed",
+  "claim": "L2/L1/elastic net C sweeps: best 0.39789 vs v0 0.39805, within noise",
+  "tested_on": "v0"
+ },
+ {
+  "dataset": "churn",
+  "entry": "churn-m6",
+  "id": "m6",
+  "kind": "failed",
+  "claim": "r2 baseline 0.32355 not confirmed: 3-seed mean 0.32444 = best, beats_best false",
+  "tested_on": "v1"
+ },
+ {
+  "dataset": "churn",
+  "entry": "churn-m8",
+  "id": "m8",
+  "kind": "failed",
+  "claim": "r1 best 0.32455 worse than baseline 0.32444; XGB/LGBM/MLP and feature engineering did not improve",
+  "tested_on": "v1"
+ },
+ {
+  "dataset": "churn",
+  "entry": "churn-m9",
+  "id": "m9",
+  "kind": "failed",
+  "claim": "r4 best run g3-r4-1 (baseline CatBoost 0.32355) not confirmed: 3-seed mean 0.32444 = best, beats_best false (g3-curator-1/2/3)",
+  "tested_on": "v1"
+ },
+ {
+  "dataset": "churn",
+  "entry": "churn-m10",
+  "id": "m10",
+  "kind": "failed",
+  "claim": "CatBoost l2_leaf_reg=0.5: 3-seed mean 0.32416, beats_best false vs best 0.32444 (g5-curator-1/2/3)",
+  "tested_on": "v1"
+ },
+ {
+  "dataset": "churn",
+  "entry": "churn-m11",
+  "id": "m11",
+  "kind": "failed",
+  "claim": "r1 best g3-r1-6 (ensemble of 5 CatBoost, 0.32379) within noise of baseline 0.32444; class weights worsened performance",
+  "tested_on": "v1"
+ },
+ {
+  "dataset": "churn",
+  "entry": "churn-m12",
+  "id": "m12",
+  "kind": "failed",
+  "claim": "r3 baseline CatBoost v1 seed=42: 3-seed mean 0.32444 = best, beats_best false (g4-r3-3)",
+  "tested_on": "v1"
+ },
+ {
+  "dataset": "churn",
+  "entry": "churn-m13",
+  "id": "m13",
+  "kind": "failed",
+  "claim": "Feature engineering log/sqrt/ratio/geography interactions: val 0.32398 vs baseline 0.32444, gain +0.14% within noise 0.0020 (g5-r2-2/5)",
+  "tested_on": "v1"
+ }
+]

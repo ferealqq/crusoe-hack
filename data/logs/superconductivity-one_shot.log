@@ -1,0 +1,27 @@
+16:21:09 research run superconductivity-one_shot-20261017-232109: 1 generations, 1 runs per generation
+16:21:20 g0-base-5 val seed 4: ok loss 17.84142  starting train.py
+16:21:20 g0-base-1 val seed 0: ok loss 17.84142  starting train.py
+16:21:20 g0-base-3 val seed 2: ok loss 17.84142  starting train.py
+16:21:21 g0-base-2 val seed 1: ok loss 17.84142  starting train.py
+16:21:27 g0-base-4 val seed 3: ok loss 17.84142  starting train.py
+16:21:27 baseline: L0 17.84142, noise threshold 0.08921
+16:21:27 committed 8f5c12b: start: L0 17.84142, noise threshold 0.08921
+16:21:27 g1: 1 researchers from v0
+16:21:56 g1-r1-1 val seed 0: ok loss 9.45583  LightGBM with moderate hyperparameters
+16:22:05 g1 done: best v1 val 9.45583 (+47.00%), 1 runs
+16:22:05 committed 63743db: g1 done: best v1 val 9.45583 (+47.00%), 1 runs
+16:22:11 test-v0-3 test seed 3: ok loss 17.88693  test: train.py v0
+16:22:12 test-v0-1 test seed 1: ok loss 17.88693  test: train.py v0
+16:22:13 test-v0-2 test seed 2: ok loss 17.88693  test: train.py v0
+16:22:24 test-v1-2 test seed 2: ok loss 9.51065  test: train.py v1
+16:22:28 test-v1-3 test seed 3: ok loss 9.44043  test: train.py v1
+16:22:29 test-v1-1 test seed 1: ok loss 9.44250  test: train.py v1
+16:22:29 research run superconductivity-one_shot-20261017-232109 finished: fitness +0.4709
+16:22:29 committed b3057d8: finished: fitness +0.4709
+
+research run                             setup          fitness  val gain  best val loss by generation                  memory  tokens (prompt/cached/output)
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+churn-no_memory-20261017-223056          no_memory      +21.72%   +18.29%  0.3252 0.3252 0.3252 0.3252 0.3252                0  0.54M/0.37M/0.14M
+churn-shared_brain-20261017-223053       shared_brain   +21.88%   +18.49%  0.3244 0.3244 0.3244 0.3244 0.3244              420  0.54M/0.35M/0.16M
+churn-one_shot-20261017-231550           one_shot       +18.46%   +11.39%  0.3527                                            0  5k/2k/1k
+superconductivity-one_shot-20261017-232109 one_shot       +47.09%   +47.00%  9.4558                                            0  5k/1k/1k

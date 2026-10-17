@@ -1,0 +1,142 @@
+[
+ {
+  "dataset": "churn",
+  "setup": "No memory",
+  "generation": 0,
+  "best_val_loss": 0.39805,
+  "val_gain": 0.0,
+  "sandbox_runs": 0,
+  "wasted_runs": 0,
+  "memory_tokens": 0
+ },
+ {
+  "dataset": "churn",
+  "setup": "No memory",
+  "generation": 1,
+  "best_val_loss": 0.32523,
+  "val_gain": 0.18293,
+  "sandbox_runs": 28,
+  "wasted_runs": 0,
+  "memory_tokens": 0
+ },
+ {
+  "dataset": "churn",
+  "setup": "No memory",
+  "generation": 2,
+  "best_val_loss": 0.32523,
+  "val_gain": 0.18293,
+  "sandbox_runs": 28,
+  "wasted_runs": 6,
+  "memory_tokens": 0
+ },
+ {
+  "dataset": "churn",
+  "setup": "No memory",
+  "generation": 3,
+  "best_val_loss": 0.32523,
+  "val_gain": 0.18293,
+  "sandbox_runs": 28,
+  "wasted_runs": 9,
+  "memory_tokens": 0
+ },
+ {
+  "dataset": "churn",
+  "setup": "No memory",
+  "generation": 4,
+  "best_val_loss": 0.32523,
+  "val_gain": 0.18293,
+  "sandbox_runs": 28,
+  "wasted_runs": 7,
+  "memory_tokens": 0
+ },
+ {
+  "dataset": "churn",
+  "setup": "No memory",
+  "generation": 5,
+  "best_val_loss": 0.32523,
+  "val_gain": 0.18293,
+  "sandbox_runs": 28,
+  "wasted_runs": 14,
+  "memory_tokens": 0
+ },
+ {
+  "dataset": "churn",
+  "setup": "One-shot",
+  "generation": 0,
+  "best_val_loss": 0.39805,
+  "val_gain": 0.0,
+  "sandbox_runs": 0,
+  "wasted_runs": 0,
+  "memory_tokens": 0
+ },
+ {
+  "dataset": "churn",
+  "setup": "One-shot",
+  "generation": 1,
+  "best_val_loss": 0.35272,
+  "val_gain": 0.11386,
+  "sandbox_runs": 1,
+  "wasted_runs": 0,
+  "memory_tokens": 0
+ },
+ {
+  "dataset": "churn",
+  "setup": "Shared Brain",
+  "generation": 0,
+  "best_val_loss": 0.39805,
+  "val_gain": 0.0,
+  "sandbox_runs": 0,
+  "wasted_runs": 0,
+  "memory_tokens": 0
+ },
+ {
+  "dataset": "churn",
+  "setup": "Shared Brain",
+  "generation": 1,
+  "best_val_loss": 0.32444,
+  "val_gain": 0.18491,
+  "sandbox_runs": 27,
+  "wasted_runs": 5,
+  "memory_tokens": 139
+ },
+ {
+  "dataset": "churn",
+  "setup": "Shared Brain",
+  "generation": 2,
+  "best_val_loss": 0.32444,
+  "val_gain": 0.18491,
+  "sandbox_runs": 26,
+  "wasted_runs": 0,
+  "memory_tokens": 227
+ },
+ {
+  "dataset": "churn",
+  "setup": "Shared Brain",
+  "generation": 3,
+  "best_val_loss": 0.32444,
+  "val_gain": 0.18491,
+  "sandbox_runs": 27,
+  "wasted_runs": 2,
+  "memory_tokens": 349
+ },
+ {
+  "dataset": "churn",
+  "setup": "Shared Brain",
+  "generation": 4,
+  "best_val_loss": 0.32444,
+  "val_gain": 0.18491,
+  "sandbox_runs": 27,
+  "wasted_runs": 2,
+  "memory_tokens": 378
+ },
+ {
+  "dataset": "churn",
+  "setup": "Shared Brain",
+  "generation": 5,
+  "best_val_loss": 0.32444,
+  "val_gain": 0.18491,
+  "sandbox_runs": 26,
+  "wasted_runs": 0,
+  "memory_tokens": 420
+ }
+]

@@ -1,0 +1,126 @@
+16:21:06 research run superconductivity-no_memory-20261017-232106: 5 generations, 28 runs per generation
+16:21:14 g0-base-5 val seed 4: ok loss 17.84142  starting train.py
+16:21:15 g0-base-3 val seed 2: ok loss 17.84142  starting train.py
+16:21:18 g0-base-2 val seed 1: ok loss 17.84142  starting train.py
+16:21:18 g0-base-4 val seed 3: ok loss 17.84142  starting train.py
+16:21:19 g0-base-1 val seed 0: ok loss 17.84142  starting train.py
+16:21:19 baseline: L0 17.84142, noise threshold 0.08921
+16:21:19 committed a03195c: start: L0 17.84142, noise threshold 0.08921
+16:21:19 g1: 4 researchers from v0
+16:21:33 g1-r3-1 val seed 0: ok loss 10.36622  LightGBM default
+16:21:34 g1-r1-1 val seed 0: ok loss 9.85180  LightGBM default-ish
+16:21:34 g1-r2-1 val seed 0: ok loss 9.79168  LightGBM defaultish
+16:21:37 RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B; retrying in 9 s
+16:21:49 RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B; retrying in 16 s
+16:21:55 g1-r2-2 val seed 0: ok loss 9.55949  XGBoost defaultish
+16:21:56 g1-r4-1 val seed 0: ok loss 17.82405  Ridge alpha=0.01
+16:21:58 g1-r1-2 val seed 0: error  LightGBM with early stopping and refit
+16:21:59 RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B; retrying in 7 s
+16:22:00 RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B; retrying in 10 s
+16:22:10 RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B; retrying in 20 s
+16:22:23 g1-r1-3 val seed 0: ok loss 9.52244  LightGBM with early stopping callback
+16:22:24 g1-r2-3 val seed 0: ok loss 10.83277  CatBoost defaultish
+16:22:25 g1-r4-2 val seed 0: ok loss 17.82458  RidgeCV with alphas logspace -3 to 3
+16:22:29 RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B; retrying in 10 s
+16:22:33 RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B; retrying in 38 s
+16:22:42 g1-r1-4 val seed 0: error  XGBoost with early stopping and refit
+16:23:01 g1-r4-3 val seed 0: ok loss 17.83883  LassoCV with alphas logspace -4 to 1
+16:23:02 g1-r1-5 val seed 0: error  XGB with eval_metric in constructor
+16:23:06 RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B; retrying in 5 s
+16:23:20 g1-r4-4 val seed 0: ok loss 17.82383  Ridge alpha=0.001
+16:23:29 g1-r3-2 val seed 0: ok loss 9.42974  LightGBM tuned: n_estimators=500, lr=0.05, num_leaves=64, feature_fraction=0.9, 
+16:23:52 g1-r3-3 val seed 0: error  LightGBM with early stopping on internal validation split
+16:23:57 g1-r4-5 val seed 0: ok loss 17.83957  ElasticNetCV with alphas logspace -4 to 0 and l1_ratio grid
+16:24:15 g1-r1-6 val seed 0: ok loss 9.39035  CatBoost with early stopping and refit
+16:24:16 g1-r4-6 val seed 0: ok loss 12.85704  XGBoost with default-ish parameters
+16:24:19 g1-r3-4 val seed 0: ok loss 9.58885  LightGBM with early stopping via callbacks
+16:24:34 g1-r4-7 val seed 0: ok loss 10.34963  LightGBM with n_estimators=200, learning_rate=0.05
+16:24:34 g1-r3-5 val seed 0: ok loss 10.10178  XGBoost default
+16:24:35 g1-r2-4 val seed 0: timeout  RandomForest
+16:24:56 g1-r3-6 val seed 0: ok loss 9.34800  XGBoost tuned: n_estimators=500, lr=0.05, max_depth=8, subsample=0.9, colsample=
+16:25:02 g1-r2-5 val seed 0: ok loss 9.96382  XGBoost tuned
+16:25:18 g1-r3-7 val seed 0: ok loss 10.13641  CatBoost tuned: iterations=500, lr=0.05, depth=8, l2_leaf_reg=3
+16:25:28 g1-r2-6 val seed 0: error  XGBoost with early stopping
+16:25:47 g1-r1-7 val seed 0: ok loss 9.30624  CatBoost tuned: deeper, lower lr, more iterations, early stopping
+16:25:52 g1-r2-7 val seed 0: ok loss 9.40493  XGBoost tuned 2
+16:26:18 g1 done: best v1 val 9.30624 (+47.84%), 28 runs
+16:26:18 committed 31b8e90: g1 done: best v1 val 9.30624 (+47.84%), 28 runs
+16:26:18 g2: 4 researchers from v1
+16:26:21 RateLimitError from nvidia/NVIDIA-Nemotron-3-Super-120B-A12B; retrying in 9 s
+16:26:49 g2-r2-1 val seed 0: error  First run: LightGBM with similar hyperparams to baseline CatBoost
+16:26:58 g2-r1-1 val seed 0: error  Trying XGBoost with similar hyperparameters to CatBoost baseline
+16:27:10 g2-r2-2 val seed 0: error  LightGBM with corrected import
+16:27:38 g2-r1-2 val seed 0: error  Trying LightGBM with similar hyperparameters to CatBoost baseline
+16:27:40 g2-r2-3 val seed 0: ok loss 9.51421  LightGBM with verbose set in constructor
+16:27:41 g2-r4-1 val seed 0: error  Run 1: Ensemble of CatBoost, LightGBM, XGBoost with early stopping and refit on 
+16:27:49 g2-r3-1 val seed 0: ok loss 9.30624  Baseline CatBoost as v1
+16:27:57 g2-r1-3 val seed 0: error  Check library versions
+16:28:17 g2-r1-4 val seed 0: error  Check library versions
+16:28:57 g2-r3-2 val seed 0: ok loss 9.27293  Increased l2_leaf_reg to 10
+16:29:34 g2-r1-5 val seed 0: ok loss 9.30624  Baseline CatBoost model from v1
+16:30:02 g2-r2-4 val seed 0: timeout  CatBoost with depth=10, l2_leaf_reg=3, learning_rate=0.02
+16:30:08 g2-r4-2 val seed 0: timeout  Run 2: Fixed LightGBM early stopping callback.
+16:30:21 g2-r3-3 val seed 0: ok loss 9.30990  l2_leaf_reg=20
+16:30:24 g2-r4-3 val seed 0: error  Run 3: Ensemble of 5 CatBoost models with different seeds (bagging).
+16:30:24 g2-r2-5 val seed 0: error  CatBoost depth=9, l2_leaf_reg=4, learning_rate=0.03, iterations=15000
+16:30:26 g2-r1-6 val seed 0: ok loss 9.79561  Trying HistGradientBoostingRegressor with early stopping
+16:30:33 g2-r3-4 val seed 0: error  depth=6, l2_leaf_reg=10
+16:30:41 g2-r2-6 val seed 0: error  CatBoost: l2_leaf_reg=7, learning_rate=0.025, depth=8, iterations=15000
+16:30:42 Task exception was never retrieved
+future: <Task finished name='Task-2135' coro=<_ContainerProcess.wait() done, defined at /Users/satya/Projects/crusoe-hack/.claude/worktrees/project-scaffolding-review-9589bb/.venv/lib/python3.12/site-packages/modal/container_process.py:165> exception=ConflictError('Modal Sandbox is shutting down.')>
+Traceback (most recent call last):
+  File "/Users/satya/Projects/crusoe-hack/.claude/worktrees/project-scaffolding-review-9589bb/.venv/lib/python3.12/site-packages/modal/container_process.py", line 171, in wait
+    resp = await self._command_router_client.exec_wait(self._task_id, self._process_id, self._exec_deadline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/satya/Projects/crusoe-hack/.claude/worktrees/project-scaffolding-review-9589bb/.venv/lib/python3.12/site-packages/modal/sandbox/_task_command_router_client.py", line 924, in exec_wait
+    with grpc_error_converter():
+         ^^^^^^^^^^^^^^^^^^^^^^
+modal.exception.ConflictError: Modal Sandbox is shutting down.
+16:30:42 g2-r3-5 val seed 0: error  depth=6, l2_leaf_reg=10 (retry)
+[modal-client] 2026-10-17T16:30:44-0700 ContainerProcess poll for 5ad880fc-a20c-4cbf-8ff9-6b95c5600cf6 failed: Modal Sandbox with container ID ta-01M56383EZKHA2QRRDTP30QWEV not found. This means this Sandbox has already shut down. (Error code: GE2QWXOK)
+16:30:44 ContainerProcess poll for 5ad880fc-a20c-4cbf-8ff9-6b95c5600cf6 failed: Modal Sandbox with container ID ta-01M56383EZKHA2QRRDTP30QWEV not found. This means this Sandbox has already shut down. (Error code: GE2QWXOK)
+16:30:44 g2-r4-4 val seed 0: error  Run 4: Ensemble of 2 CatBoost models with different seeds.
+16:30:56 g2-r4-5 val seed 0: error  Run 5: Baseline (v1) to confirm environment.
+16:31:01 g2-r4-6 val seed 0: error  Run 6: Simple Ridge regression to test if sandbox works.
+16:31:01 g2-r2-7 val seed 0: error  CatBoost with reduced iterations and depth to avoid timeout
+16:31:02 Task exception was never retrieved
+future: <Task finished name='Task-2168' coro=<_ContainerProcess.wait() done, defined at /Users/satya/Projects/crusoe-hack/.claude/worktrees/project-scaffolding-review-9589bb/.venv/lib/python3.12/site-packages/modal/container_process.py:165> exception=NotFoundError('Modal Sandbox with container ID ta-01M56383EZKHA2QRRDTP30QWEV not found. This means this Sandbox has already shut down. (Error code: 0D85UDIJ)')>
+Traceback (most recent call last):
+  File "/Users/satya/Projects/crusoe-hack/.claude/worktrees/project-scaffolding-review-9589bb/.venv/lib/python3.12/site-packages/modal/container_process.py", line 171, in wait
+    resp = await self._command_router_client.exec_wait(self._task_id, self._process_id, self._exec_deadline)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/satya/Projects/crusoe-hack/.claude/worktrees/project-scaffolding-review-9589bb/.venv/lib/python3.12/site-packages/modal/sandbox/_task_command_router_client.py", line 924, in exec_wait
+    with grpc_error_converter():
+         ^^^^^^^^^^^^^^^^^^^^^^
+modal.exception.NotFoundError: Modal Sandbox with container ID ta-01M56383EZKHA2QRRDTP30QWEV not found. This means this Sandbox has already shut down. (Error code: 0D85UDIJ)
+16:31:02 g2-r3-6 val seed 0: error  Confirm l2_leaf_reg=10, depth=8
+16:31:09 g2-r1-7 val seed 0: error  Trying a simple PyTorch MLP with early stopping
+16:31:12 g2-r4-7 val seed 0: error  Run 7: Try v1 again to see if sandbox works.
+16:31:13 g2-r3-7 val seed 0: error  Add subsample=0.8 to l2_leaf_reg=10
+16:31:56 g2 done: best v1 val 9.30624 (+47.84%), 28 runs
+16:31:56 committed 6d64099: g2 done: best v1 val 9.30624 (+47.84%), 28 runs
+16:31:56 g3: 4 researchers from v1
+16:32:04 g3-r4-1 val seed 0: error  Baseline v1
+16:32:05 g3-r2-1 val seed 0: error  Baseline CatBoost as given
+16:32:10 g3-r4-2 val seed 0: error  Baseline v1 retry
+16:32:10 g3-r2-2 val seed 0: error  Baseline again
+16:32:13 g3-r3-1 val seed 0: error  Ensemble of 5 CatBoost models with different seeds
+16:32:14 g3-r1-1 val seed 0: error  Run 1: Confirm v1 baseline
+16:32:18 g3-r2-3 val seed 0: error  RandomForestRegressor baseline
+16:32:20 g3-r1-2 val seed 0: error  Run 2: Confirm baseline again
+16:32:22 g3-r3-2 val seed 0: error  Ensemble of 5 CatBoost models with different seeds
+16:32:23 g3-r2-4 val seed 0: error  Ridge regression
+16:32:24 g3-r4-3 val seed 0: error  LightGBM baseline
+16:32:26 g3-r2-5 val seed 0: error  LinearRegression baseline
+16:32:29 g3-r4-4 val seed 0: error  Simple Ridge
+16:32:31 g3-r2-6 val seed 0: error  Constant predictor (mean)
+16:32:32 g3-r1-3 val seed 0: error  Run 3: LightGBM attempt (incomplete)
+16:32:32 g3-r3-3 val seed 0: error  Original v1 baseline
+16:32:33 g3-r4-5 val seed 0: error  LinearRegression baseline
+16:32:37 g3-r1-4 val seed 0: error  Run 4: Simple RandomForest to test if workspace works
+16:32:40 g3-r4-6 val seed 0: error  Small RandomForest
+16:32:41 g3-r1-5 val seed 0: error  Run 5: Linear Regression to test if workspace works
+16:32:44 g3-r4-7 val seed 0: error  Dummy model predicting mean
+16:32:44 g3-r2-7 val seed 0: error  Constant predictor (mean) - minimal code
+16:32:46 g3-r3-4 val seed 0: error  Reduced CatBoost size to try to avoid spend limit
+16:32:52 g3-r1-6 val seed 0: error  Run 6: Predict mean baseline to test if sandbox works

@@ -1,140 +1,159 @@
-"""Runs train.py in the sandbox and scores it. Labels stay here, outside the sandbox."""
+"""State for one research run: dataset, budget, run log, best train.py and memory."""
 
 import asyncio
-import hashlib
-import json
 import logging
+import math
+from collections import Counter
+from dataclasses import dataclass
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Literal
 
 import numpy as np
-import pandas as pd
-from pydantic import BaseModel
 
-from app import events, scoring
+from app import gitlog, scoring
+from app.config import ResearchConfig
+from app.data import Dataset
+from app.memory import Memory
+from app.schemas import Experiment
 from app.services import sandbox
-from app.store import Store
+from app.store import DATA_DIR, append_jsonl
+
+Setup = Literal["shared_brain", "no_memory", "one_shot"]
+SETUPS: tuple[Setup, ...] = ("shared_brain", "no_memory", "one_shot")
 
 log = logging.getLogger(__name__)
 
-OUTPUT_TAIL_CHARS = 2000
+
+def researcher_runs(config: ResearchConfig, setup: Setup) -> int:
+    """Shared Brain researchers give up runs for the curator, so it and No memory use the same
+    total. One-shot is the floor: a single edit."""
+    if setup == "one_shot":
+        return 1
+    if setup == "no_memory":
+        return config.researcher_runs
+    return config.researcher_runs - math.ceil(config.curator_runs / config.researchers)
 
 
-class Dataset:
-    """A prepared dataset (scripts/prepare_data.py). Shared by every setup in a run."""
-
-    def __init__(self, data_dir: Path) -> None:
-        self.dir = data_dir
-        self.meta: dict[str, Any] = json.loads((data_dir / "meta.json").read_text())
-        target = self.meta["target"]
-        self.loss: str = self.meta["loss"]
-        self.val_y = pd.read_parquet(data_dir / "val_y.parquet")[target].to_numpy(np.float64)
-        self.test_y = pd.read_parquet(data_dir / "test_y.parquet")[target].to_numpy(np.float64)
-        self._test_cache: dict[str, asyncio.Task[list[float | None]]] = {}
-
-    def card(self) -> str:
-        """The dataset card agents read. No val or test labels or scores."""
-        return json.dumps(self.meta, indent=2)
-
-    async def test_losses(self, code: str, seeds: list[int]) -> list[float | None]:
-        """Test loss per seed (None for a failed seed). Cached by code, across setups."""
-        key = hashlib.sha256(code.encode()).hexdigest() + str(seeds)
-        if key not in self._test_cache:
-            self._test_cache[key] = asyncio.create_task(self._score_test(code, seeds))
-        return await self._test_cache[key]
-
-    async def _score_test(self, code: str, seeds: list[int]) -> list[float | None]:
-        with events.scope(agent=None, role="orchestrator", phase="test"):
-            events.emit("test.started", seeds=seeds)
-            losses = await self._score_test_once(code, seeds)
-            events.emit("test.completed", seeds=seeds, losses=losses)
-            return losses
-
-    async def _score_test_once(self, code: str, seeds: list[int]) -> list[float | None]:
-        async with asyncio.TaskGroup() as group:
-            tasks = [
-                group.create_task(sandbox.run_train(code, self.dir, seed, mode="test"))
-                for seed in seeds
-            ]
-        results = [task.result() for task in tasks]
-        losses: list[float | None] = []
-        for seed, r in zip(seeds, results, strict=True):
-            try:
-                if r.status != "ok" or r.preds is None:
-                    raise ValueError(r.status + ": " + r.output[-500:])
-                losses.append(scoring.score(self.loss, self.test_y, r.preds))
-            except ValueError as e:
-                log.warning("test scoring failed for seed %s: %s", seed, e)
-                losses.append(None)
-        return losses
+def runs_per_generation(config: ResearchConfig, setup: Setup) -> int:
+    curator = config.curator_runs if setup == "shared_brain" else 0
+    return config.researchers * researcher_runs(config, setup) + curator
 
 
-class Experiment(BaseModel):
-    id: str
-    gen: int
-    agent: str
-    seed: int
-    status: Literal["ok", "error", "timeout"]
-    val_loss: float | None
-    runtime_s: float
-    note: str
-    output_tail: str
+@dataclass(frozen=True)
+class Best:
+    version: int
     code: str
-    started_from: int  # best version the agent started from
+    val_loss: float  # verified score (baseline: mean of seeds 0-4; curator: mean of seeds 1-3)
+    run_id: str
+    note: str
+    seed_loss: float  # its score on the research seed, which researchers' runs use
 
 
 class Lab:
-    """One research run's experiments: run, score on val, record."""
-
-    def __init__(self, dataset: Dataset, store: Store) -> None:
+    def __init__(
+        self,
+        dataset: Dataset,
+        setup: Setup,
+        config: ResearchConfig,
+        *,
+        root: Path = DATA_DIR,
+        commit: bool = False,
+        run_id: str | None = None,
+    ) -> None:
         self.dataset = dataset
-        self.store = store
-        self.experiments: dict[str, Experiment] = {}
-        self._count = 0
+        self.setup = setup
+        self.config = config
+        self.root = root
+        self.run_id = run_id or f"{dataset.name}-{setup}-{datetime.now(UTC):%Y%m%d-%H%M%S}"
+        self.dir = root / "research_runs" / self.run_id
+        self.commit_enabled = commit
+        self.memory = Memory(self.dir / "memory.jsonl", config.memory_cap_tokens)
+        self.experiments: list[Experiment] = []
+        self.baseline_code = ""
+        self.l0 = 0.0
+        self.threshold = 0.0
+        self._best: Best | None = None
+        self._counters: Counter[str] = Counter()
 
-    async def run(
-        self, code: str, seed: int, agent: str, note: str, gen: int, started_from: int
+    @property
+    def best(self) -> Best:
+        if self._best is None:
+            raise RuntimeError("run the baseline first")
+        return self._best
+
+    @best.setter
+    def best(self, best: Best) -> None:
+        self._best = best
+        self.dir.mkdir(parents=True, exist_ok=True)
+        (self.dir / "best_train.py").write_text(best.code)
+
+    @property
+    def loss(self) -> str:
+        return self.dataset.meta.get("loss", "log_loss")
+
+    @property
+    def researcher_runs(self) -> int:
+        return researcher_runs(self.config, self.setup)
+
+    def new_run_id(self, prefix: str) -> str:
+        self._counters[prefix] += 1
+        return f"{prefix}-{self._counters[prefix]}"
+
+    async def run_experiment(
+        self,
+        code: str,
+        *,
+        prefix: str,
+        agent: str,
+        generation: int,
+        seed: int,
+        note: str = "",
+        split: Literal["val", "test"] = "val",
     ) -> Experiment:
-        self._count += 1
-        exp_id = f"e{self._count}"
-        with events.scope(experiment_id=exp_id, agent=agent, seed=seed, gen=gen):
-            events.emit("experiment.queued", note=note[:300], started_from=started_from)
-            try:
-                result = await sandbox.run_train(code, self.dataset.dir, seed, mode="research")
-            except asyncio.CancelledError:
-                events.emit("experiment.cancelled")
-                raise
-            except Exception as e:
-                events.emit("experiment.failed", error_type=type(e).__name__)
-                raise
-        status, val_loss, output = result.status, None, result.output
-        if status == "ok" and result.preds is not None:
-            try:
-                val_loss = scoring.score(self.dataset.loss, self.dataset.val_y, result.preds)
-            except ValueError as e:
-                status, output = "error", output + f"\n[bad predictions: {e}]"
+        """Run train.py in a sandbox and score it here, outside the sandbox."""
+        run_id = self.new_run_id(prefix)
+        files = self.dataset.research_files if split == "val" else self.dataset.test_files
+        result = await sandbox.run_train(code, files, self.dataset.target, seed, self.loss)
+        loss = None
+        if result.status == "ok" and result.preds is not None:
+            labels = self.dataset.val_y if split == "val" else self.dataset.test_y
+            loss = scoring.score(self.loss, labels, np.asarray(result.preds))
         exp = Experiment(
-            id=exp_id,
-            gen=gen,
+            run_id=run_id,
+            generation=generation,
             agent=agent,
             seed=seed,
-            status=status,
-            val_loss=val_loss,
-            runtime_s=round(result.runtime_s, 1),
-            note=note[:300],
-            output_tail=output[-OUTPUT_TAIL_CHARS:],
+            split=split,
+            status=result.status,
+            loss=loss,
+            runtime_s=result.runtime_s,
+            note=note,
+            output_tail=result.output_tail,
             code=code,
-            started_from=started_from,
         )
-        self.experiments[exp_id] = exp
-        self.store.append("experiments", exp.model_dump())
-        with events.scope(experiment_id=exp_id, agent=agent, seed=seed, gen=gen):
-            events.emit(
-                "experiment.completed",
-                status=status,
-                val_loss=val_loss,
-                runtime_s=exp.runtime_s,
-                note=exp.note,
-                started_from=started_from,
-            )
+        self.experiments.append(exp)
+        append_jsonl(self.dir / "experiments.jsonl", exp.model_dump())
+        score = f" loss {loss:.5f}" if loss is not None else ""
+        log.info("%s %s seed %d: %s%s  %s", run_id, split, seed, result.status, score, note[:80])
         return exp
+
+    def find_run(self, run_id: str) -> Experiment | None:
+        """A research (val) run from this research run. Never returns a test run."""
+        return next((e for e in self.experiments if e.run_id == run_id and e.split == "val"), None)
+
+    def log_agent(self, row: dict[str, Any]) -> None:
+        append_jsonl(self.dir / "agents.jsonl", row)
+
+    def log_generation(self, row: dict[str, Any]) -> None:
+        append_jsonl(self.dir / "generations.jsonl", row)
+
+    async def checkpoint(self, message: str) -> None:
+        """Commit this run's files to git (no-op unless commits are on)."""
+        if not self.commit_enabled:
+            return
+        paths = [self.dir, self.root / "research_runs.jsonl"]
+        full = f"chore(brain): {message} [{self.run_id}]"
+        sha = await asyncio.to_thread(gitlog.commit, paths, full)
+        if sha:
+            log.info("committed %s: %s", sha, message)

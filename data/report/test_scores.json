@@ -1,0 +1,83 @@
+[
+ {
+  "key": "churn/No memory/1",
+  "dataset": "churn",
+  "setup": "No memory",
+  "seed": 1,
+  "start_loss": 0.39332,
+  "best_loss": 0.30743,
+  "gain": 0.21837
+ },
+ {
+  "key": "churn/No memory/2",
+  "dataset": "churn",
+  "setup": "No memory",
+  "seed": 2,
+  "start_loss": 0.39332,
+  "best_loss": 0.30755,
+  "gain": 0.21805
+ },
+ {
+  "key": "churn/No memory/3",
+  "dataset": "churn",
+  "setup": "No memory",
+  "seed": 3,
+  "start_loss": 0.39332,
+  "best_loss": 0.30868,
+  "gain": 0.21519
+ },
+ {
+  "key": "churn/One-shot/1",
+  "dataset": "churn",
+  "setup": "One-shot",
+  "seed": 1,
+  "start_loss": 0.39332,
+  "best_loss": 0.32071,
+  "gain": 0.18459
+ },
+ {
+  "key": "churn/One-shot/2",
+  "dataset": "churn",
+  "setup": "One-shot",
+  "seed": 2,
+  "start_loss": 0.39332,
+  "best_loss": 0.32071,
+  "gain": 0.18459
+ },
+ {
+  "key": "churn/One-shot/3",
+  "dataset": "churn",
+  "setup": "One-shot",
+  "seed": 3,
+  "start_loss": 0.39332,
+  "best_loss": 0.32071,
+  "gain": 0.18459
+ },
+ {
+  "key": "churn/Shared Brain/1",
+  "dataset": "churn",
+  "setup": "Shared Brain",
+  "seed": 1,
+  "start_loss": 0.39332,
+  "best_loss": 0.30756,
+  "gain": 0.21803
+ },
+ {
+  "key": "churn/Shared Brain/2",
+  "dataset": "churn",
+  "setup": "Shared Brain",
+  "seed": 2,
+  "start_loss": 0.39332,
+  "best_loss": 0.30727,
+  "gain": 0.21876
+ },
+ {
+  "key": "churn/Shared Brain/3",
+  "dataset": "churn",
+  "setup": "Shared Brain",
+  "seed": 3,
+  "start_loss": 0.39332,
+  "best_loss": 0.30699,
+  "gain": 0.21948
+ }
+]
