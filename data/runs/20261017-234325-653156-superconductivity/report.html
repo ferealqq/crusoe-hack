@@ -1,0 +1,217 @@
+<title>Shared Brain Superconductivity Results</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Newsreader:opsz,wght@6..72,600&family=Public+Sans:wght@400;600&display=swap">
+<style>
+/* Layout: one reading column; charts in a two-up grid that stacks on phones. */
+:root {
+  --bg: #f6f7f4; --surface: #ffffff; --ink: #18211e; --muted: #5d6a65; --rule: #d9dfdb;
+  --accent: #0b6e63;
+  --one_shot: #9aa39f; --no_memory: #5b6f9c; --raw_log: #b5832b; --shared_brain: #0b6e63;
+  --good: #1f7a45; --good-bg: #e3f1e8;
+  --display: "Newsreader", Georgia, serif;
+  --body: "Public Sans", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111614; --surface: #19201d; --ink: #e4ebe7; --muted: #94a39d; --rule: #2c3632;
+  --accent: #4cc2b2;
+  --one_shot: #7f8884; --no_memory: #8ea3d6; --raw_log: #d9a54a; --shared_brain: #4cc2b2;
+  --good: #7fd39c; --good-bg: #1d3326; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #111614; --surface: #19201d; --ink: #e4ebe7; --muted: #94a39d; --rule: #2c3632;
+  --accent: #4cc2b2;
+  --one_shot: #7f8884; --no_memory: #8ea3d6; --raw_log: #d9a54a; --shared_brain: #4cc2b2;
+  --good: #7fd39c; --good-bg: #1d3326; color-scheme: dark; }
+body { background: var(--bg); color: var(--ink); font: 15px/1.55 var(--body); }
+main { max-width: 68rem; margin: 0 auto; padding-inline: 16px; padding-block: 2rem 4rem;
+  display: grid; gap: 2.25rem; }
+h1, h2, h3 { font-family: var(--display); font-weight: 600; text-wrap: balance; margin: 0; }
+h1 { font-size: 2.2rem; line-height: 1.1; }
+h2 { font-size: 1.45rem; }
+h4 { margin: 0; font-size: 1rem; }
+h5 { margin: .75rem 0 .25rem; font-size: .8rem; text-transform: uppercase; letter-spacing: .06em;
+  color: var(--muted); }
+p { margin: 0; max-width: 65ch; }
+.eyebrow { font: 600 .75rem var(--mono); letter-spacing: .08em; text-transform: uppercase;
+  color: var(--accent); }
+.lede { font-size: 1.1rem; }
+.dim { color: var(--muted); }
+section { display: grid; gap: .9rem; min-width: 0; }
+.meta { display: flex; flex-wrap: wrap; gap: .4rem 1.25rem; font: .8rem var(--mono);
+  color: var(--muted); }
+.tablewrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: .45rem .7rem .45rem 0; border-bottom: 1px solid var(--rule);
+  vertical-align: top; }
+thead th { font: 600 .72rem var(--body); text-transform: uppercase; letter-spacing: .05em;
+  color: var(--muted); }
+td { font-family: var(--mono); font-size: .85rem; }
+table.small td { font-size: .78rem; }
+.swatch { display: inline-block; width: .7rem; height: .7rem; border-radius: 2px;
+  margin-right: .5rem; vertical-align: baseline; }
+.row-one_shot .swatch { background: var(--one_shot); }
+.row-no_memory .swatch { background: var(--no_memory); }
+.row-raw_log .swatch { background: var(--raw_log); }
+.row-shared_brain .swatch { background: var(--shared_brain); }
+
+.charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 26rem), 1fr));
+  gap: 1.5rem; }
+figure { margin: 0; display: grid; gap: .5rem; min-width: 0; }
+figcaption { font-size: .85rem; color: var(--muted); }
+.canvasbox { position: relative; height: 18rem; background: var(--surface);
+  border: 1px solid var(--rule); border-radius: 6px; padding: .75rem; }
+.gen { border-top: 1px solid var(--rule); padding-block: 1rem; display: grid; gap: .5rem;
+  min-width: 0; }
+.gen header { display: grid; gap: .25rem; }
+.nums { font: .78rem var(--mono); color: var(--muted); }
+.pill { display: inline-block; font: 600 .72rem var(--body); padding: .1rem .5rem;
+  border-radius: 999px; border: 1px solid var(--rule); color: var(--muted); }
+.pill.good { background: var(--good-bg); color: var(--good); border-color: transparent; }
+.events { margin: 0; padding-left: 1.1rem; font-size: .85rem; display: grid; gap: .2rem; }
+.curator { font-size: .88rem; color: var(--muted); }
+details summary { cursor: pointer; font-size: .85rem; color: var(--accent); }
+details summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+pre { white-space: pre-wrap; font: .78rem/1.5 var(--mono); background: var(--surface);
+  border: 1px solid var(--rule); border-radius: 6px; padding: .75rem; overflow-x: auto; }
+code { font-family: var(--mono); font-size: .85em; }
+.tabs { display: flex; flex-wrap: wrap; gap: .5rem; }
+.tabs button { font: 600 .82rem var(--body); padding: .35rem .8rem; border-radius: 999px;
+  border: 1px solid var(--rule); background: var(--surface); color: var(--ink); cursor: pointer; }
+.tabs button[aria-selected="true"] { border-color: var(--accent); color: var(--accent); }
+.tabs button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+<main>
+<header style="display:grid;gap:.6rem">
+  <div class="eyebrow">Shared Brain &middot; superconductivity &middot; run 20261017-234325-653156</div>
+  <h1>Does curated memory make research agents better?</h1>
+  <p class="lede">Shared Brain improved test rmse by 46.17% over the starting model, 0.49 points ahead of No memory (45.68%) on the same budget.</p>
+  <div class="meta"><span>5 generations</span>
+  <span>4 researchers each</span>
+  <span>28 runs per generation</span><span>researcher nvidia/NVIDIA-Nemotron-3-Super-120B-A12B</span>
+  <span>curator deepseek-ai/DeepSeek-V4-Pro</span><span>start val rmse L0 17.76691</span><span>noise threshold 0.08883</span><span>start test rmse 17.81569</span></div>
+</header>
+<section>
+  <h2>Results by setup</h2>
+  <p class="dim">Test gain is the drop in test rmse of the final best train.py versus the
+  starting one, averaged over seeds 1, 2 and 3. Agents never see the test split.</p>
+  <div class="tablewrap"><table>
+  <thead><tr><th>Setup</th><th>Test gain</th><th>Val gain</th><th>Best</th><th>Gens</th>
+  <th>Runs</th><th>Failed</th><th>Prompt tokens</th><th>Cost</th></tr></thead>
+  <tbody><tr class='row-one_shot'><th scope='row'><span class='swatch'></span>One-shot</th><td>+44.13%</td><td>+48.70%</td><td>v1 <span class='dim'>(1 new)</span></td><td>1</td><td>1</td><td>0</td><td>0.01M <span class='dim'>(41% cached)</span></td><td>$0.01</td></tr><tr class='row-no_memory'><th scope='row'><span class='swatch'></span>No memory</th><td>+45.68%</td><td>+51.18%</td><td>v1 <span class='dim'>(1 new)</span></td><td>1</td><td>51</td><td>4</td><td>0.11M <span class='dim'>(71% cached)</span></td><td>$0.07</td></tr><tr class='row-raw_log'><th scope='row'><span class='swatch'></span>Raw log</th><td>+45.98%</td><td>+50.87%</td><td>v1 <span class='dim'>(1 new)</span></td><td>1</td><td>42</td><td>7</td><td>0.14M <span class='dim'>(71% cached)</span></td><td>$0.10</td></tr><tr class='row-shared_brain'><th scope='row'><span class='swatch'></span>Shared Brain</th><td>+46.17%</td><td>+51.47%</td><td>v1 <span class='dim'>(1 new)</span></td><td>1</td><td>47</td><td>6</td><td>0.13M <span class='dim'>(65% cached)</span></td><td>$0.09</td></tr></tbody></table></div>
+</section>
+<section>
+  <h2>How it evolved</h2>
+  <div class="charts">
+    <figure><div class="canvasbox"><canvas id="test" aria-label="Test gain per generation"></canvas></div>
+      <figcaption>Test gain of each generation's best train.py. Higher is better.</figcaption></figure>
+    <figure><div class="canvasbox"><canvas id="val" aria-label="Best val loss per generation"></canvas></div>
+      <figcaption>Best val rmse so far. A step down is a new best that beat the old one by
+      more than the noise threshold.</figcaption></figure>
+    <figure><div class="canvasbox"><canvas id="mem" aria-label="Memory size per generation"></canvas></div>
+      <figcaption>What researchers read at the start of each generation. Curated memory is
+      capped at 2,000 tokens; the raw log keeps growing.</figcaption></figure>
+  </div>
+</section>
+<section>
+  <h2>Generation by generation</h2>
+  <div class="tabs" role="tablist"><button type='button' role='tab' data-setup='one_shot' aria-selected='false'>One-shot</button><button type='button' role='tab' data-setup='no_memory' aria-selected='false'>No memory</button><button type='button' role='tab' data-setup='raw_log' aria-selected='false'>Raw log</button><button type='button' role='tab' data-setup='shared_brain' aria-selected='true'>Shared Brain</button></div>
+  <div class='evo' id='evo-one_shot' hidden><article class='gen'><header><h4>Generation 1</h4><div><span class='pill good'>new best v1</span> LightGBM with defaultish hyperparameters</div><div class='nums'>val 9.11366 &middot; test gain +44.13% &middot; 1 runs, 0 failed &middot; read 0 tokens &middot; 1.2 min</div></header><div class='tablewrap'><table class='small'><thead><tr><th>Focus</th><th>Rank</th><th>Best val</th><th>Change</th></tr></thead><tbody><tr><td>any</td><td>1</td><td>9.11366 <span class='dim'>e1</span></td><td>LightGBM with defaultish hyperparameters</td></tr></tbody></table></div></article></div><div class='evo' id='evo-no_memory' hidden><article class='gen'><header><h4>Generation 1</h4><div><span class='pill good'>new best v1</span> LightGBM tuned</div><div class='nums'>val 8.67439 &middot; test gain +45.68% &middot; 28 runs, 2 failed &middot; read 0 tokens &middot; 4.5 min</div></header><div class='tablewrap'><table class='small'><thead><tr><th>Focus</th><th>Rank</th><th>Best val</th><th>Change</th></tr></thead><tbody><tr><td>features</td><td>1</td><td>8.67439 <span class='dim'>e12</span></td><td>LightGBM tuned</td></tr><tr><td>model type</td><td>2</td><td>9.03410 <span class='dim'>e15</span></td><td>XGB tuned: more trees, lower lr, subsample</td></tr><tr><td>regularization</td><td>3</td><td>9.18343 <span class='dim'>e19</span></td><td>LightGBM default-ish</td></tr><tr><td>tuning</td><td>4</td><td>17.74637 <span class='dim'>e18</span></td><td>Ridge with alpha=0.0</td></tr></tbody></table></div></article></div><div class='evo' id='evo-raw_log' hidden><article class='gen'><header><h4>Generation 1</h4><div><span class='pill good'>new best v1</span> LightGBM with more trees, lower LR</div><div class='nums'>val 8.72867 &middot; test gain +45.98% &middot; 28 runs, 6 failed &middot; read 0 tokens &middot; 5.7 min</div></header><div class='tablewrap'><table class='small'><thead><tr><th>Focus</th><th>Rank</th><th>Best val</th><th>Change</th></tr></thead><tbody><tr><td>model type</td><td>1</td><td>8.72867 <span class='dim'>e18</span></td><td>LightGBM with more trees, lower LR</td></tr><tr><td>tuning</td><td>2</td><td>9.00971 <span class='dim'>e27</span></td><td>Weighted ensemble of LightGBM, XGBoost, CatBoost with holdout weight tuning (step 0.1)</td></tr><tr><td>regularization</td><td>3</td><td>9.18343 <span class='dim'>e17</span></td><td>LightGBM with learning_rate=0.05, n_estimators=500</td></tr><tr><td>features</td><td>3</td><td>9.18839 <span class='dim'>e9</span></td><td>XGBoost default</td></tr></tbody></table></div><details><summary>Memory after generation 1 (1055 tokens)</summary><pre>Generation 1, researcher-1 (features):
+
+
+Tried: Ridge baseline (v0): 17.76691; Polynomial features degree 2 with Ridge: 13.2597; LightGBM default: 9.9369; XGBoost default: 9.1884 (best); XGBoost with engineered ratio/diff features: error (duplicate/missing features); Fixed feature engineering with XGBoost (applying same transformation in fit and predict): 9.3174; CatBoost default: 9.3617
+Best run: e9
+Learned: Gradient boosting models (XGBoost, LightGBM, CatBoost) significantly outperform linear models and polynomial Ridge. Feature engineering with ratios and differences did not improve XGBoost in our limited trials, possibly due to redundancy or overfitting. Consistent application of feature engineering in fit and predict is essential to avoid feature mismatch errors.
+Next: Tune XGBoost hyperparameters (learning rate, max depth, subsample, colsample); explore other interaction features (e.g., products of important features); try feature selection to reduce noise; consider stacking or ensemble methods.
+
+---
+
+Generation 1, researcher-2 (model type):
+
+
+Tried: Ridge baseline (v0) RMSE 17.76691; LightGBM default (e1) 8.7366; XGBoost default (e5) 8.759; CatBoost default (e10) 9.61; Simple MLP (e14) 16.15; LightGBM with more trees, lower LR (e18) 8.7287; LightGBM with early stopping (e23) 9.04; LightGBM with high estimators, low LR, reg (e28) timeout.
+Best run: e18
+Learned: LightGBM outperforms other gradient boosting frameworks and linear models; lowering learning rate and increasing trees yields modest improvement; simple MLP underperforms likely due to limited hyperparameter tuning and overfitting; early stopping with internal validation did not improve over training on full data with fixed large number of trees.
+Next: With more runs, would tune LightGBM hyperparameters (num_leaves, min_child_samples, subsample, colsample_bytree, regularization), try feature engineering (interactions, polynomials), attempt stacking with linear models, and explore better neural network architectures with proper regularization and learning rate schedules.
+
+---
+
+Generation 1, researcher-3 (tuning):
+
+
+Tried: RidgeCV with alphas logspace -3 to 3 (5-fold CV)
+Best run: e27
+Learned: Gradient boosting models (LightGBM, XGBoost, CatBoost) significantly outperformed linear models. Tuning hyperparameters (learning rate, num_leaves, feature/bagging fractions) and using early stopping improved performance. Ensembling models (especially weighted averaging based on holdout validation) provided further gains. LightGBM and XGBoost were particularly effective, while CatBoost added modest improvement in the ensemble.
+Next: Try more sophisticated ensembling (stacking with a meta-learner), further hyperparameter tuning via Bayesian optimization, feature engineering (interactions, polynomial features), and using different seeds for model diversity. Also consider reducing overfitting by increasing regularization or using dropout-like techniques in boosting.
+
+---
+
+Generation 1, researcher-4 (regularization):
+
+
+Tried: Baseline Ridge (alpha=1.0) -&gt; 17.7669; RidgeCV with alphas grid -&gt; 17.7490; LightGBM default -&gt; 9.9369; LightGBM with learning_rate=0.05, n_estimators=500 -&gt; 9.1834; Attempted LightGBM with early stopping via sklearn API (error); Attempted LightGBM native API with early stopping (error).
+Best run: e17
+Learned: LightGBM significantly outperforms linear models on this dataset. Reducing learning rate and increasing n_estimators improves validation RMSE (from 9.9369 to 9.1834). Regularization via lambda_l1, lambda_l2, feature_fraction, bagging_fraction could help but we couldn&#x27;t implement early stopping due to API mismatches. The best model used LightGBM with moderate learning rate and sufficient trees.
+Next: Try LightGBM with proper early stopping (using correct API version), tune hyperparameters like lambda_l1, lambda_l2, feature_fraction, bagging_fraction, and possibly increase n_estimations with early stopping. Also consider using CatBoost or XGBoost for comparison. If early stopping fails, use a fixed validation split within fit to determine best iteration. Additionally, feature engineering (e.g., interactions) might help but given the feature richness, likely not necessary.</pre></details></article></div><div class='evo' id='evo-shared_brain' ><article class='gen'><header><h4>Generation 1</h4><div><span class='pill good'>new best v1</span> Tuned LightGBM with ratio features</div><div class='nums'>val 8.62233 &middot; test gain +46.17% &middot; 27 runs, 4 failed &middot; read 0 tokens &middot; 4.5 min</div></header><div class='tablewrap'><table class='small'><thead><tr><th>Focus</th><th>Rank</th><th>Best val</th><th>Change</th></tr></thead><tbody><tr><td>features</td><td>1</td><td>8.61329 <span class='dim'>e14</span></td><td>Tuned LightGBM with ratio features</td></tr><tr><td>regularization</td><td>2</td><td>8.73661 <span class='dim'>e10</span></td><td>LightGBM with default regularization (none) but many trees, low learning rate</td></tr><tr><td>model type</td><td>2</td><td>8.75919 <span class='dim'>e6</span></td><td>XGBoost with typical parameters</td></tr><tr><td>tuning</td><td>4</td><td>17.74637 <span class='dim'>e15</span></td><td>Ridge alpha=0.0001</td></tr></tbody></table></div><h5>Memory changes</h5><ul class='events'><li><b>upsert</b> <code>m1</code> works: LightGBM (n_estimators=2000, lr=0.02, num_leaves=63, subsample/colsample=0.8) + ratio features (wtd/non-wtd) gives val RMSE ~8.62, huge gain over Ridge baseline 17.77. <span class='dim'>(add)</span></li><li><b>upsert</b> <code>m2</code> works: Gradient boosted trees (LightGBM/XGBoost) &gt;&gt; linear Ridge on superconductivity; ratio features improve tree models. Diff features don&#x27;t help vs ratio. <span class='dim'>(add)</span></li><li><b>upsert</b> <code>m3</code> failed: Linear Ridge (alpha 1.0 to 1e-4) stagnates at val ~17.75, no meaningful gain; CatBoost (~9.55) and feedforward NN (~15.3) underperform trees. <span class='dim'>(add)</span></li><li><b>upsert</b> <code>m4</code> try_next: Feature interactions (products of ratio features) or polynomial/log/sqrt transforms worth testing next for LightGBM. <span class='dim'>(add)</span></li><li><b>upsert</b> <code>m5</code> try_next: Stacking/blending LightGBM+XGBoost+CatBoost, or stronger L1/L2 reg + early stopping (native callback) for LightGBM overfitting control. <span class='dim'>(add)</span></li><li><b>set best</b> <code>best</code> best: v1: val rmse 8.62233 (mean of seeds 1, 2, 3), from run e14: Tuned LightGBM with ratio features <span class='dim'>(new best v1, val 8.6223)</span></li></ul><p class='curator'><b>Curator:</b> Done. Summary of changes:
+
+- **Re-checked top run e14** with `run_code` (seeds 1,2,3): mean val RMSE 8.622, clearly **beats_best** (vs baseline 17.767, well beyond the 0.0888 noise threshold). Recorded as `works`.
+- **Recorded key finding**: gradient-boosted trees (LightGBM/XGBoost) dramatically beat linear Ridge; ratio features (weighted/non-weighted) help trees, while difference features and CatBoost/NN underperform &#8212; as `works`.
+- **Recorded dead ends** (`failed`): Ridge alpha sweep stalls at ~17.75; CatBoost (~9.55) and feedforward NN (~15.3) underperform.
+- **Added two `try_next` ideas**: feature interactions/polynomial transforms, and stacking/blending plus LightGBM L1/L2 regularization with early stopping.
+
+No conflicting or stale entries to clean up (memory was empty at start).</p><details><summary>Memory after generation 1 (263 tokens)</summary><pre>## Best
+v1: val rmse 8.62233 (mean of seeds 1, 2, 3), from run e14: Tuned LightGBM with ratio features
+## Works
+- [m1] (tested on v0; val -9.1446; runs e14,e25,e26,e27) LightGBM (n_estimators=2000, lr=0.02, num_leaves=63, subsample/colsample=0.8) + ratio features (wtd/non-wtd) gives val RMSE ~8.62, huge gain over Ridge baseline 17.77.
+- [m2] (tested on v0; val -9.0776; runs e9,e6,e19,e2) Gradient boosted trees (LightGBM/XGBoost) &gt;&gt; linear Ridge on superconductivity; ratio features improve tree models. Diff features don&#x27;t help vs ratio.
+## Failed
+- [m3] (tested on v0; val -8.1572; runs e15,e11,e17) Linear Ridge (alpha 1.0 to 1e-4) stagnates at val ~17.75, no meaningful gain; CatBoost (~9.55) and feedforward NN (~15.3) underperform trees.
+## Try next
+- [m4] (tested on v0) Feature interactions (products of ratio features) or polynomial/log/sqrt transforms worth testing next for LightGBM.
+- [m5] (tested on v0) Stacking/blending LightGBM+XGBoost+CatBoost, or stronger L1/L2 reg + early stopping (native callback) for LightGBM overfitting control.</pre></details></article></div>
+</section>
+</main>
+<script id="data" type="application/json">{"gens": [0, 1, 2, 3, 4, 5], "loss": "rmse", "l0": 17.76690925798813, "threshold": 0.08883454628994064, "series": [{"key": "one_shot", "label": "One-shot", "test": [0.0, 0.4412848152826176, 0.4412848152826176, 0.4412848152826176, 0.4412848152826176, 0.4412848152826176], "val": [17.76690925798813, 9.113663537677528, 9.113663537677528, 9.113663537677528, 9.113663537677528, 9.113663537677528], "memory": [0]}, {"key": "no_memory", "label": "No memory", "test": [0.0, 0.4568327074742394], "val": [17.76690925798813, 8.674390687014998], "memory": [0]}, {"key": "raw_log", "label": "Raw log", "test": [0.0, 0.45978402008385855], "val": [17.76690925798813, 8.728669546321317], "memory": [0]}, {"key": "shared_brain", "label": "Shared Brain", "test": [0.0, 0.4616991172379044], "val": [17.76690925798813, 8.622331351605608], "memory": [0]}]}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+const css = getComputedStyle(document.documentElement);
+const v = (n) => css.getPropertyValue(n).trim();
+const D = JSON.parse(document.getElementById('data').textContent);
+Chart.defaults.font.family = v('--body');
+Chart.defaults.color = v('--muted');
+Chart.defaults.borderColor = v('--rule');
+const pct = (x) => (x == null ? 'n/a' : (x * 100).toFixed(2) + '%');
+function line(id, key, opts) {
+  const sets = D.series.filter((s) => !opts.only || opts.only.includes(s.key)).map((s) => ({
+    label: s.label, data: s[key], borderColor: v('--' + s.key), backgroundColor: v('--' + s.key),
+    borderWidth: s.key === 'shared_brain' ? 3 : 2, pointRadius: 3, tension: 0,
+    borderDash: s.key === 'one_shot' ? [5, 4] : [], stepped: opts.stepped || false,
+    spanGaps: true,
+  }));
+  if (opts.extra) sets.push(...opts.extra);
+  new Chart(document.getElementById(id), {
+    type: 'line',
+    data: { labels: opts.labels || D.gens, datasets: sets },
+    options: {
+      responsive: true, maintainAspectRatio: false, animation: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 12 } },
+        tooltip: { callbacks: { label: (c) => c.dataset.label + ': ' + opts.fmt(c.parsed.y) } } },
+      scales: {
+        x: { title: { display: true, text: 'Generation' }, grid: { display: false } },
+        y: { title: { display: true, text: opts.y }, ticks: { callback: opts.fmt } },
+      },
+    },
+  });
+}
+line('test', 'test', { y: 'Test gain vs starting model', fmt: pct });
+line('val', 'val', { y: 'Best val ' + D.loss, fmt: (x) => x == null ? '' : x.toFixed(4),
+  stepped: true,
+  extra: D.l0 ? [{ label: 'Start minus noise threshold', data: D.gens.map(() => D.l0 - D.threshold),
+    borderColor: v('--rule'), borderDash: [2, 3], pointRadius: 0, borderWidth: 1 }] : [] });
+line('mem', 'memory', { y: 'Tokens researchers read', only: ['raw_log', 'shared_brain'],
+  labels: D.gens.slice(1), fmt: (x) => x == null ? '' : Math.round(x).toLocaleString() });
+document.querySelectorAll('.tabs button').forEach((b) => b.addEventListener('click', () => {
+  document.querySelectorAll('.tabs button').forEach((o) => o.setAttribute('aria-selected', o === b));
+  document.querySelectorAll('.evo').forEach((p) => { p.hidden = p.id !== 'evo-' + b.dataset.setup; });
+}));
+</script>
