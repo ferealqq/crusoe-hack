@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from app import scoring
+from app import events, scoring
 from app.agents import prompts
 from app.agents.curator import Check, CuratorOutcome, check_code, run_curator
 from app.agents.researcher import ResearcherOutcome, run_researcher
@@ -42,9 +42,12 @@ async def measure_baseline(
 ) -> Baseline:
     """Run the starting train.py on the baseline seeds: L0 and the noise threshold."""
     lab = Lab(dataset, store)
-    exps = await asyncio.gather(
-        *(lab.run(code, s, "orchestrator", "baseline", 0, 0) for s in cfg.baseline_seeds)
-    )
+    async with asyncio.TaskGroup() as group:
+        tasks = [
+            group.create_task(lab.run(code, s, "orchestrator", "baseline", 0, 0))
+            for s in cfg.baseline_seeds
+        ]
+    exps = [task.result() for task in tasks]
     losses = [e.val_loss for e in exps]
     if any(x is None for x in losses):
         raise RuntimeError(f"baseline failed: {[e.output_tail[-500:] for e in exps]}")
@@ -126,6 +129,20 @@ class SetupRun:
         return None
 
     async def run(self) -> dict[str, Any]:
+        with events.scope(setup=self.setup):
+            events.emit("setup.started", generations=self.cfg.generations_for(self.setup))
+            try:
+                result = await self._run()
+            except asyncio.CancelledError:
+                events.emit("setup.cancelled")
+                raise
+            except Exception as e:
+                events.emit("setup.failed", error_type=type(e).__name__)
+                raise
+            events.emit("setup.completed", **{k: v for k, v in result.items() if k != "best_code"})
+            return result
+
+    async def _run(self) -> dict[str, Any]:
         started = time.time()
         gens = self.cfg.generations_for(self.setup)
         self._snapshot(0, None)
@@ -158,6 +175,16 @@ class SetupRun:
         return scoring.fitness(self.baseline.test_losses, [x for x in test if x is not None])
 
     async def generation(self, gen: int) -> None:
+        with events.scope(gen=gen):
+            events.emit(
+                "generation.started",
+                best_val=self.best.val,
+                best_version=self.best.version,
+                researchers=self.cfg.researchers_for(self.setup),
+            )
+            await self._generation(gen)
+
+    async def _generation(self, gen: int) -> None:
         cfg, setup, start = self.cfg, self.setup, self.best
         t0 = time.time()
         n = cfg.researchers_for(setup)
@@ -188,12 +215,12 @@ class SetupRun:
             start.version,
             start.val,
         )
-        outcomes = await asyncio.gather(
-            *(
-                self._researcher(gen, i, f, system, runs, memory, start)
+        async with asyncio.TaskGroup() as group:
+            tasks = [
+                group.create_task(self._researcher(gen, i, f, system, runs, memory, start))
                 for i, f in enumerate(focuses)
-            )
-        )
+            ]
+        outcomes = [task.result() for task in tasks]
         losses = [b["val_loss"] if (b := o.best_run()) else None for o in outcomes]
         ranked = rank(losses, self.baseline.threshold)
 
@@ -208,35 +235,34 @@ class SetupRun:
 
         test = await self.dataset.test_losses(self.best.code, cfg.test_seeds)
         gen_exps = [e for e in self.lab.experiments.values() if e.gen == gen]
-        self.store.append(
-            "generations",
-            {
-                "gen": gen,
-                "start_best_val": start.val,
-                "end_best_val": self.best.val,
-                "best_version": self.best.version,
-                "new_best": self.best.version != start.version,
-                "best_run_id": self.best.run_id,
-                "best_note": self.best.note,
-                "val_gain": scoring.gain(self.baseline.l0, self.best.val),
-                "test_losses": test,
-                "test_gain": self._fitness(test),
-                "memory_tokens": count_tokens(memory or ""),
-                "runs": len(gen_exps),
-                "errors": sum(e.status == "error" for e in gen_exps),
-                "timeouts": sum(e.status == "timeout" for e in gen_exps),
-                "researcher_best": [
-                    {"name": o.name, "focus": o.focus, "best": o.best_run(), "rank": r}
-                    for (i, r) in ranked
-                    for o in [outcomes[i]]
-                ],
-                "usage": {
-                    "researchers": _sum_usage([o.usage for o in outcomes]),
-                    "curator": curator.usage if curator else {},
-                },
-                "minutes": round((time.time() - t0) / 60, 1),
+        metrics = {
+            "gen": gen,
+            "start_best_val": start.val,
+            "end_best_val": self.best.val,
+            "best_version": self.best.version,
+            "new_best": self.best.version != start.version,
+            "best_run_id": self.best.run_id,
+            "best_note": self.best.note,
+            "val_gain": scoring.gain(self.baseline.l0, self.best.val),
+            "test_losses": test,
+            "test_gain": self._fitness(test),
+            "memory_tokens": count_tokens(memory or ""),
+            "runs": len(gen_exps),
+            "errors": sum(e.status == "error" for e in gen_exps),
+            "timeouts": sum(e.status == "timeout" for e in gen_exps),
+            "researcher_best": [
+                {"name": o.name, "focus": o.focus, "best": o.best_run(), "rank": r}
+                for (i, r) in ranked
+                for o in [outcomes[i]]
+            ],
+            "usage": {
+                "researchers": _sum_usage([o.usage for o in outcomes]),
+                "curator": curator.usage if curator else {},
             },
-        )
+            "minutes": round((time.time() - t0) / 60, 1),
+        }
+        self.store.append("generations", metrics)
+        events.emit("generation.completed", **metrics)
         for o in outcomes:
             self.store.append(
                 "agents",
@@ -278,6 +304,12 @@ class SetupRun:
     async def _researcher(
         self, gen: int, i: int, focus: str, system: str, runs: int, memory: str | None, start: Best
     ) -> ResearcherOutcome:
+        with events.scope(phase="candidate"):
+            return await self._run_researcher(gen, i, focus, system, runs, memory, start)
+
+    async def _run_researcher(
+        self, gen: int, i: int, focus: str, system: str, runs: int, memory: str | None, start: Best
+    ) -> ResearcherOutcome:
         description = prompts.ONE_SHOT_FOCUS if focus == "any" else prompts.FOCUSES[focus]
         return await run_researcher(
             lab=self.lab,
@@ -301,6 +333,18 @@ class SetupRun:
         if scoring.beats(top["val_loss"], self.best.val, self.baseline.threshold):
             exp = self.lab.experiments[top["run_id"]]
             self.best = Best(exp.code, top["val_loss"], self.best.version + 1, exp.id, exp.note)
+            self._emit_best(verified=False)
+
+    def _emit_best(self, *, verified: bool) -> None:
+        events.emit(
+            "best.updated",
+            val_loss=self.best.val,
+            version=self.best.version,
+            run_id=self.best.run_id,
+            note=self.best.note,
+            verified=verified,
+            val_gain=scoring.gain(self.baseline.l0, self.best.val),
+        )
 
     async def _curate(
         self,
@@ -383,6 +427,7 @@ class SetupRun:
             src = self.lab.experiments.get(win.source)
             note = src.note if src else "curator code"
             self.best = Best(win.code, win.mean, start.version + 1, win.source, note)
+            self._emit_best(verified=True)
             self.memory.set_best(
                 f"v{self.best.version}: val {self.dataset.loss} {win.mean:.5f} (mean of seeds "
                 f"{', '.join(map(str, win.seeds))}), from run {win.source}: {note}"[:300],
@@ -391,14 +436,30 @@ class SetupRun:
                 gen,
                 win.mean,
             )
-        self.memory.enforce_cap(gen, self.best.version)
+        dropped = self.memory.enforce_cap(gen, self.best.version)
+        events.emit(
+            "memory.updated",
+            action="curation_completed",
+            text=self.memory.render(self.best.version),
+            tokens=self.memory.tokens(self.best.version),
+            best_version=self.best.version,
+            dropped_ids=dropped,
+        )
         return curator
 
     def _snapshot(self, gen: int, curator: CuratorOutcome | None) -> None:
         text = self.memory_text() or ""
-        events: list[dict[str, Any]] = []
+        with events.scope(gen=gen):
+            events.emit(
+                "memory.updated",
+                action="snapshot",
+                text=text,
+                tokens=count_tokens(text),
+                best_version=self.best.version,
+            )
+        memory_events: list[dict[str, Any]] = []
         if self.memory is not None:
-            events = self.memory.events[self._events_saved :]
+            memory_events = self.memory.events[self._events_saved :]
             self._events_saved = len(self.memory.events)
         self.store.append(
             "memory_snapshots",
@@ -407,7 +468,7 @@ class SetupRun:
                 "best_version": self.best.version,
                 "tokens": count_tokens(text),
                 "text": text,
-                "events": events,
+                "events": memory_events,
                 "curator_summary": curator.summary if curator else None,
             },
         )

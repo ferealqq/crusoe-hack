@@ -291,7 +291,12 @@ scripts/prepare_data.py
 
 ## API and dashboard
 
-The orchestrator writes to Postgres. The API only reads.
+The backend now records live research events and serves SSE plus paced replay.
+See [Research telemetry API](docs/research-telemetry.md) for endpoints, event types,
+reconnect/seek semantics, and frontend integration. The dashboard UI is separate.
+
+Research telemetry reads the CLI's files under `DATA_DIR/runs/`; the API is read-only
+for research runs. The older prompt-grading endpoints still use Postgres.
 
 | Endpoint | Returns |
 |---|---|

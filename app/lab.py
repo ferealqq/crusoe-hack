@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 from pydantic import BaseModel
 
-from app import scoring
+from app import events, scoring
 from app.services import sandbox
 from app.store import Store
 
@@ -44,9 +44,19 @@ class Dataset:
         return await self._test_cache[key]
 
     async def _score_test(self, code: str, seeds: list[int]) -> list[float | None]:
-        results = await asyncio.gather(
-            *(sandbox.run_train(code, self.dir, seed, mode="test") for seed in seeds)
-        )
+        with events.scope(agent=None, role="orchestrator", phase="test"):
+            events.emit("test.started", seeds=seeds)
+            losses = await self._score_test_once(code, seeds)
+            events.emit("test.completed", seeds=seeds, losses=losses)
+            return losses
+
+    async def _score_test_once(self, code: str, seeds: list[int]) -> list[float | None]:
+        async with asyncio.TaskGroup() as group:
+            tasks = [
+                group.create_task(sandbox.run_train(code, self.dir, seed, mode="test"))
+                for seed in seeds
+            ]
+        results = [task.result() for task in tasks]
         losses: list[float | None] = []
         for seed, r in zip(seeds, results, strict=True):
             try:
@@ -87,7 +97,16 @@ class Lab:
     ) -> Experiment:
         self._count += 1
         exp_id = f"e{self._count}"
-        result = await sandbox.run_train(code, self.dataset.dir, seed, mode="research")
+        with events.scope(experiment_id=exp_id, agent=agent, seed=seed, gen=gen):
+            events.emit("experiment.queued", note=note[:300], started_from=started_from)
+            try:
+                result = await sandbox.run_train(code, self.dataset.dir, seed, mode="research")
+            except asyncio.CancelledError:
+                events.emit("experiment.cancelled")
+                raise
+            except Exception as e:
+                events.emit("experiment.failed", error_type=type(e).__name__)
+                raise
         status, val_loss, output = result.status, None, result.output
         if status == "ok" and result.preds is not None:
             try:
@@ -109,4 +128,13 @@ class Lab:
         )
         self.experiments[exp_id] = exp
         self.store.append("experiments", exp.model_dump())
+        with events.scope(experiment_id=exp_id, agent=agent, seed=seed, gen=gen):
+            events.emit(
+                "experiment.completed",
+                status=status,
+                val_loss=val_loss,
+                runtime_s=exp.runtime_s,
+                note=exp.note,
+                started_from=started_from,
+            )
         return exp
