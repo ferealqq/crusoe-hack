@@ -13,9 +13,14 @@ Open the matching skill before working in that area. If your harness doesn't aut
 | `modal-sandboxes` | Sandbox code, isolation, exit codes, Modal auth |
 | `neon` | Postgres URLs/pooling/migrations, buckets, branches, `neon` CLI |
 
+## Demo frontend and event log
+- `web/`: the demo UI (see `web/README.md`). It only reads the run event log.
+- `app/runlog/`: the event contract (`events.py`, mirrored in `web/src/lib/events.ts`; change both together). The orchestrator emits events through `RunLogger`.
+- Regenerate the recorded sample runs with `uv run python scripts/make_sample_runs.py`.
+
 ## Rules
 - Local setup is `scripts/setup.sh` (interactive, opens browsers). Don't run it yourself; ask the user to.
-- Before finishing: `uv run ruff check . && uv run ruff format . && uv run pytest`.
+- Before finishing: `uv run ruff check . && uv run ruff format . && uv run pytest`. If you touched `web/`, also run `cd web && npm run build`.
 - Tests never call Crusoe, Modal or the bucket. Monkeypatch the `app.services.*` functions.
 - Schema changes go through reviewed Alembic migrations, run against a Neon branch, never the main branch.
 - New settings go in `app/config.py` **and** `.env.example`. Never commit `.env` or `.env.local`.

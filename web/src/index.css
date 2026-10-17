@@ -1,0 +1,58 @@
+@import 'tailwindcss';
+
+/* Dark "mission control" theme. Chart colors are the dataviz reference palette's dark steps
+   (validated: categorical slots 1-4 pass CVD/contrast on the #1a1a19 surface). */
+@theme {
+  --font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --color-page: #0d0d0d;
+  --color-surface: #1a1a19;
+  --color-surface-2: #232321;
+  --color-ink: #f0efec;
+  --color-ink-2: #c3c2b7;
+  --color-muted: #898781;
+  --color-grid: #2c2c2a;
+  --color-axis: #383835;
+  --color-line: rgb(255 255 255 / 0.1);
+
+  --color-series-1: #3987e5;
+  --color-series-2: #d95926;
+  --color-series-3: #199e70;
+  --color-series-4: #c98500;
+
+  --color-good: #0ca30c;
+  --color-warning: #fab219;
+  --color-serious: #ec835a;
+  --color-critical: #d03b3b;
+}
+
+html {
+  color-scheme: dark;
+  background: var(--color-page);
+  color: var(--color-ink);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-sans);
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgb(57 135 229 / 0.5); }
+  100% { box-shadow: 0 0 0 8px rgb(57 135 229 / 0); }
+}
+.pulse {
+  animation: pulse-ring 1.4s ease-out infinite;
+}
+
+@keyframes flash-in {
+  from { background: rgb(12 163 12 / 0.25); }
+  to { background: transparent; }
+}
+.flash-add { animation: flash-in 2.5s ease-out; }

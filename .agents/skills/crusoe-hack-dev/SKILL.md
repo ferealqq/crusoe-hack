@@ -27,7 +27,8 @@ RUN_INTEGRATION=1 DATABASE_URL=… uv run pytest  # real (branch) Postgres, fake
   - `storage.py`: Neon bucket via boto3 in `asyncio.to_thread`, path-style + SigV4.
   - `sandbox.py`: Modal.
   - `evaluator.py`: generate → grade → persist, plus the graders.
-- Flow:
+- `app/runlog/`: Shared Brain run event log. `events.py` holds the typed contract, `logger.py` has `RunLogger` (the orchestrator emits through it), and `store.py` handles samples, `var/runs` and the bucket. Served by `app/api/routes/brain.py` (`/api/runs`, plus SSE at `/stream`). The demo UI lives in `web/` (Vite/React).
+- Flow (eval scaffold):
   1. `POST /datasets` writes `datasets/<id>/tasks.jsonl` to the bucket and adds a row.
   2. `POST /runs` adds a row and starts a BackgroundTask (`execute_run`).
   3. The run writes `run_results` rows and `runs/<id>/trace.jsonl`.
