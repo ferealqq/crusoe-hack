@@ -1,0 +1,67 @@
+{
+  "dataset": "churn",
+  "setups": [
+    "one_shot",
+    "no_memory",
+    "raw_log",
+    "shared_brain"
+  ],
+  "research": {
+    "generations": 5,
+    "researchers": 4,
+    "researcher_runs": 7,
+    "researcher_runs_shared_brain": 6,
+    "curator_runs": 4,
+    "curator_seeds": [
+      1,
+      2,
+      3
+    ],
+    "test_seeds": [
+      1,
+      2,
+      3
+    ],
+    "baseline_seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "research_seed": 0,
+    "web_searches": 2,
+    "web_results": 5,
+    "max_turns": 30,
+    "curator_max_turns": 20,
+    "memory_cap_tokens": 2000,
+    "raw_log_cap_tokens": 100000
+  },
+  "researcher_model": "nvidia/NVIDIA-Nemotron-3-Super-120B-A12B",
+  "curator_model": "deepseek-ai/DeepSeek-V4-Pro",
+  "pricing": {
+    "deepseek-ai/DeepSeek-V4-Pro": {
+      "prompt": "1.74",
+      "completion": "3.48",
+      "image": "0",
+      "request": "0",
+      "video": "0",
+      "input_cache_reads": "0.15"
+    },
+    "nvidia/NVIDIA-Nemotron-3-Super-120B-A12B": {
+      "prompt": "0.30",
+      "completion": "2.40",
+      "image": "0",
+      "request": "0",
+      "video": "0",
+      "input_cache_reads": "0.15"
+    }
+  },
+  "web_search": true,
+  "sandbox": {
+    "timeout_s": 120,
+    "cpu": 2.0,
+    "memory_mb": 4096
+  },
+  "started": "20261017-223035"
+}

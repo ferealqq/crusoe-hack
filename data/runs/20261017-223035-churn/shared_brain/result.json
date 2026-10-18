@@ -1,0 +1,23 @@
+{
+  "setup": "shared_brain",
+  "dataset": "churn",
+  "l0": 0.3947244433333342,
+  "noise_threshold": 0.001973622216666671,
+  "best_version": 2,
+  "best_val": 0.3075212836948517,
+  "val_gain": 0.22092161028102772,
+  "baseline_test_losses": [
+    0.40328536159905987,
+    0.40328536159905987,
+    0.40328536159905987
+  ],
+  "best_test_losses": [
+    0.3193505751615443,
+    0.31905739138804956,
+    0.31796501059015825
+  ],
+  "fitness": 0.20951509096217955,
+  "runs": 134,
+  "minutes": 51.9,
+  "best_code": "import numpy as np\nimport pandas as pd\nfrom catboost import CatBoostClassifier\n\ndef fit(train: pd.DataFrame, target: str, seed: int) -> object:\n    X = train.drop(columns=[target])\n    y = train[target]\n    \n    X = X.copy()\n    \n    # Drop TFIDF columns\n    tfidf_cols = [c for c in X.columns if c.startswith('surname_tfidf_')]\n    if tfidf_cols:\n        X = X.drop(columns=tfidf_cols)\n    \n    # Convert surname to categorical (it's currently integer, but we treat as cat)\n    # We'll keep it as is and let CatBoost know it's categorical.\n    \n    # Convert country one-hot to single categorical feature\n    if 'france' in X.columns and 'germany' in X.columns and 'spain' in X.columns:\n        X['country'] = np.where(X['france']==1, 0,\n                               np.where(X['germany']==1, 1, 2))\n        X = X.drop(columns=['france', 'germany', 'spain'])\n    \n    # Convert gender one-hot to single categorical feature\n    if 'female' in X.columns and 'male' in X.columns:\n        X['gender'] = np.where(X['female']==1, 0, 1)\n        X = X.drop(columns=['female', 'male'])\n    \n    # Identify categorical features\n    cat_features = []\n    if 'surname' in X.columns:\n        cat_features.append('surname')\n    if 'country' in X.columns:\n        cat_features.append('country')\n    if 'gender' in X.columns:\n        cat_features.append('gender')\n    \n    model = CatBoostClassifier(\n        iterations=1000,\n        learning_rate=0.01,\n        depth=8,\n        l2_leaf_reg=3,\n        loss_function='Logloss',\n        random_seed=seed,\n        verbose=False,\n        subsample=0.9,\n        rsm=0.9,\n        cat_features=cat_features\n    )\n    model.fit(X, y)\n    return model\n\ndef predict(model: object, X: pd.DataFrame) -> np.ndarray:\n    X = X.copy()\n    \n    # Same transformations as in fit\n    tfidf_cols = [c for c in X.columns if c.startswith('surname_tfidf_')]\n    if tfidf_cols:\n        X = X.drop(columns=tfidf_cols)\n    \n    if 'france' in X.columns and 'germany' in X.columns and 'spain' in X.columns:\n        X['country'] = np.where(X['france']==1, 0,\n                               np.where(X['germany']==1, 1, 2))\n        X = X.drop(columns=['france', 'germany', 'spain'])\n    \n    if 'female' in X.columns and 'male' in X.columns:\n        X['gender'] = np.where(X['female']==1, 0, 1)\n        X = X.drop(columns=['female', 'male'])\n    \n    cat_features = []\n    if 'surname' in X.columns:\n        cat_features.append('surname')\n    if 'country' in X.columns:\n        cat_features.append('country')\n    if 'gender' in X.columns:\n        cat_features.append('gender')\n    \n    return model.predict_proba(X)[:, 1]"
+}

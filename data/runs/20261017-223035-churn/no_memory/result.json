@@ -1,0 +1,23 @@
+{
+  "setup": "no_memory",
+  "dataset": "churn",
+  "l0": 0.3947244433333342,
+  "noise_threshold": 0.001973622216666671,
+  "best_version": 1,
+  "best_val": 0.3117572169877278,
+  "val_gain": 0.2101902421977521,
+  "baseline_test_losses": [
+    0.40328536159905987,
+    0.40328536159905987,
+    0.40328536159905987
+  ],
+  "best_test_losses": [
+    0.32238021269704265,
+    0.3231199078973859,
+    0.32285624703719573
+  ],
+  "fitness": 0.19961028439679282,
+  "runs": 140,
+  "minutes": 38.1,
+  "best_code": "import numpy as np\nimport pandas as pd\nfrom catboost import CatBoostClassifier\n\ndef fit(train: pd.DataFrame, target: str, seed: int) -> object:\n    X = train.drop(columns=[target])\n    y = train[target]\n    model = CatBoostClassifier(\n        iterations=200,\n        learning_rate=0.05,\n        depth=6,\n        l2_leaf_reg=3,\n        loss_function='Logloss',\n        random_seed=seed,\n        verbose=False,\n        thread_count=2\n    )\n    model.fit(X, y)\n    return model\n\ndef predict(model: object, X: pd.DataFrame) -> np.ndarray:\n    return model.predict_proba(X)[:, 1]"
+}
