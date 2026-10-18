@@ -1,208 +1,104 @@
-"""CLI that runs research runs. A plain Python script, not an agent.
+"""CLI for research runs.
 
-    uv run python -m app.orchestrator --dataset churn --setup shared_brain
-    uv run python -m app.orchestrator --dataset churn --setup all
-
-With --setup all, the setups run in parallel and share one baseline measurement (same L0
-and noise threshold). Results go to data/runs/<timestamp>-<dataset>/, then report.html.
+uv run python -m app.orchestrator --dataset churn --setup shared_brain
+uv run python -m app.orchestrator --report
 """
 
 import argparse
 import asyncio
 import logging
-import signal
-from datetime import UTC, datetime
+import sys
 from pathlib import Path
+from typing import Any
 
-from app import events, report
-from app.config import SETUPS, ResearchConfig, Setup, get_settings
-from app.lab import Dataset
-from app.loop import SetupRun, measure_baseline
+from app.config import ResearchConfig, get_settings
+from app.data import load_dataset
+from app.lab import SETUPS, Setup
+from app.loop import research_run
 from app.services import inference
-from app.store import Store
-
-log = logging.getLogger("orchestrator")
+from app.store import DATA_DIR, read_jsonl
 
 
-async def check_models() -> dict[str, dict[str, str]]:
-    """Stop if a model ID is missing on Crusoe. Returns pricing per model ($ per 1M tokens)."""
+def _m(n: int) -> str:
+    return f"{n / 1e6:.2f}M" if n >= 100_000 else f"{n / 1e3:.0f}k"
+
+
+def results_table(root: Path = DATA_DIR) -> str:
+    rows: list[dict[str, Any]] = read_jsonl(root / "research_runs.jsonl")
+    if not rows:
+        return "No finished research runs yet."
+    header = (
+        f"{'research run':<40} {'setup':<13} {'fitness':>8} {'val gain':>9}  "
+        f"{'best val loss by generation':<44} {'memory':>6}  tokens (prompt/cached/output)"
+    )
+    lines = [header, "-" * len(header)]
+    for r in rows:
+        gens = read_jsonl(root / "research_runs" / r["run_id"] / "generations.jsonl")
+        trail = " ".join(f"{g['end_best']:.4f}" for g in gens)
+        fitness = f"{r['fitness']:+.2%}" if r.get("fitness") is not None else "n/a"
+        u = r["usage"]
+        lines.append(
+            f"{r['run_id']:<40} {r['setup']:<13} {fitness:>8} {r['val_gain']:>+9.2%}  "
+            f"{trail:<44} {r['memory_tokens']:>6}  "
+            f"{_m(u['prompt'])}/{_m(u['cached'])}/{_m(u['output'])}"
+        )
+    return "\n".join(lines)
+
+
+async def check_models(setup: Setup) -> None:
     s = get_settings()
-    models = (await inference.get_client().models.list()).data
-    ids = {m.id for m in models}
-    missing = [m for m in (s.researcher_model, s.curator_model) if m not in ids]
+    wanted = [s.researcher_model] + ([s.curator_model] if setup == "shared_brain" else [])
+    available = set(await inference.list_models())
+    missing = [m for m in wanted if m not in available]
     if missing:
-        raise RuntimeError(f"models not on Crusoe: {missing}. Available: {sorted(ids)}")
-    return {
-        m.id: (m.model_dump().get("pricing") or {})
-        for m in models
-        if m.id in (s.researcher_model, s.curator_model)
-    }
+        sys.exit(f"model(s) not on Crusoe: {', '.join(missing)}. Check GET /playground/models.")
 
 
-async def main_async(args: argparse.Namespace) -> Path:
-    s = get_settings()
+async def main(args: argparse.Namespace) -> None:
     overrides = {
         k: v
         for k, v in {
             "generations": args.generations,
             "researchers": args.researchers,
-            "max_turns": args.max_turns,
+            "researcher_runs": args.runs,
+            "researcher_turns": args.turns,
         }.items()
         if v is not None
     }
-    cfg = ResearchConfig(**overrides)
-    setups: list[Setup] = list(SETUPS) if args.setup == "all" else [args.setup]
-    stamp = datetime.now(UTC).strftime("%Y%m%d-%H%M%S-%f")
-    root = Path(s.data_dir) / "runs" / f"{stamp}-{args.dataset}"
-    store = Store(root)
-    event_log = events.EventLog(root)
-    handler = logging.FileHandler(root / "run.log")
-    logging.getLogger().addHandler(handler)
-    with events.bind(event_log):
-        events.emit(
-            "run.started",
-            dataset=args.dataset,
-            setups=setups,
-            research=cfg.model_dump(),
-            researcher_model=s.researcher_model,
-            curator_model=s.curator_model,
-        )
-        heartbeat = asyncio.create_task(_heartbeat())
-        terminal, terminal_data = "run.failed", {}
-        try:
-            success = await _execute(args, cfg, setups, root, store, stamp)
-            terminal = "run.completed" if success else "run.failed"
-        except asyncio.CancelledError:
-            terminal = "run.cancelled"
-            raise
-        except Exception as e:
-            terminal_data = {"error_type": type(e).__name__}
-            raise
-        finally:
-            heartbeat.cancel()
-            await asyncio.gather(heartbeat, return_exceptions=True)
-            events.emit(terminal, **terminal_data)
-            logging.getLogger().removeHandler(handler)
-            handler.close()
-    return root
+    if args.goal:
+        overrides["goal"] = args.goal
+    config = ResearchConfig(**overrides)
+    await check_models(args.setup)
+    dataset = load_dataset(args.dataset)
+    run_id = f"{dataset.name}-{args.setup}-{args.stamp}" if args.stamp else None
+    await research_run(dataset, args.setup, config, commit=not args.no_commit, run_id=run_id)
+    print()
+    print(results_table())
 
 
-async def _heartbeat() -> None:
-    while True:
-        await asyncio.sleep(5)
-        events.emit("run.heartbeat")
-
-
-async def _execute(
-    args: argparse.Namespace,
-    cfg: ResearchConfig,
-    setups: list[Setup],
-    root: Path,
-    store: Store,
-    stamp: str,
-) -> bool:
-    s = get_settings()
-    dataset = Dataset(Path(s.data_dir) / args.dataset)
-    pricing = await check_models()
-    store.write_json(
-        "config",
-        {
-            "dataset": args.dataset,
-            "loss": dataset.loss,
-            "setups": setups,
-            "research": cfg.model_dump(),
-            "researcher_model": s.researcher_model,
-            "curator_model": s.curator_model,
-            "pricing": pricing,
-            "web_search": bool(s.ydc_api_key),
-            "sandbox": {
-                "timeout_s": s.sandbox_timeout_seconds,
-                "cpu": s.sandbox_cpu,
-                "memory_mb": s.sandbox_memory_mb,
-            },
-            "started": stamp,
-        },
+def cli() -> None:
+    parser = argparse.ArgumentParser(description="Run Shared Brain research runs.")
+    parser.add_argument("--dataset", default="churn")
+    parser.add_argument("--setup", choices=SETUPS, default="shared_brain")
+    parser.add_argument("--generations", type=int)
+    parser.add_argument("--researchers", type=int)
+    parser.add_argument("--runs", type=int, help="runs per No memory researcher (default 7)")
+    parser.add_argument("--turns", type=int, help="max turns per researcher (default 30)")
+    parser.add_argument("--goal", help="the researchers' brief (default: config.DEFAULT_GOAL)")
+    parser.add_argument(
+        "--stamp", help="run id timestamp YYYYmmdd-HHMMSS; setups with the same one group together"
     )
-    log.info("results in %s", root)
-
-    code = (Path("baselines") / args.dataset / "train.py").read_text()
-    with events.scope(phase="baseline", role="orchestrator"):
-        events.emit("baseline.started", seeds=cfg.baseline_seeds)
-        baseline = await measure_baseline(dataset, code, cfg, store)
-        events.emit(
-            "baseline.completed",
-            l0=baseline.l0,
-            threshold=baseline.threshold,
-            val_losses=baseline.val_losses,
-            test_losses=baseline.test_losses,
-        )
-    store.write_json("baseline", baseline.__dict__)
-    log.info(
-        "baseline: L0 %.5f, noise threshold %.5f, test %s",
-        baseline.l0,
-        baseline.threshold,
-        baseline.test_losses,
-    )
-
-    runs = [SetupRun(setup, dataset, baseline, cfg, root) for setup in setups]
-    results = await asyncio.gather(*(r.run() for r in runs), return_exceptions=True)
-    summary = []
-    for setup, res in zip(setups, results, strict=True):
-        if isinstance(res, BaseException):
-            log.error("[%s] failed: %r", setup, res, exc_info=res)
-            summary.append({"setup": setup, "error": repr(res)})
-        else:
-            summary.append({k: v for k, v in res.items() if k != "best_code"})
-    store.write_json("summary", summary)
-    store.write_json("rate_limited", inference.RATE_LIMITED)
-    if inference.RATE_LIMITED:
-        log.warning("Crusoe rate limits (429) hit during the run: %s", inference.RATE_LIMITED)
-
-    path = report.write_report(root)
-    print("\nsetup         fitness   val gain  best  runs")
-    for row in summary:
-        if "error" in row:
-            print(f"{row['setup']:<13} error: {row['error'][:60]}")
-            continue
-        fit = f"{row['fitness']:+.2%}" if row["fitness"] is not None else "n/a"
-        print(
-            f"{row['setup']:<13} {fit:>8} {row['val_gain']:>+9.2%}  v{row['best_version']:<3} "
-            f"{row['runs']:>4}"
-        )
-    print(f"\nreport: {path}")
-    return all("error" not in row for row in summary)
-
-
-def main() -> None:
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
-    ap.add_argument("--dataset", default="churn")
-    ap.add_argument("--setup", choices=[*SETUPS, "all"], default="shared_brain")
-    ap.add_argument("--generations", type=int)
-    ap.add_argument("--researchers", type=int)
-    ap.add_argument("--max-turns", type=int)
-    args = ap.parse_args()
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
-    for noisy in ("httpx", "openai", "modal", "hpack"):
-        logging.getLogger(noisy).setLevel(logging.WARNING)
-    try:
-        asyncio.run(_cli(args))
-    except (KeyboardInterrupt, asyncio.CancelledError):
-        log.info("research run cancelled")
-        raise SystemExit(130) from None
-
-
-async def _cli(args: argparse.Namespace) -> None:
-    # SIGINT is handled by asyncio.run; handle SIGTERM as cancellation as well so
-    # sandbox finally blocks finish before the terminal event is recorded.
-    loop = asyncio.get_running_loop()
-    task = asyncio.current_task()
-    assert task is not None
-    loop.add_signal_handler(signal.SIGTERM, task.cancel)
-    try:
-        await main_async(args)
-    finally:
-        loop.remove_signal_handler(signal.SIGTERM)
+    parser.add_argument("--no-commit", action="store_true", help="don't commit outputs to git")
+    parser.add_argument("--report", action="store_true", help="print the results table and exit")
+    args = parser.parse_args()
+    if args.report:
+        print(results_table())
+        return
+    # Our progress at INFO; libraries (httpx, openai, modal) only at WARNING.
+    logging.basicConfig(level=logging.WARNING, format="%(asctime)s %(message)s", datefmt="%H:%M:%S")
+    logging.getLogger("app").setLevel(logging.INFO)
+    asyncio.run(main(args))
 
 
 if __name__ == "__main__":
-    main()
+    cli()

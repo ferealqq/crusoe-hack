@@ -1,0 +1,41 @@
+{
+  "name": "churn",
+  "source": "OpenML 46371 (Customer_Churn_Classification_Nominal)",
+  "task": "Predict the chance (0 to 1) that a bank customer leaves.",
+  "target": "exited",
+  "positive_label": "churned (encoded as 1)",
+  "loss": "log_loss",
+  "split": "random 70/15/15, stratified by target, seed 42",
+  "rows": {
+    "train": 24499,
+    "val": 5250,
+    "test": 5251
+  },
+  "positive_rate_train": 0.2113,
+  "columns": {
+    "surname": "int64",
+    "creditscore": "float64",
+    "age": "float64",
+    "tenure": "uint8",
+    "balance": "float64",
+    "numofproducts": "uint8",
+    "hascrcard": "uint8",
+    "isactivemember": "uint8",
+    "estimatedsalary": "float64",
+    "surname_tfidf_0": "float64",
+    "surname_tfidf_1": "float64",
+    "surname_tfidf_2": "float64",
+    "surname_tfidf_3": "float64",
+    "surname_tfidf_4": "float64",
+    "france": "uint8",
+    "germany": "uint8",
+    "spain": "uint8",
+    "female": "uint8",
+    "male": "uint8",
+    "mem__no__products": "uint8",
+    "cred_bal_sal": "float64",
+    "bal_sal": "float64",
+    "tenure_age": "float64",
+    "age_tenure_product": "float64"
+  }
+}

@@ -1,102 +1,113 @@
-"""Read-only dashboard API, independent of Postgres and inference providers."""
+"""Telemetry for the demo UI: research runs under data/, as events (app/replay.py), and
+POST to start a new run from a prompt (app/launch.py)."""
 
 import asyncio
-from datetime import datetime
-from typing import Annotated, Literal
+import json
+from collections.abc import AsyncIterator
+from typing import Any
 
-from fastapi import APIRouter, Header, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import StreamingResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
+from app import launch, replay
 from app.config import get_settings
-from app.events import ResearchEvent, read_events
-from app.services import research_events
 
-router = APIRouter(prefix="/research-runs", tags=["research telemetry"])
+router = APIRouter(prefix="/research-runs", tags=["research"])
 
-
-class RunInfo(BaseModel):
-    run_id: str
-    dataset: str | None
-    setups: list[str]
-    status: Literal["unavailable", "running", "stalled", "completed", "failed", "cancelled"]
-    events_available: bool
-    last_seq: int
-    duration_ms: int
-    last_event_at: datetime | None
-    replay_available: bool
+POLL_S = 2.0
+KEEPALIVE_S = 15.0
 
 
-class EventPage(BaseModel):
-    events: list[ResearchEvent]
-    next_after: int
-    has_more: bool
-    last_seq: int
+def _snapshot(run_id: str) -> replay.Snapshot:
+    snap = replay.snapshots().get(run_id)
+    if snap is None:
+        raise HTTPException(404, f"no research run {run_id}")
+    return snap
 
 
-def _root(run_id: str):
+@router.get("")
+async def list_runs() -> list[dict[str, Any]]:
+    return [s.info for s in (await asyncio.to_thread(replay.snapshots)).values()]
+
+
+class LaunchRequest(BaseModel):
+    prompt: str = Field(min_length=1, max_length=4000)
+    generations: int = Field(default=5, ge=1, le=10)
+
+
+@router.post("", status_code=201)
+async def start_run(body: LaunchRequest) -> dict[str, Any]:
+    """Start Shared Brain and No memory side by side with `prompt` as the researchers' brief."""
+    if not get_settings().research_launch_enabled:
+        raise HTTPException(403, "starting runs is turned off on this server")
+    prompt = body.prompt.strip()
+    if not prompt:
+        raise HTTPException(422, "the prompt is empty")
+    runs = (await asyncio.to_thread(replay.snapshots)).values()
+    busy = launch.active() or next((s for s in runs if s.info["status"] == "running"), None)
+    if busy:
+        run_id = busy.run_id if isinstance(busy, launch.Launch) else busy.info["run_id"]
+        raise HTTPException(409, {"message": "a run is already in progress", "run_id": run_id})
+    started = launch.start(prompt, body.generations)
     try:
-        return research_events.resolve_run(get_settings().data_dir, run_id)
-    except FileNotFoundError:
-        raise HTTPException(404, "research run not found") from None
+        await asyncio.to_thread(launch.wait_started, started)
+    except launch.LaunchError as e:
+        raise HTTPException(502, str(e)) from e
+    return {"run_id": started.run_id}
 
 
-@router.get("", response_model=list[RunInfo])
-async def runs() -> list[dict]:
-    return await asyncio.to_thread(research_events.list_runs, get_settings().data_dir)
+@router.get("/{run_id}")
+async def get_run(run_id: str) -> dict[str, Any]:
+    return (await asyncio.to_thread(_snapshot, run_id)).info
 
 
-@router.get("/{run_id}", response_model=RunInfo)
-async def detail(run_id: str) -> dict:
-    return await asyncio.to_thread(research_events.metadata, _root(run_id))
+@router.get("/{run_id}/events")
+async def get_events(run_id: str, after: int = 0, limit: int = 2000) -> dict[str, Any]:
+    events = (await asyncio.to_thread(_snapshot, run_id)).events
+    page = [e for e in events if e["seq"] > after][: max(1, min(limit, 5000))]
+    return {
+        "events": page,
+        "next_after": page[-1]["seq"] if page else after,
+        "has_more": bool(page) and page[-1]["seq"] < events[-1]["seq"],
+    }
 
 
-@router.get("/{run_id}/events", response_model=EventPage)
-async def history(
-    run_id: str,
-    after: Annotated[int, Query(ge=0)] = 0,
-    limit: Annotated[int, Query(ge=1, le=2000)] = 500,
-    until: Annotated[int | None, Query(ge=0)] = None,
-) -> dict:
-    return await asyncio.to_thread(
-        research_events.event_page, _root(run_id) / "events.jsonl", after, limit, until
-    )
+def _sse(event: str, data: Any, event_id: int | None = None) -> str:
+    head = f"id: {event_id}\n" if event_id is not None else ""
+    return f"{head}event: {event}\ndata: {json.dumps(data)}\n\n"
 
 
-@router.get("/{run_id}/state")
-async def state(run_id: str, at: Annotated[int | None, Query(ge=0)] = None) -> dict:
-    return await asyncio.to_thread(research_events.state_at, _root(run_id) / "events.jsonl", at)
+@router.get("/{run_id}/stream")
+async def stream(run_id: str, request: Request, after: int = 0) -> StreamingResponse:
+    """Backlog after `after`, then new events as the run's files change.
 
+    Events are rebuilt from files, so history can shift when an agent finishes (its trace is
+    placed back in time). Then the stream sends `stream.reset` and the client reloads.
+    """
+    first = await asyncio.to_thread(_snapshot, run_id)
 
-@router.get("/{run_id}/stream", response_class=StreamingResponse)
-async def stream(
-    run_id: str,
-    after: Annotated[int, Query(ge=0)] = 0,
-    mode: Literal["live", "replay"] = "live",
-    speed: Annotated[float, Query(ge=0.1, le=1000, allow_inf_nan=False)] = 1,
-    max_gap: Annotated[float | None, Query(ge=0, le=60, allow_inf_nan=False)] = None,
-    last_event_id: Annotated[str | None, Header()] = None,
-) -> StreamingResponse:
-    path = _root(run_id) / "events.jsonl"
-    if not path.exists():
-        raise HTTPException(
-            409, "This older run has no event recording; record a new run for replay"
-        )
-    if last_event_id is not None:
-        try:
-            after = max(after, int(last_event_id))
-        except ValueError:
-            raise HTTPException(422, "Last-Event-ID must be a nonnegative integer") from None
-        if int(last_event_id) < 0:
-            raise HTTPException(422, "Last-Event-ID must be a nonnegative integer")
-    events: list[ResearchEvent] = await asyncio.to_thread(read_events, path)
-    end_seq = events[-1].seq if events else 0
-    if after > end_seq:
-        raise HTTPException(422, "cursor is beyond the last recorded event")
+    async def gen() -> AsyncIterator[str]:
+        sent = [e for e in first.events if e["seq"] <= after]
+        idle = 0.0
+        while not await request.is_disconnected():
+            snap = await asyncio.to_thread(_snapshot, run_id)
+            if snap.events[: len(sent)] != sent:
+                yield _sse("stream.reset", {"reason": "history changed"})
+                return
+            for e in snap.events[len(sent) :]:
+                yield _sse("research", e, e["seq"])
+                idle = 0.0
+            sent = snap.events
+            if snap.info["status"] not in ("running", "stalled"):
+                yield _sse("stream.end", {"status": snap.info["status"]})
+                return
+            await asyncio.sleep(POLL_S)
+            idle += POLL_S
+            if idle >= KEEPALIVE_S:
+                yield ": keepalive\n\n"
+                idle = 0.0
+
     return StreamingResponse(
-        research_events.stream(
-            path, after=after, mode=mode, speed=speed, max_gap=max_gap, end_seq=end_seq
-        ),
-        media_type="text/event-stream",
-        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+        gen(), media_type="text/event-stream", headers={"Cache-Control": "no-cache"}
     )

@@ -1,0 +1,35 @@
+{
+  "generations": 1,
+  "researchers": 4,
+  "researcher_runs": 7,
+  "curator_runs": 4,
+  "researcher_turns": 30,
+  "curator_turns": 20,
+  "memory_cap_tokens": 2000,
+  "baseline_seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "research_seed": 0,
+  "verify_seeds": [
+    1,
+    2,
+    3
+  ],
+  "test_seeds": [
+    1,
+    2,
+    3
+  ],
+  "focuses": [
+    "features",
+    "model type",
+    "tuning",
+    "regularization",
+    "ensembling"
+  ],
+  "goal": "You are an ML researcher on a small team. Your goal: lower the validation log loss of the model in train.py. Start from a gradient boosting model."
+}

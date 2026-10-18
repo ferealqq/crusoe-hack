@@ -1,474 +1,258 @@
-"""The generation loop: baseline and noise, researchers, ranking, memory, best tracking."""
+"""One research run: baseline, generations (researchers, ranking, curator, best tracking),
+then the final test (README "Generation loop")."""
 
 import asyncio
 import logging
-import time
-from dataclasses import dataclass
+import statistics
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from app import events, scoring
+from app import scoring
 from app.agents import prompts
-from app.agents.curator import Check, CuratorOutcome, check_code, run_curator
+from app.agents.curator import run_curator
 from app.agents.researcher import ResearcherOutcome, run_researcher
-from app.config import ResearchConfig, Setup, get_settings
-from app.lab import Dataset, Lab
-from app.memory import RawLog, SharedMemory, count_tokens
-from app.store import Store
+from app.config import ResearchConfig
+from app.data import Dataset
+from app.lab import Best, Lab, Setup, runs_per_generation
+from app.schemas import Experiment, Usage
+from app.store import DATA_DIR, append_jsonl
+
+BASELINES = Path(__file__).resolve().parents[1] / "baselines"
 
 log = logging.getLogger(__name__)
 
 
-@dataclass
-class Baseline:
-    code: str
-    val_losses: list[float]  # baseline seeds (0-4)
-    l0: float
-    threshold: float
-    test_losses: list[float]  # test seeds (1-3)
+def best_claim(lab: Lab) -> str:
+    b = lab.best
+    gain = scoring.gain(lab.l0, b.val_loss)
+    claim = f"train.py v{b.version}: val loss {b.val_loss:.5f} ({gain:+.2%} vs start). {b.note}"
+    return claim[:200]
 
 
-@dataclass
-class Best:
-    code: str
-    val: float
-    version: int
-    run_id: str | None
-    note: str
+async def run_baseline(lab: Lab) -> None:
+    """Starting train.py on seeds 0-4: L0 is the mean, plus the noise threshold."""
+    code = (BASELINES / lab.dataset.name / "train.py").read_text()
+    exps = await asyncio.gather(
+        *(
+            lab.run_experiment(
+                code,
+                prefix="g0-base",
+                agent="orchestrator",
+                generation=0,
+                seed=s,
+                note="starting train.py",
+            )
+            for s in lab.config.baseline_seeds
+        )
+    )
+    losses = [e.loss for e in exps if e.loss is not None]
+    if len(losses) != len(exps):
+        failed = next(e for e in exps if e.loss is None)
+        raise RuntimeError(f"baseline failed: {failed.output_tail[-1000:]}")
+    lab.baseline_code = code
+    lab.l0 = statistics.mean(losses)
+    lab.threshold = scoring.noise_threshold(losses)
+    seed_run = next((e for e in exps if e.seed == lab.config.research_seed), exps[0])
+    lab.best = Best(0, code, lab.l0, seed_run.run_id, "Starting train.py.", seed_run.loss or lab.l0)
+    if lab.setup == "shared_brain":
+        lab.memory.set_best(
+            claim=best_claim(lab),
+            run_ids=[e.run_id for e in exps],
+            val_change=None,
+            version=0,
+            gen=0,
+        )
+    log.info("baseline: L0 %.5f, noise threshold %.5f", lab.l0, lab.threshold)
+    await lab.checkpoint(f"start: L0 {lab.l0:.5f}, noise threshold {lab.threshold:.5f}")
 
 
-async def measure_baseline(
-    dataset: Dataset, code: str, cfg: ResearchConfig, store: Store
-) -> Baseline:
-    """Run the starting train.py on the baseline seeds: L0 and the noise threshold."""
-    lab = Lab(dataset, store)
-    async with asyncio.TaskGroup() as group:
-        tasks = [
-            group.create_task(lab.run(code, s, "orchestrator", "baseline", 0, 0))
-            for s in cfg.baseline_seeds
+def _focuses(lab: Lab, generation: int) -> list[str]:
+    f = lab.config.focuses
+    return [f[(generation - 1 + i) % len(f)] for i in range(lab.config.researchers)]
+
+
+async def run_generation(lab: Lab, generation: int) -> tuple[Usage, int]:
+    start = lab.best
+    memory_tokens = lab.memory.tokens() if lab.setup == "shared_brain" else 0
+    system = prompts.researcher_system(lab)  # identical for every researcher: cache-friendly
+    log.info("g%d: %d researchers from v%d", generation, lab.config.researchers, start.version)
+    outcomes: list[ResearcherOutcome] = await asyncio.gather(
+        *(
+            run_researcher(lab, generation=generation, index=i + 1, focus=focus, system=system)
+            for i, focus in enumerate(_focuses(lab, generation))
+        )
+    )
+    # Compare against the best's own score on the research seed, so an unchanged copy of the
+    # best (or a lucky seed) can't look like a gain.
+    ranked = scoring.rank_researchers(
+        {o.agent: o.runs for o in outcomes}, start.seed_loss, lab.threshold
+    )
+    usage = sum((o.usage for o in outcomes), Usage())
+    runs = sum(len(o.runs) for o in outcomes)
+
+    if lab.setup == "shared_brain":
+        curator = await run_curator(lab, generation=generation, outcomes=outcomes, ranked=ranked)
+        usage += curator.usage
+        runs += curator.runs_used
+        winners = [
+            v for v in curator.verifications if v.full and v.beats_best and v.mean is not None
         ]
-    exps = [task.result() for task in tasks]
-    losses = [e.val_loss for e in exps]
-    if any(x is None for x in losses):
-        raise RuntimeError(f"baseline failed: {[e.output_tail[-500:] for e in exps]}")
-    val = [x for x in losses if x is not None]
-    test = await dataset.test_losses(code, cfg.test_seeds)
-    if any(x is None for x in test):
-        raise RuntimeError("baseline failed on the test split")
-    l0 = sum(val) / len(val)
-    return Baseline(code, val, l0, scoring.noise_threshold(val), [x for x in test if x is not None])
-
-
-def rank(losses: list[float | None], threshold: float) -> list[tuple[int, int]]:
-    """(index, rank) ordered best first. Lower loss is better; gaps within the noise
-    threshold are ties (same rank). Researchers with no successful run rank last."""
-
-    def better(j: int, i: int) -> bool:
-        lj, li = losses[j], losses[i]
-        if lj is None:
-            return False
-        return li is None or lj < li - threshold
-
-    order = sorted(range(len(losses)), key=lambda i: (losses[i] is None, losses[i] or 0.0, i))
-    return [(i, 1 + sum(better(j, i) for j in range(len(losses)))) for i in order]
-
-
-def ranking_text(
-    outcomes: list[ResearcherOutcome], ranked: list[tuple[int, int]], start_val: float
-) -> str:
-    lines = []
-    for pos, (i, r) in enumerate(ranked, 1):
-        o = outcomes[i]
-        b = o.best_run()
-        if b is None:
-            lines.append(f"{pos}. {o.name} ({o.focus}): no successful run. Rank {r}.")
-            continue
-        g = scoring.gain(start_val, b["val_loss"])
-        lines.append(
-            f"{pos}. {o.name} ({o.focus}): best run {b['run_id']}, val {b['val_loss']:.5f}, "
-            f"gain {g:+.2%}. Rank {r}."
-        )
-    return "\n".join(lines)
-
-
-def _sum_usage(usages: list[dict[str, int]]) -> dict[str, int]:
-    total: dict[str, int] = {}
-    for u in usages:
-        for k, v in u.items():
-            total[k] = total.get(k, 0) + v
-    return total
-
-
-class SetupRun:
-    """One research run: one dataset, one setup, `generations` generations."""
-
-    def __init__(
-        self,
-        setup: Setup,
-        dataset: Dataset,
-        baseline: Baseline,
-        cfg: ResearchConfig,
-        root: Path,
-    ) -> None:
-        self.setup: Setup = setup
-        self.dataset = dataset
-        self.baseline = baseline
-        self.cfg = cfg
-        self.store = Store(root / setup)
-        self.lab = Lab(dataset, self.store)
-        self.best = Best(baseline.code, baseline.l0, 0, None, "starting train.py")
-        self.memory = SharedMemory(cfg.memory_cap_tokens) if setup == "shared_brain" else None
-        self.raw_log = RawLog(cfg.raw_log_cap_tokens) if setup == "raw_log" else None
-        self._events_saved = 0
-
-    def memory_text(self) -> str | None:
-        if self.memory is not None:
-            return self.memory.render(self.best.version)
-        if self.raw_log is not None:
-            return self.raw_log.render()
-        return None
-
-    async def run(self) -> dict[str, Any]:
-        with events.scope(setup=self.setup):
-            events.emit("setup.started", generations=self.cfg.generations_for(self.setup))
-            try:
-                result = await self._run()
-            except asyncio.CancelledError:
-                events.emit("setup.cancelled")
-                raise
-            except Exception as e:
-                events.emit("setup.failed", error_type=type(e).__name__)
-                raise
-            events.emit("setup.completed", **{k: v for k, v in result.items() if k != "best_code"})
-            return result
-
-    async def _run(self) -> dict[str, Any]:
-        started = time.time()
-        gens = self.cfg.generations_for(self.setup)
-        self._snapshot(0, None)
-        for gen in range(1, gens + 1):
-            await self.generation(gen)
-        test = await self.dataset.test_losses(self.best.code, self.cfg.test_seeds)
-        fitness = self._fitness(test)
-        result = {
-            "setup": self.setup,
-            "dataset": self.dataset.meta["name"],
-            "l0": self.baseline.l0,
-            "noise_threshold": self.baseline.threshold,
-            "best_version": self.best.version,
-            "best_val": self.best.val,
-            "val_gain": scoring.gain(self.baseline.l0, self.best.val),
-            "baseline_test_losses": self.baseline.test_losses,
-            "best_test_losses": test,
-            "fitness": fitness,
-            "runs": len(self.lab.experiments),
-            "minutes": round((time.time() - started) / 60, 1),
-            "best_code": self.best.code,
-        }
-        self.store.write_json("result", result)
-        log.info("[%s] done: fitness %s", self.setup, fitness)
-        return result
-
-    def _fitness(self, test: list[float | None]) -> float | None:
-        if any(x is None for x in test):
-            return None
-        return scoring.fitness(self.baseline.test_losses, [x for x in test if x is not None])
-
-    async def generation(self, gen: int) -> None:
-        with events.scope(gen=gen):
-            events.emit(
-                "generation.started",
-                best_val=self.best.val,
-                best_version=self.best.version,
-                researchers=self.cfg.researchers_for(self.setup),
-            )
-            await self._generation(gen)
-
-    async def _generation(self, gen: int) -> None:
-        cfg, setup, start = self.cfg, self.setup, self.best
-        t0 = time.time()
-        n = cfg.researchers_for(setup)
-        runs = cfg.runs_per_researcher(setup)
-        memory = self.memory_text()
-        memory_title = "Team memory (curated)" if self.memory else "Team log (every report)"
-        system = prompts.researcher_system(
-            card=self.dataset.card(),
-            loss=self.dataset.loss,
-            memory=memory,
-            memory_title=memory_title,
-            best_code=start.code,
-            best_val=start.val,
-            best_version=start.version,
-            runs=runs,
-            max_turns=cfg.max_turns,
-            timeout_s=get_settings().sandbox_timeout_seconds,
-            web_search=bool(get_settings().ydc_api_key),
-        )
-        focuses = (
-            ["any"] if setup == "one_shot" else [prompts.focus_for(gen, i, n) for i in range(n)]
-        )
-        log.info(
-            "[%s] gen %d: %d researchers, best v%d val %.5f",
-            setup,
-            gen,
-            n,
-            start.version,
-            start.val,
-        )
-        async with asyncio.TaskGroup() as group:
-            tasks = [
-                group.create_task(self._researcher(gen, i, f, system, runs, memory, start))
-                for i, f in enumerate(focuses)
-            ]
-        outcomes = [task.result() for task in tasks]
-        losses = [b["val_loss"] if (b := o.best_run()) else None for o in outcomes]
-        ranked = rank(losses, self.baseline.threshold)
-
-        curator: CuratorOutcome | None = None
-        if self.memory is not None:
-            curator = await self._curate(gen, outcomes, ranked, start)
-        else:
-            self._pick_best_by_val(gen, outcomes)
-            if self.raw_log is not None:
-                for o in outcomes:
-                    self.raw_log.append(f"Generation {gen}, {o.name} ({o.focus}):\n{o.report}")
-
-        test = await self.dataset.test_losses(self.best.code, cfg.test_seeds)
-        gen_exps = [e for e in self.lab.experiments.values() if e.gen == gen]
-        metrics = {
-            "gen": gen,
-            "start_best_val": start.val,
-            "end_best_val": self.best.val,
-            "best_version": self.best.version,
-            "new_best": self.best.version != start.version,
-            "best_run_id": self.best.run_id,
-            "best_note": self.best.note,
-            "val_gain": scoring.gain(self.baseline.l0, self.best.val),
-            "test_losses": test,
-            "test_gain": self._fitness(test),
-            "memory_tokens": count_tokens(memory or ""),
-            "runs": len(gen_exps),
-            "errors": sum(e.status == "error" for e in gen_exps),
-            "timeouts": sum(e.status == "timeout" for e in gen_exps),
-            "researcher_best": [
-                {"name": o.name, "focus": o.focus, "best": o.best_run(), "rank": r}
-                for (i, r) in ranked
-                for o in [outcomes[i]]
-            ],
-            "usage": {
-                "researchers": _sum_usage([o.usage for o in outcomes]),
-                "curator": curator.usage if curator else {},
-            },
-            "minutes": round((time.time() - t0) / 60, 1),
-        }
-        self.store.append("generations", metrics)
-        events.emit("generation.completed", **metrics)
-        for o in outcomes:
-            self.store.append(
-                "agents",
-                {
-                    "gen": gen,
-                    "role": "researcher",
-                    "name": o.name,
-                    "focus": o.focus,
-                    "model": get_settings().researcher_model,
-                    "report": o.report,
-                    "run_log": o.run_log,
-                    "usage": o.usage,
-                    "turns": o.turns,
-                    "messages": o.messages,
-                },
-            )
-        if curator:
-            self.store.append(
-                "agents",
-                {
-                    "gen": gen,
-                    "role": "curator",
-                    "name": "curator",
-                    "model": get_settings().curator_model,
-                    "report": curator.summary,
-                    "checks": [c.__dict__ | {"code": None} for c in curator.checks],
-                    "usage": curator.usage,
-                    "turns": curator.turns,
-                    "messages": curator.messages,
-                },
-            )
-        self._snapshot(gen, curator)
-        log.info(
-            "[%s] gen %d done in %.1f min: best v%d val %.5f, test gain %s",
-            setup, gen, (time.time() - t0) / 60, self.best.version, self.best.val,
-            self._fitness(test),
-        )  # fmt: skip
-
-    async def _researcher(
-        self, gen: int, i: int, focus: str, system: str, runs: int, memory: str | None, start: Best
-    ) -> ResearcherOutcome:
-        with events.scope(phase="candidate"):
-            return await self._run_researcher(gen, i, focus, system, runs, memory, start)
-
-    async def _run_researcher(
-        self, gen: int, i: int, focus: str, system: str, runs: int, memory: str | None, start: Best
-    ) -> ResearcherOutcome:
-        description = prompts.ONE_SHOT_FOCUS if focus == "any" else prompts.FOCUSES[focus]
-        return await run_researcher(
-            lab=self.lab,
-            name=f"researcher-{i + 1}",
-            focus=focus,
-            system=system,
-            task=prompts.researcher_task(focus, description),
-            gen=gen,
-            best_version=start.version,
-            runs=runs,
-            memory=memory,
-            cfg=self.cfg,
-        )
-
-    def _pick_best_by_val(self, gen: int, outcomes: list[ResearcherOutcome]) -> None:
-        """No memory, Raw log, One-shot: the orchestrator takes the lowest val loss."""
-        runs = [r for o in outcomes for r in o.run_log if r["val_loss"] is not None]
-        if not runs:
-            return
-        top = min(runs, key=lambda r: r["val_loss"])
-        if scoring.beats(top["val_loss"], self.best.val, self.baseline.threshold):
-            exp = self.lab.experiments[top["run_id"]]
-            self.best = Best(exp.code, top["val_loss"], self.best.version + 1, exp.id, exp.note)
-            self._emit_best(verified=False)
-
-    def _emit_best(self, *, verified: bool) -> None:
-        events.emit(
-            "best.updated",
-            val_loss=self.best.val,
-            version=self.best.version,
-            run_id=self.best.run_id,
-            note=self.best.note,
-            verified=verified,
-            val_gain=scoring.gain(self.baseline.l0, self.best.val),
-        )
-
-    async def _curate(
-        self,
-        gen: int,
-        outcomes: list[ResearcherOutcome],
-        ranked: list[tuple[int, int]],
-        start: Best,
-    ) -> CuratorOutcome:
-        assert self.memory is not None
-        cfg, threshold = self.cfg, self.baseline.threshold
-        reports = []
-        for pos, (i, r) in enumerate(ranked, 1):
-            o = outcomes[i]
-            reports.append(
-                f"## {pos}. {o.name} (focus: {o.focus}, rank {r})\n"
-                f"Run log:\n{o.run_log_text()}\n\nReport:\n{o.report}"
-            )
-        top_run = outcomes[ranked[0][0]].best_run() if ranked else None
-        top_code = self.lab.experiments[top_run["run_id"]].code if top_run else None
-        task = prompts.curator_task(
-            gen=gen,
-            card=self.dataset.card(),
-            loss=self.dataset.loss,
-            memory=self.memory.render(start.version),
-            best_version=start.version,
-            best_val=start.val,
-            threshold=threshold,
-            stale_ids=[e.id for e in self.memory.stale(start.version)],
-            ranking=ranking_text(outcomes, ranked, start.val),
-            reports="\n\n".join(reports),
-            top_code=top_code,
-        )
-        system = prompts.CURATOR_SYSTEM.format(
-            cap=cfg.memory_cap_tokens,
-            runs=cfg.curator_runs,
-            seeds=", ".join(map(str, cfg.curator_seeds)),
-        )
-        try:
-            curator = await run_curator(
-                lab=self.lab,
-                memory=self.memory,
-                cfg=cfg,
-                system=system,
-                task=task,
-                gen=gen,
-                best_version=start.version,
-                best_val=start.val,
-                threshold=threshold,
-            )
-        except Exception as e:
-            log.exception("[%s] curator failed in gen %d", self.setup, gen)
-            curator = CuratorOutcome(f"(curator failed: {e})", [], 0, {}, 0, [])
-
-        # Fallback: if the curator never did a full re-check, the orchestrator re-checks the
-        # top run itself, so a new best is never missed because of a tool-use slip.
-        full = len(cfg.curator_seeds)
-        runs_left = cfg.curator_runs - curator.runs_used
-        if top_run and not any(len(c.seeds) == full for c in curator.checks) and runs_left >= full:
-            log.info(
-                "[%s] gen %d: curator skipped the re-check; orchestrator runs it", self.setup, gen
-            )
-            check = await check_code(
-                lab=self.lab,
-                code=self.lab.experiments[top_run["run_id"]].code,
-                source=top_run["run_id"],
-                seeds=cfg.curator_seeds,
-                gen=gen,
-                best_version=start.version,
-                best_val=start.val,
-                threshold=threshold,
-                by="orchestrator",
-            )
-            curator.checks.append(check)
-            curator.runs_used += full
-
-        winners = [c for c in curator.checks if c.beats_best and len(c.seeds) == full]
         if winners:
-            win: Check = min(winners, key=lambda c: c.mean or 0.0)
-            assert win.mean is not None
-            src = self.lab.experiments.get(win.source)
-            note = src.note if src else "curator code"
-            self.best = Best(win.code, win.mean, start.version + 1, win.source, note)
-            self._emit_best(verified=True)
-            self.memory.set_best(
-                f"v{self.best.version}: val {self.dataset.loss} {win.mean:.5f} (mean of seeds "
-                f"{', '.join(map(str, win.seeds))}), from run {win.source}: {note}"[:300],
-                [win.source, *win.run_ids],
-                self.best.version,
-                gen,
-                win.mean,
+            w = min(winners, key=lambda v: v.mean or 0.0)
+            source = lab.find_run(w.source_run_id) if w.source_run_id else None
+            on_seed = source and source.seed == lab.config.research_seed and source.loss
+            lab.best = Best(
+                start.version + 1,
+                w.code,
+                w.mean or 0.0,
+                w.source_run_id or w.run_ids[0],
+                source.note if source else "Curator's code.",
+                source.loss if on_seed and source.loss is not None else w.mean or 0.0,
             )
-        dropped = self.memory.enforce_cap(gen, self.best.version)
-        events.emit(
-            "memory.updated",
-            action="curation_completed",
-            text=self.memory.render(self.best.version),
-            tokens=self.memory.tokens(self.best.version),
-            best_version=self.best.version,
-            dropped_ids=dropped,
-        )
-        return curator
+    else:
+        candidates = [r for o in outcomes for r in o.runs if r.loss is not None]
+        top = min(candidates, key=lambda r: r.loss or 0.0, default=None)
+        if top and top.loss is not None and scoring.beats(top.loss, start.seed_loss, lab.threshold):
+            lab.best = Best(start.version + 1, top.code, top.loss, top.run_id, top.note, top.loss)
 
-    def _snapshot(self, gen: int, curator: CuratorOutcome | None) -> None:
-        text = self.memory_text() or ""
-        with events.scope(gen=gen):
-            events.emit(
-                "memory.updated",
-                action="snapshot",
-                text=text,
-                tokens=count_tokens(text),
-                best_version=self.best.version,
+    changed = lab.best.version != start.version
+    dropped: list[str] = []
+    if lab.setup == "shared_brain":
+        if changed:
+            lab.memory.set_best(
+                claim=best_claim(lab),
+                run_ids=[lab.best.run_id],
+                val_change=lab.best.val_loss - start.val_loss,
+                version=lab.best.version,
+                gen=generation,
             )
-        memory_events: list[dict[str, Any]] = []
-        if self.memory is not None:
-            memory_events = self.memory.events[self._events_saved :]
-            self._events_saved = len(self.memory.events)
-        self.store.append(
-            "memory_snapshots",
-            {
-                "gen": gen,
-                "best_version": self.best.version,
-                "tokens": count_tokens(text),
-                "text": text,
-                "events": memory_events,
-                "curator_summary": curator.summary if curator else None,
-            },
+            await lab.checkpoint(
+                f"g{generation} best -> v{lab.best.version}: val {lab.best.val_loss:.5f} "
+                f"from {lab.best.run_id}"
+            )
+        dropped = [e.id for e in lab.memory.enforce_cap()]
+        if dropped:
+            await lab.checkpoint(
+                f"g{generation} cap: dropped {', '.join(dropped)} ({lab.memory.tokens()} tokens)"
+            )
+
+    lab.log_generation(
+        {
+            "generation": generation,
+            "start_best": start.val_loss,
+            "start_best_seed_loss": start.seed_loss,
+            "end_best": lab.best.val_loss,
+            "best_version": lab.best.version,
+            "best_run_id": lab.best.run_id,
+            "best_changed": changed,
+            "val_gain": scoring.gain(lab.l0, lab.best.val_loss),
+            "memory_tokens": memory_tokens,
+            "memory_tokens_after": lab.memory.tokens() if lab.setup == "shared_brain" else 0,
+            "dropped": dropped,
+            "runs": runs,
+            "usage": usage.model_dump(),
+            "ranking": [r.__dict__ for r in ranked],
+        }
+    )
+    log.info(
+        "g%d done: best v%d val %.5f (%+.2f%%), %d runs",
+        generation,
+        lab.best.version,
+        lab.best.val_loss,
+        100 * scoring.gain(lab.l0, lab.best.val_loss),
+        runs,
+    )
+    await lab.checkpoint(
+        f"g{generation} done: best v{lab.best.version} val {lab.best.val_loss:.5f} "
+        f"({scoring.gain(lab.l0, lab.best.val_loss):+.2%}), {runs} runs"
+    )
+    return usage, runs
+
+
+async def final_test(lab: Lab) -> tuple[list[Experiment], list[Experiment]]:
+    """Score the starting and best train.py on the test split, seeds 1-3. Agents never see it."""
+    gen = lab.config.generations + 1
+
+    async def score(code: str, version: int) -> list[Experiment]:
+        exps = await asyncio.gather(
+            *(
+                lab.run_experiment(
+                    code,
+                    prefix=f"test-v{version}",
+                    agent="orchestrator",
+                    generation=gen,
+                    seed=s,
+                    note=f"test: train.py v{version}",
+                    split="test",
+                )
+                for s in lab.config.test_seeds
+            )
         )
+        return list(exps)
+
+    start = await score(lab.baseline_code, 0)
+    best = start if lab.best.version == 0 else await score(lab.best.code, lab.best.version)
+    return start, best
+
+
+async def research_run(
+    dataset: Dataset,
+    setup: Setup,
+    config: ResearchConfig,
+    *,
+    root: Path = DATA_DIR,
+    commit: bool = False,
+    run_id: str | None = None,
+) -> dict[str, Any]:
+    lab = Lab(dataset, setup, config, root=root, commit=commit, run_id=run_id)
+    lab.save_config()
+    started = datetime.now(UTC)
+    log.info(
+        "research run %s: %d generations, %d runs per generation",
+        lab.run_id,
+        config.generations,
+        runs_per_generation(config, setup),
+    )
+    await run_baseline(lab)
+    usage, runs = Usage(), len(config.baseline_seeds)
+    for g in range(1, config.generations + 1):
+        u, r = await run_generation(lab, g)
+        usage, runs = usage + u, runs + r
+
+    start_exps, best_exps = await final_test(lab)
+    test_start, test_best = [e.loss for e in start_exps], [e.loss for e in best_exps]
+    complete = all(x is not None for x in test_start + test_best)
+    fitness = (
+        scoring.fitness([x or 0.0 for x in test_start], [x or 0.0 for x in test_best])
+        if complete
+        else None
+    )
+    row = {
+        "run_id": lab.run_id,
+        "dataset": dataset.name,
+        "setup": setup,
+        "config": config.model_dump(),
+        "l0": lab.l0,
+        "noise_threshold": lab.threshold,
+        "best_version": lab.best.version,
+        "best_run_id": lab.best.run_id,
+        "best_val_loss": lab.best.val_loss,
+        "val_gain": scoring.gain(lab.l0, lab.best.val_loss),
+        "test_start": test_start,
+        "test_best": test_best,
+        "test_start_accuracy": [e.accuracy for e in start_exps],
+        "test_best_accuracy": [e.accuracy for e in best_exps],
+        "test_majority_accuracy": scoring.majority_accuracy(dataset.test_y),
+        "fitness": fitness,
+        "runs": runs,
+        "memory_tokens": lab.memory.tokens() if setup == "shared_brain" else 0,
+        "usage": usage.model_dump(),
+        "started_at": started.isoformat(),
+        "finished_at": datetime.now(UTC).isoformat(),
+    }
+    append_jsonl(root / "research_runs.jsonl", row)
+    done = f"fitness {fitness:+.4f}" if fitness is not None else "fitness unknown (test run failed)"
+    log.info("research run %s finished: %s", lab.run_id, done)
+    await lab.checkpoint(f"finished: {done}")
+    return row

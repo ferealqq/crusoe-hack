@@ -1,97 +1,6 @@
-import uuid
-from datetime import datetime
-from typing import Any, Literal
+from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field
-
-from app.config import Setup
-from app.models import RunStatus
-
-
-class Task(BaseModel):
-    """A single eval item. One line of a dataset's JSONL file.
-
-    grader:
-      - "exact":   output.strip() == expected.strip()
-      - "code":    output is Python code; `test` is appended and run in a Modal sandbox
-      - "judge":   an LLM on Crusoe scores the output against `expected` / `rubric`
-    """
-
-    id: str
-    prompt: str
-    grader: Literal["exact", "code", "judge"] = "judge"
-    expected: str | None = None
-    test: str | None = None
-    rubric: str | None = None
-
-
-class DatasetCreate(BaseModel):
-    name: str
-    description: str | None = None
-    tasks: list[Task]
-
-
-class DatasetOut(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    id: uuid.UUID
-    name: str
-    description: str | None
-    s3_key: str
-    num_tasks: int
-    created_at: datetime
-
-
-class RunCreate(BaseModel):
-    dataset_id: uuid.UUID
-    model: str | None = None
-    system_prompt: str | None = None
-    params: dict[str, Any] = Field(default_factory=lambda: {"temperature": 0.2, "max_tokens": 4096})
-
-
-class RunResultOut(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    task_id: str
-    output: str | None
-    score: float | None
-    grader: str
-    feedback: str | None
-    latency_ms: int | None
-    sandbox_exit_code: int | None
-
-
-class RunOut(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    id: uuid.UUID
-    dataset_id: uuid.UUID
-    model: str
-    system_prompt: str | None
-    params: dict[str, Any]
-    status: RunStatus
-    score: float | None
-    error: str | None
-    trace_s3_key: str | None
-    created_at: datetime
-    finished_at: datetime | None
-
-
-class RunDetail(RunOut):
-    results: list[RunResultOut]
-
-
-class ChatRequest(BaseModel):
-    messages: list[dict[str, str]]
-    model: str | None = None
-    temperature: float = 0.2
-    max_tokens: int = 4096
-
-
-class ChatResponse(BaseModel):
-    model: str
-    content: str
-    latency_ms: int
+from pydantic import BaseModel
 
 
 class SandboxRequest(BaseModel):
@@ -105,17 +14,57 @@ class SandboxResult(BaseModel):
     exit_code: int
 
 
-class ModelExportOut(BaseModel):
+class TrainResult(BaseModel):
+    """One train.py run in the sandbox. `preds` is set only when status is "ok"."""
+
+    status: Literal["ok", "error", "timeout"]
+    preds: list[float] | None = None
+    output_tail: str = ""
+    runtime_s: float = 0.0
+
+
+class Experiment(BaseModel):
+    """One sandbox run, as stored in experiments.jsonl."""
+
     run_id: str
-    setup: Setup
-    status: Literal["not_created", "building", "ready", "failed"]
-    best_version: int
-    seed: int = 1
-    code_sha256: str
-    created_at: datetime | None = None
-    finished_at: datetime | None = None
-    error: str | None = None
-    filename: str | None = None
-    size_bytes: int | None = None
-    sha256: str | None = None
-    download_url: str | None = None
+    generation: int
+    agent: str
+    seed: int
+    split: Literal["val", "test"] = "val"
+    status: Literal["ok", "error", "timeout"]
+    loss: float | None = None
+    accuracy: float | None = None  # test runs only (agents only ever see loss)
+    runtime_s: float
+    note: str = ""
+    output_tail: str = ""
+    code: str
+
+
+class Usage(BaseModel):
+    prompt: int = 0
+    cached: int = 0
+    output: int = 0
+    calls: int = 0
+
+    def __add__(self, other: "Usage") -> "Usage":
+        return Usage(
+            prompt=self.prompt + other.prompt,
+            cached=self.cached + other.cached,
+            output=self.output + other.output,
+            calls=self.calls + other.calls,
+        )
+
+
+class ToolCall(BaseModel):
+    id: str
+    name: str
+    arguments: str  # JSON text, as the model wrote it
+
+
+class Reply(BaseModel):
+    """One chat completion, reduced to what the agent loop needs."""
+
+    content: str
+    tool_calls: list[ToolCall] = []
+    usage: Usage = Usage()
+    finish_reason: str | None = None
