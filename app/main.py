@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
-from app.api.routes import brain, health, playground
+from app.api.routes import health, playground, research
 
 logging.basicConfig(level=logging.INFO)
 
@@ -17,7 +17,7 @@ app = FastAPI(
 
 app.include_router(health.router)
 app.include_router(playground.router)
-app.include_router(brain.router)
+app.include_router(research.router)
 
 # Demo frontend: serve the built web/ app (cd web && npm run build) with an SPA fallback.
 WEB_DIST = Path(__file__).resolve().parent.parent / "web" / "dist"

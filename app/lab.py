@@ -108,10 +108,12 @@ class Lab:
         run_id = self.new_run_id(prefix)
         files = self.dataset.research_files if split == "val" else self.dataset.test_files
         result = await sandbox.run_train(code, files, self.dataset.target, seed)
-        loss = None
+        loss = accuracy = None
         if result.status == "ok" and result.preds is not None:
             labels = self.dataset.val_y if split == "val" else self.dataset.test_y
             loss = scoring.log_loss(labels, np.asarray(result.preds))
+            if split == "test":
+                accuracy = scoring.accuracy(labels, np.asarray(result.preds))
         exp = Experiment(
             run_id=run_id,
             generation=generation,
@@ -120,6 +122,7 @@ class Lab:
             split=split,
             status=result.status,
             loss=loss,
+            accuracy=accuracy,
             runtime_s=result.runtime_s,
             note=note,
             output_tail=result.output_tail,
@@ -134,6 +137,11 @@ class Lab:
     def find_run(self, run_id: str) -> Experiment | None:
         """A research (val) run from this research run. Never returns a test run."""
         return next((e for e in self.experiments if e.run_id == run_id and e.split == "val"), None)
+
+    def save_config(self) -> None:
+        """config.json: lets the UI show a run's budget and prompt while it's still going."""
+        self.dir.mkdir(parents=True, exist_ok=True)
+        (self.dir / "config.json").write_text(self.config.model_dump_json(indent=2))
 
     def log_agent(self, row: dict[str, Any]) -> None:
         append_jsonl(self.dir / "agents.jsonl", row)

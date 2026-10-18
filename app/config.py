@@ -3,6 +3,13 @@ from functools import lru_cache
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+# The researchers' brief: the first paragraph of their system prompt (app/agents/prompts.py).
+# A run started from the UI replaces it with the prompt typed there.
+DEFAULT_GOAL = (
+    "You are an ML researcher on a small team. Your goal: lower the validation log loss of the "
+    "model in train.py."
+)
+
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
@@ -16,6 +23,8 @@ class Settings(BaseSettings):
     sandbox_timeout_seconds: int = 120
     sandbox_cpu: float = 2
     sandbox_memory_mb: int = 4096
+    # POST /research-runs starts real runs (Crusoe + Modal spend). Turn off on public deploys.
+    research_launch_enabled: bool = True
 
 
 class ResearchConfig(BaseModel):
@@ -33,6 +42,7 @@ class ResearchConfig(BaseModel):
     verify_seeds: list[int] = [1, 2, 3]
     test_seeds: list[int] = [1, 2, 3]
     focuses: list[str] = ["features", "model type", "tuning", "regularization", "ensembling"]
+    goal: str = DEFAULT_GOAL
 
 
 @lru_cache

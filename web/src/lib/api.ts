@@ -1,57 +1,94 @@
-// Run data access. Uses the FastAPI backend when it's running and falls back to the
-// recorded runs bundled in public/samples, so the demo also works as a static site.
-import { parseJsonl, type RunEvent, type Setup } from './events'
+// Run data access, as two separate sources with no fallback between them:
+// - demo: static files exported from data/ by scripts/export_demo.py (public/samples), so the
+//   demo also works as a static site and never touches the API;
+// - live: the read-only telemetry API (/research-runs, app/api/routes/research.py), which
+//   rebuilds events from data/ on every request, so runs in progress show up as they're written.
+import { parseJsonl, type ResearchEvent, type RunInfo } from './events'
 
-export interface RunSummary {
-  run_id: string
-  source: string
-  setup: Setup | null
-  status: 'live' | 'completed' | 'failed'
-  best_val_loss: number | null
-  baseline_val_loss: number | null
-  fitness: number | null
-  generations: number | null
-}
+export type Source = 'demo' | 'live'
 
-async function getText(url: string): Promise<string> {
+const API = '/research-runs'
+const DEMO = '/samples'
+
+async function get(url: string): Promise<Response> {
   const res = await fetch(url)
   if (!res.ok) throw new Error(`${res.status} ${url}`)
-  const type = res.headers.get('content-type') ?? ''
-  if (type.includes('text/html')) throw new Error(`no API at ${url}`) // Vite SPA fallback
-  return res.text()
+  if ((res.headers.get('content-type') ?? '').includes('text/html')) throw new Error(`no backend at ${url}`) // SPA fallback
+  return res
 }
 
-export function summarize(runId: string, source: string, events: RunEvent[]): RunSummary {
-  const s: RunSummary = { run_id: runId, source, setup: null, status: 'live', best_val_loss: null, baseline_val_loss: null, fitness: null, generations: null }
-  for (const e of events) {
-    if (e.t === 'run.started') {
-      s.setup = e.setup
-      s.baseline_val_loss = e.baseline_val_loss
-      s.generations = e.config.generations
-    } else if (e.t === 'gen.finished') s.best_val_loss = e.best_val_loss
-    else if (e.t === 'eval.finished') s.fitness = e.fitness
-    else if (e.t === 'run.finished') s.status = e.status
+// ---- demo: static recorded runs ----
+
+const demoIndex = (): Promise<RunInfo[]> =>
+  get(`${DEMO}/index.json`)
+    .then((r) => r.json() as Promise<RunInfo[]>)
+    .catch(() => [])
+
+const demoCache = new Map<string, Promise<ResearchEvent[]>>()
+
+/** Recorded runs bundled with the frontend, newest first. */
+export const listDemoRuns = demoIndex
+
+export async function getDemoRun(runId: string): Promise<RunInfo> {
+  const run = (await demoIndex()).find((r) => r.run_id === runId)
+  if (!run) throw new Error(`no recorded run ${runId}`)
+  return run
+}
+
+export function getDemoEvents(runId: string): Promise<ResearchEvent[]> {
+  if (!demoCache.has(runId)) {
+    demoCache.set(runId, get(`${DEMO}/${encodeURIComponent(runId)}.jsonl`).then(async (r) => parseJsonl(await r.text())))
   }
-  return s
+  return demoCache.get(runId)!
 }
 
-export async function listRuns(): Promise<RunSummary[]> {
-  try {
-    return JSON.parse(await getText('/api/runs')) as RunSummary[]
-  } catch {
-    const ids = JSON.parse(await getText('/samples/index.json')) as string[]
-    return Promise.all(ids.map(async (id) => summarize(id, 'static', await getEvents(id))))
+// ---- live: the API ----
+
+/** Runs under data/ as the API sees them now, newest first. Throws if there's no backend. */
+export const listRuns = async (): Promise<RunInfo[]> => (await get(API)).json()
+
+export async function getRun(runId: string): Promise<RunInfo> {
+  return (await get(`${API}/${encodeURIComponent(runId)}`)).json()
+}
+
+/** The whole history, following `next_after` pages. */
+export async function getEvents(run: RunInfo): Promise<ResearchEvent[]> {
+  const out: ResearchEvent[] = []
+  let after = 0
+  for (;;) {
+    const page = (await (await get(`${API}/${encodeURIComponent(run.run_id)}/events?after=${after}&limit=2000`)).json()) as {
+      events: ResearchEvent[]
+      next_after: number
+      has_more: boolean
+    }
+    out.push(...page.events)
+    if (!page.has_more) return out
+    after = page.next_after
   }
 }
 
-export async function getEvents(runId: string): Promise<RunEvent[]> {
-  try {
-    return parseJsonl(await getText(`/api/runs/${encodeURIComponent(runId)}/events`))
-  } catch {
-    return parseJsonl(await getText(`/samples/${encodeURIComponent(runId)}.jsonl`))
+export class StartError extends Error {
+  runId?: string // set when another run is already in progress
+  constructor(message: string, runId?: string) {
+    super(message)
+    this.runId = runId
   }
 }
 
-export function streamUrl(runId: string, after: number): string {
-  return `/api/runs/${encodeURIComponent(runId)}/stream?after=${after}`
+/** Start Shared Brain and No memory side by side, with `prompt` as the researchers' brief. */
+export async function startRun(prompt: string, generations: number): Promise<string> {
+  const res = await fetch(API, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ prompt, generations }) })
+  const body = await res.json().catch(() => ({}))
+  if (res.ok) return body.run_id as string
+  const detail = body.detail
+  if (typeof detail === 'object' && detail?.run_id) throw new StartError(detail.message, detail.run_id)
+  throw new StartError(typeof detail === 'string' ? detail : `${res.status} ${res.statusText}`)
 }
+
+/** Live SSE: backlog after `after`, then appends; `stream.reset` if history changed, `stream.end` when done. */
+export const streamUrl = (runId: string, after: number) => `${API}/${encodeURIComponent(runId)}/stream?after=${after}`
+
+// ---- either ----
+
+export const runInfo = (runId: string, source: Source) => (source === 'demo' ? getDemoRun(runId) : getRun(runId))
+export const runEvents = (run: RunInfo, source: Source) => (source === 'demo' ? getDemoEvents(run.run_id) : getEvents(run))

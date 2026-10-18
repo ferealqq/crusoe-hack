@@ -16,6 +16,17 @@ def log_loss(y: np.ndarray, p: np.ndarray) -> float:
     return float(-np.mean(y * np.log(p) + (1 - y) * np.log(1 - p)))
 
 
+def accuracy(y: np.ndarray, p: np.ndarray, cutoff: float = 0.5) -> float:
+    """Share of rows where the predicted class (p >= cutoff) matches the label."""
+    return float(np.mean((np.asarray(p, dtype=float) >= cutoff) == (np.asarray(y) == 1)))
+
+
+def majority_accuracy(y: np.ndarray) -> float:
+    """Accuracy of always predicting the most common class: the floor any model must beat."""
+    rate = float(np.mean(np.asarray(y) == 1))
+    return max(rate, 1 - rate)
+
+
 def spread(losses: list[float]) -> float:
     """Population standard deviation; 0 for a single value."""
     return statistics.pstdev(losses) if len(losses) > 1 else 0.0

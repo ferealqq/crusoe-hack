@@ -33,6 +33,7 @@ class Experiment(BaseModel):
     split: Literal["val", "test"] = "val"
     status: Literal["ok", "error", "timeout"]
     loss: float | None = None
+    accuracy: float | None = None  # test runs only (agents only ever see loss)
     runtime_s: float
     note: str = ""
     output_tail: str = ""

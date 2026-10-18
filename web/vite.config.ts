@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: { alias: { '@': path.resolve(__dirname, 'src') } },
   server: {
-    // FastAPI (uv run fastapi dev app/main.py) serves the run event logs
-    proxy: { '/api': 'http://localhost:8000' },
+    // FastAPI (uv run fastapi dev app/main.py) serves the live telemetry API
+    proxy: { '/research-runs': 'http://localhost:8000' },
   },
 })

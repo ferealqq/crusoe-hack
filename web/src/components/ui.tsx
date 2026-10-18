@@ -1,5 +1,6 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react'
 import { cn } from '@/lib/format'
+import type { Shape } from '@/lib/theme'
 
 export function Card({ title, action, children, className }: { title?: ReactNode; action?: ReactNode; children: ReactNode; className?: string }) {
   return (
@@ -58,13 +59,14 @@ export function Stat({ label, value, sub }: { label: string; value: ReactNode; s
 }
 
 /** Identity swatch: a colored mark beside text that stays in ink colors. */
-export function Swatch({ color, shape = 'circle' }: { color: string; shape?: 'circle' | 'square' | 'triangle' | 'diamond' }) {
+export function Swatch({ color, shape = 'circle' }: { color: string; shape?: Shape }) {
   return (
     <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden className="shrink-0">
       {shape === 'circle' && <circle cx="5" cy="5" r="4" fill={color} />}
       {shape === 'square' && <rect x="1" y="1" width="8" height="8" rx="1.5" fill={color} />}
       {shape === 'triangle' && <path d="M5 1 L9 9 L1 9 Z" fill={color} />}
       {shape === 'diamond' && <path d="M5 0.5 L9.5 5 L5 9.5 L0.5 5 Z" fill={color} />}
+      {shape === 'cross' && <path d="M3.5 0.5 H6.5 V3.5 H9.5 V6.5 H6.5 V9.5 H3.5 V6.5 H0.5 V3.5 H3.5 Z" fill={color} />}
     </svg>
   )
 }

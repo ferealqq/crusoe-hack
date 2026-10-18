@@ -56,3 +56,50 @@ body {
   to { background: transparent; }
 }
 .flash-add { animation: flash-in 2.5s ease-out; }
+
+/* Prompt → watch page. The prompt box morphs between pages with the View Transitions API. */
+.prompt-box { view-transition-name: prompt; }
+::view-transition-group(prompt) { animation-duration: 0.55s; animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1); }
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.35s; }
+
+.hero-glow {
+  background:
+    radial-gradient(40% 35% at 30% 70%, rgb(57 135 229 / 0.28), transparent 70%),
+    radial-gradient(35% 30% at 70% 65%, rgb(217 89 38 / 0.22), transparent 70%),
+    radial-gradient(30% 25% at 50% 85%, rgb(25 158 112 / 0.18), transparent 70%);
+  filter: blur(30px);
+  animation: glow-drift 12s ease-in-out infinite alternate;
+}
+@keyframes glow-drift {
+  from { transform: translateY(0) scale(1); }
+  to { transform: translateY(-3%) scale(1.06); }
+}
+
+.caret {
+  display: inline-block;
+  width: 2px;
+  height: 1.1em;
+  margin-left: 1px;
+  vertical-align: text-bottom;
+  background: var(--color-ink);
+  animation: blink 0.9s steps(1) infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+@keyframes send-pulse {
+  0% { box-shadow: 0 0 0 0 rgb(240 239 236 / 0.45); }
+  100% { box-shadow: 0 0 0 10px rgb(240 239 236 / 0); }
+}
+.send-ready { animation: send-pulse 1.3s ease-out infinite; }
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+.anim-rise { animation: rise 0.35s ease-out both; }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+.anim-fade { animation: fade 0.4s ease-out both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-glow, .caret, .send-ready, .anim-rise, .anim-fade { animation: none; }
+}

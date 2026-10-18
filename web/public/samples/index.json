@@ -1,0 +1,98 @@
+[
+ {
+  "run_id": "churn-20261017-235135",
+  "dataset": "churn",
+  "setups": [
+   "shared_brain",
+   "no_memory"
+  ],
+  "status": "completed",
+  "events_available": true,
+  "last_seq": 419,
+  "duration_ms": 433876,
+  "last_event_at": "2026-10-17T23:58:48.876083+00:00",
+  "replay_available": true,
+  "generations": 1,
+  "started_at": "2026-10-17T23:51:35+00:00",
+  "summary": {
+   "shared_brain": {
+    "status": "completed",
+    "generations_done": 1,
+    "l0": 0.3980459053188114,
+    "best_val": 0.32411012834817693,
+    "fitness": 0.22046413403161658
+   },
+   "no_memory": {
+    "status": "completed",
+    "generations_done": 1,
+    "l0": 0.3980459053188114,
+    "best_val": 0.32355288467691473,
+    "fitness": 0.21875946050787484
+   }
+  }
+ },
+ {
+  "run_id": "churn-20261017-231140",
+  "dataset": "churn",
+  "setups": [
+   "shared_brain",
+   "no_memory"
+  ],
+  "status": "completed",
+  "events_available": true,
+  "last_seq": 1917,
+  "duration_ms": 1314000,
+  "last_event_at": "2026-10-17T23:33:34+00:00",
+  "replay_available": true,
+  "generations": 5,
+  "started_at": "2026-10-17T23:11:40+00:00",
+  "summary": {
+   "shared_brain": {
+    "status": "completed",
+    "generations_done": 5,
+    "l0": 0.3980459053188114,
+    "best_val": 0.32444134347459824,
+    "fitness": null
+   },
+   "no_memory": {
+    "status": "completed",
+    "generations_done": 5,
+    "l0": 0.3980459053188114,
+    "best_val": 0.324735701930462,
+    "fitness": null
+   }
+  }
+ },
+ {
+  "run_id": "churn-20261017-223053",
+  "dataset": "churn",
+  "setups": [
+   "shared_brain",
+   "no_memory"
+  ],
+  "status": "completed",
+  "events_available": true,
+  "last_seq": 1990,
+  "duration_ms": 1566175,
+  "last_event_at": "2026-10-17T22:56:59.174953+00:00",
+  "replay_available": true,
+  "generations": 5,
+  "started_at": "2026-10-17T22:30:53+00:00",
+  "summary": {
+   "shared_brain": {
+    "status": "completed",
+    "generations_done": 5,
+    "l0": 0.3980459053188115,
+    "best_val": 0.32444134347459824,
+    "fitness": 0.21875946050787484
+   },
+   "no_memory": {
+    "status": "completed",
+    "generations_done": 5,
+    "l0": 0.3980459053188114,
+    "best_val": 0.32523254858524375,
+    "fitness": 0.2172053944429756
+   }
+  }
+ }
+]

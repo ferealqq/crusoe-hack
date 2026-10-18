@@ -15,7 +15,7 @@ from app.agents.researcher import ResearcherOutcome, run_researcher
 from app.config import ResearchConfig
 from app.data import Dataset
 from app.lab import Best, Lab, Setup, runs_per_generation
-from app.schemas import Usage
+from app.schemas import Experiment, Usage
 from app.store import DATA_DIR, append_jsonl
 
 BASELINES = Path(__file__).resolve().parents[1] / "baselines"
@@ -170,11 +170,11 @@ async def run_generation(lab: Lab, generation: int) -> tuple[Usage, int]:
     return usage, runs
 
 
-async def final_test(lab: Lab) -> tuple[list[float | None], list[float | None]]:
+async def final_test(lab: Lab) -> tuple[list[Experiment], list[Experiment]]:
     """Score the starting and best train.py on the test split, seeds 1-3. Agents never see it."""
     gen = lab.config.generations + 1
 
-    async def score(code: str, version: int) -> list[float | None]:
+    async def score(code: str, version: int) -> list[Experiment]:
         exps = await asyncio.gather(
             *(
                 lab.run_experiment(
@@ -189,7 +189,7 @@ async def final_test(lab: Lab) -> tuple[list[float | None], list[float | None]]:
                 for s in lab.config.test_seeds
             )
         )
-        return [e.loss for e in exps]
+        return list(exps)
 
     start = await score(lab.baseline_code, 0)
     best = start if lab.best.version == 0 else await score(lab.best.code, lab.best.version)
@@ -203,8 +203,10 @@ async def research_run(
     *,
     root: Path = DATA_DIR,
     commit: bool = False,
+    run_id: str | None = None,
 ) -> dict[str, Any]:
-    lab = Lab(dataset, setup, config, root=root, commit=commit)
+    lab = Lab(dataset, setup, config, root=root, commit=commit, run_id=run_id)
+    lab.save_config()
     started = datetime.now(UTC)
     log.info(
         "research run %s: %d generations, %d runs per generation",
@@ -218,7 +220,8 @@ async def research_run(
         u, r = await run_generation(lab, g)
         usage, runs = usage + u, runs + r
 
-    test_start, test_best = await final_test(lab)
+    start_exps, best_exps = await final_test(lab)
+    test_start, test_best = [e.loss for e in start_exps], [e.loss for e in best_exps]
     complete = all(x is not None for x in test_start + test_best)
     fitness = (
         scoring.fitness([x or 0.0 for x in test_start], [x or 0.0 for x in test_best])
@@ -238,6 +241,9 @@ async def research_run(
         "val_gain": scoring.gain(lab.l0, lab.best.val_loss),
         "test_start": test_start,
         "test_best": test_best,
+        "test_start_accuracy": [e.accuracy for e in start_exps],
+        "test_best_accuracy": [e.accuracy for e in best_exps],
+        "test_majority_accuracy": scoring.majority_accuracy(dataset.test_y),
         "fitness": fitness,
         "runs": runs,
         "memory_tokens": lab.memory.tokens() if setup == "shared_brain" else 0,

@@ -3,13 +3,12 @@
 
 import json
 
-from app.config import get_settings
+from app.config import DEFAULT_GOAL, get_settings
 from app.lab import Lab
 from app.schemas import Experiment
 from app.scoring import Ranked
 
-RESEARCHER_RULES = """You are an ML researcher on a small team. Your goal: lower the validation \
-log loss of the model in train.py.
+RESEARCHER_RULES = """{goal}
 
 ## How it works
 - train.py must define:
@@ -76,6 +75,7 @@ def researcher_system(lab: Lab) -> str:
     shared = lab.setup == "shared_brain"
     parts = [
         RESEARCHER_RULES.format(
+            goal=lab.config.goal,
             timeout=settings.sandbox_timeout_seconds,
             cpu=settings.sandbox_cpu,
             memory_gb=settings.sandbox_memory_mb / 1024,
@@ -105,9 +105,12 @@ def researcher_task(focus: str) -> str:
 
 
 def curator_system(lab: Lab) -> str:
-    return CURATOR_RULES.format(
+    rules = CURATOR_RULES.format(
         threshold=lab.threshold, runs=lab.config.curator_runs, cap=lab.memory.cap
     )
+    if lab.config.goal != DEFAULT_GOAL:
+        rules += f"\n\n## The team's brief (what the researchers were told)\n{lab.config.goal}"
+    return rules
 
 
 def _run_line(r: Experiment) -> str:

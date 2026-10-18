@@ -65,10 +65,13 @@ async def main(args: argparse.Namespace) -> None:
         }.items()
         if v is not None
     }
+    if args.goal:
+        overrides["goal"] = args.goal
     config = ResearchConfig(**overrides)
     await check_models(args.setup)
     dataset = load_dataset(args.dataset)
-    await research_run(dataset, args.setup, config, commit=not args.no_commit)
+    run_id = f"{dataset.name}-{args.setup}-{args.stamp}" if args.stamp else None
+    await research_run(dataset, args.setup, config, commit=not args.no_commit, run_id=run_id)
     print()
     print(results_table())
 
@@ -81,6 +84,10 @@ def cli() -> None:
     parser.add_argument("--researchers", type=int)
     parser.add_argument("--runs", type=int, help="runs per No memory researcher (default 7)")
     parser.add_argument("--turns", type=int, help="max turns per researcher (default 30)")
+    parser.add_argument("--goal", help="the researchers' brief (default: config.DEFAULT_GOAL)")
+    parser.add_argument(
+        "--stamp", help="run id timestamp YYYYmmdd-HHMMSS; setups with the same one group together"
+    )
     parser.add_argument("--no-commit", action="store_true", help="don't commit outputs to git")
     parser.add_argument("--report", action="store_true", help="print the results table and exit")
     args = parser.parse_args()
